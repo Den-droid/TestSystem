@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+<div th:if="${error}">
+    <span th:text="${error}"></span>
+</div>
+<form name="login" method="post" action="/login">
+    <label for="username"> Enter username:
+        <input id="username" type="text" name="username" value="denis" placeholder="Enter email"/>
+    </label>
+    <br>
+    <label for="password"> Enter password:
+        <input id="password" type="password" name="password" value="password"/>
+    </label>
+    <br>
+    <input type="submit" value="Login">
+</form>
+</body>
+</html>
