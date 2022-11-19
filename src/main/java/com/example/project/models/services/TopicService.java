@@ -1,8 +1,7 @@
 package com.example.project.models.services;
 
 import com.example.project.models.entities.Topic;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface TopicService {
     void add(String username, String topicName);
@@ -13,11 +12,11 @@ public interface TopicService {
 
     Topic getById(int id);
 
-    List<Topic> getPage(int page, int limit);
+    Page<Topic> getPage(int page, int limit);
 
-    List<Topic> getPageByUsername(int page, int limit, String username);
+    Page<Topic> getPageByUsername(int page, int limit, String username);
 
-    List<Topic> searchByName(String name);
+    Page<Topic> getSearchPageByName(int page, int limit, String name);
 
-    List<Topic> searchByNameAndUserId(String userId, String name);
+    Page<Topic> getSearchPageByNameAndUsername(int page, int limit, String username, String name);
 }

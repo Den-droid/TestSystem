@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Edit topic</title>
 </head>
 <body>
-
+<h1>Edit topic</h1>
+<br>
+<form name="addTopic" method="post" th:action="@{/topics/edit/{id}(id=${topic.id})}">
+    <label for="name"> Name:
+        <input id="name" name="name" th:value="${topic.name}" type="text"/>
+    </label>
+    <br>
+    <input type="submit" value="Edit Topic">
+</form>
 </body>
 </html>

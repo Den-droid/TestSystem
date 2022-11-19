@@ -1,6 +1,5 @@
 package com.example.project.models.services.impl;
 
-import com.example.project.dto.topic.TopicPageDto;
 import com.example.project.models.entities.Topic;
 import com.example.project.models.entities.User;
 import com.example.project.models.repositories.TopicRepository;
@@ -8,10 +7,11 @@ import com.example.project.models.repositories.UserRepository;
 import com.example.project.models.services.TopicService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @Transactional
@@ -28,7 +28,7 @@ public class TopicServiceImpl implements TopicService {
     public void add(String username, String topicName) {
         User user = userRepository.findByUsernameIgnoreCase(username);
         if (user == null)
-            throw new IllegalArgumentException("There is no user with such username!!!");
+            throw new UsernameNotFoundException("There is no user with such username!!!");
         if (topicRepository.existsTopicByName(topicName))
             throw new IllegalArgumentException("There is already topic with such name!!!");
         Topic toSave = new Topic();
@@ -40,39 +40,49 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public void edit(int topicId, String topicName) {
         Topic topic = topicRepository.findById(topicId)
-                .orElseThrow(() -> new IllegalArgumentException("There is no topic with such id!!!"));
+                .orElseThrow(NoSuchElementException::new);
+        if (topicRepository.existsTopicByName(topicName)) {
+            throw new IllegalArgumentException("There is already topic with such name!!!");
+        }
         topic.setName(topicName);
         topicRepository.save(topic);
     }
+
     @Override
     public void remove(int id) {
         topicRepository.deleteById(id);
     }
+
     @Override
     public Topic getById(int id) {
         return topicRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("There is no topic with such id!!!"));
+                .orElseThrow(IllegalArgumentException::new);
     }
+
     @Override
-    public List<Topic> getPage(int pageNumber, int limit) {
-        Page<Topic> page = topicRepository.findAll(PageRequest.of(pageNumber, limit));
-        return page.getContent();
+    public Page<Topic> getPage(int pageNumber, int limit) {
+        return topicRepository.findAll(PageRequest.of(pageNumber - 1, limit));
     }
+
     @Override
-    public List<Topic> getPageByUsername(int page, int limit, String username) {
+    public Page<Topic> getPageByUsername(int page, int limit, String username) {
         User user = userRepository.findByUsernameIgnoreCase(username);
         if (user == null)
             throw new IllegalArgumentException();
-        return topicRepository.findAllByUser(user, PageRequest.of(page, limit));
+        return topicRepository.findAllByUser(user, PageRequest.of(page - 1, limit));
     }
 
     @Override
-    public List<Topic> searchByName(String name) {
-        return null;
+    public Page<Topic> getSearchPageByName(int page, int limit, String name) {
+        return topicRepository.findAllByNameContainsIgnoreCase(name, PageRequest.of(page - 1, limit));
     }
 
     @Override
-    public List<Topic> searchByNameAndUserId(String userId, String name) {
-        return null;
+    public Page<Topic> getSearchPageByNameAndUsername(int page, int limit, String username, String name) {
+        User user = userRepository.findByUsernameIgnoreCase(username);
+        if (user == null)
+            throw new IllegalArgumentException();
+        return topicRepository.findAllByNameContainsIgnoreCaseAndUser(name, user,
+                PageRequest.of(page - 1, limit));
     }
 }

@@ -1,8 +1,12 @@
 package com.example.project.security;
 
 import com.example.project.models.enums.Role;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class WebSecurityConfig {
     private final static String[] USER_PATTERNS = new String[]{
-            "/user/**", "/topics/**"
+            "/user/**", "/topics/add", "/topics/delete/**", "/topics/edit/**"
     };
 
     private final static String[] ADMIN_PATTERNS = new String[]{
@@ -30,8 +34,7 @@ public class WebSecurityConfig {
         security.authorizeRequests()
                 .antMatchers(USER_PATTERNS).hasAuthority(Role.USER.name())
                 .antMatchers(ADMIN_PATTERNS).hasAuthority(Role.ADMIN.name())
-                .antMatchers("/").permitAll()
-                .antMatchers("/register").anonymous()
+                .antMatchers("/", "/register").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

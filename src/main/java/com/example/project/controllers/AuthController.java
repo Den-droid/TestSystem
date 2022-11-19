@@ -1,12 +1,13 @@
 package com.example.project.controllers;
 
-import com.example.project.mappers.RegisterMapper;
 import com.example.project.dto.auth.RegisterDto;
-import com.example.project.models.entities.User;
 import com.example.project.models.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AuthController {
@@ -31,8 +32,7 @@ public class AuthController {
     @PostMapping("/register")
     public String register(@ModelAttribute(name = "register") RegisterDto registerDto, Model model) {
         try {
-            User user = RegisterMapper.map(registerDto);
-            userService.register(user);
+            userService.register(registerDto);
         } catch (IllegalArgumentException ex) {
             model.addAttribute("error", ex.getMessage());
             return "register";

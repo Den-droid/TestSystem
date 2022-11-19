@@ -3,6 +3,7 @@ package com.example.project.dto.auth;
 public class RegisterDto {
     private String username;
     private String password;
+    private String confirmPassword;
     private String firstName;
     private String lastName;
     private String email;
@@ -45,5 +46,13 @@ public class RegisterDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
 }
