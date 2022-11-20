@@ -128,11 +128,15 @@ public class TopicController {
     public String getByPageAndUsername(@PathVariable int page,
                                        @PathVariable String username,
                                        Model model) {
-        Page<Topic> topics = topicService.getPageByUsername(page, 10, username);
-        model.addAttribute("topics", topics.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", topics.getTotalPages());
-        return "user/topics";
+        try {
+            Page<Topic> topics = topicService.getPageByUsername(page, 10, username);
+            model.addAttribute("topics", topics.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", topics.getTotalPages());
+            return "user/topics";
+        } catch (IllegalArgumentException ex) {
+            return "redirect:/error";
+        }
     }
 
     @GetMapping("/user/{username}/topics/search/{page}")
@@ -140,10 +144,14 @@ public class TopicController {
                                          @PathVariable int page,
                                          @RequestParam(name = "name") String name,
                                          Model model) {
-        Page<Topic> topics = topicService.getSearchPageByNameAndUsername(page, 10, username, name);
-        model.addAttribute("topics", topics.getContent());
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", topics.getTotalPages());
-        return "user/topics";
+        try {
+            Page<Topic> topics = topicService.getSearchPageByNameAndUsername(page, 10, username, name);
+            model.addAttribute("topics", topics.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", topics.getTotalPages());
+            return "user/topics";
+        } catch (IllegalArgumentException ex) {
+            return "redirect:/error";
+        }
     }
 }
