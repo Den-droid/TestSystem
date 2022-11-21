@@ -14,4 +14,6 @@ public interface TopicRepository extends PagingAndSortingRepository<Topic, Integ
     boolean existsTopicByName(String name);
 
     Page<Topic> findAllByUser(User user, Pageable pageable);
+
+    Topic findByName(String name);
 }

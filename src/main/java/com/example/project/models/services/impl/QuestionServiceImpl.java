@@ -14,4 +14,19 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionServiceImpl(QuestionRepository questionRepository) {
         this.questionRepository = questionRepository;
     }
+
+    @Override
+    public void add() {
+
+    }
+
+    @Override
+    public void edit() {
+
+    }
+
+    @Override
+    public void delete(long id) {
+
+    }
 }

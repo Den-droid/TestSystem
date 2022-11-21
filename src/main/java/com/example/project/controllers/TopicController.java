@@ -1,12 +1,16 @@
 package com.example.project.controllers;
 
 import com.example.project.models.entities.Topic;
+import com.example.project.models.entities.User;
 import com.example.project.models.services.TopicService;
 import com.example.project.models.services.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.NoSuchElementException;
 
@@ -69,18 +73,45 @@ public class TopicController {
         }
     }
 
-    @GetMapping("/topics/delete/{id}")
-    public String deleteTopic(@PathVariable int id) {
-        topicService.remove(id);
+    @GetMapping("topics/delete/{id}")
+    public String getUserDeleteTopic(@PathVariable int id) {
+        //Get all topics
+        return "topics/delete";
+    }
 
-        String username = userService.getCurrentLoggedIn().getUsername();
-        String url = "/user/" + username + "/topics";
+    @PostMapping("topics/delete/{id}")
+    public String userDeleteTopic(@PathVariable int id,
+                                  @RequestParam(name = "topicName") String transferTopicName) {
+        try {
+            topicService.remove(id, transferTopicName);
+        } catch (IllegalArgumentException ex) {
+            return "redirect:/error";
+        }
+        String url = getRedirectUrlToMainUserPage();
+        return "redirect:" + url;
+    }
+
+    @GetMapping("admin/topics")
+    public String redirectToCorrectAdminTopicsPage() {
+        String url = "admin/topics/" + 1;
+        return "redirect:" + url;
+    }
+
+    @GetMapping("admin/topics/search")
+    public String redirectToSearchTopicsByNameForAdmin(@RequestParam(name = "name") String name) {
+        String url = "admin/topics/search/" + 1 + "?name=" + name;
         return "redirect:" + url;
     }
 
     @GetMapping("/topics")
     public String redirectToCorrectTopicsPage() {
         String url = "/topics/" + 1;
+        return "redirect:" + url;
+    }
+
+    @GetMapping("/topics/search")
+    public String redirectToSearchTopicsByName(@RequestParam(name = "name") String name) {
+        String url = "/topics/search/" + 1 + "?name=" + name;
         return "redirect:" + url;
     }
 
@@ -97,10 +128,25 @@ public class TopicController {
         return "redirect:" + url;
     }
 
-    @GetMapping("/topics/search")
-    public String redirectToSearchTopicsByName(@RequestParam(name = "name") String name) {
-        String url = "/topics/search/" + 1 + "?name=" + name;
-        return "redirect:" + url;
+    @GetMapping("admin/topics/{page}")
+    public String getByPageForAdmin(@PathVariable int page,
+                                    Model model) {
+        Page<Topic> topics = topicService.getPage(page, 10);
+        model.addAttribute("topics", topics.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", topics.getTotalPages());
+        return "admin/topics";
+    }
+
+    @GetMapping("admin/topics/search/{page}")
+    public String searchTopicsByNameForAdmin(@RequestParam(name = "name") String name,
+                                             @PathVariable int page,
+                                             Model model) {
+        Page<Topic> topics = topicService.getSearchPageByName(page, 10, name);
+        model.addAttribute("topics", topics.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", topics.getTotalPages());
+        return "admin/topics";
     }
 
     @GetMapping("/topics/{page}")
@@ -153,5 +199,16 @@ public class TopicController {
         } catch (IllegalArgumentException ex) {
             return "redirect:/error";
         }
+    }
+
+    private String getRedirectUrlToMainUserPage() {
+        User user = userService.getCurrentLoggedIn();
+        switch (user.getRole()) {
+            case USER:
+                return "/user/" + user.getUsername() + "/topics";
+            case ADMIN:
+                return "/admin/topics";
+        }
+        return null;
     }
 }

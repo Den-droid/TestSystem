@@ -8,7 +8,7 @@ public interface TopicService {
 
     void edit(int topicId, String topicName);
 
-    void remove(int id);
+    void remove(int id, String transferToTopicName);
 
     Topic getById(int id);
 

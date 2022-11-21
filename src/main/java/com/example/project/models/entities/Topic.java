@@ -17,6 +17,9 @@ public class Topic {
     @ManyToMany(mappedBy = "topics")
     private List<Test> tests;
 
+    @OneToMany(mappedBy = "topic")
+    private List<Question> questions;
+
     public Topic() {
     }
 
@@ -51,5 +54,13 @@ public class Topic {
 
     public void setTests(List<Test> tests) {
         this.tests = tests;
+    }
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
     }
 }

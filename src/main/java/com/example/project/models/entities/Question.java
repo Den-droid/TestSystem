@@ -26,6 +26,10 @@ public class Question {
     private QuestionDifficulty difficulty;
 
     @ManyToOne
+    @JoinColumn(name = "topic_id", referencedColumnName = "id")
+    private Topic topic;
+
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
@@ -150,5 +154,13 @@ public class Question {
 
     public void setStatistic(QuestionStatistic statistic) {
         this.statistic = statistic;
+    }
+
+    public Topic getTopic() {
+        return topic;
+    }
+
+    public void setTopic(Topic topic) {
+        this.topic = topic;
     }
 }

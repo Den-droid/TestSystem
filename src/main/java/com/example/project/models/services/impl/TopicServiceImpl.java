@@ -1,7 +1,11 @@
 package com.example.project.models.services.impl;
 
+import com.example.project.models.entities.Question;
+import com.example.project.models.entities.Test;
 import com.example.project.models.entities.Topic;
 import com.example.project.models.entities.User;
+import com.example.project.models.repositories.QuestionRepository;
+import com.example.project.models.repositories.TestRepository;
 import com.example.project.models.repositories.TopicRepository;
 import com.example.project.models.repositories.UserRepository;
 import com.example.project.models.services.TopicService;
@@ -11,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -19,9 +25,18 @@ public class TopicServiceImpl implements TopicService {
     private final TopicRepository topicRepository;
     private final UserRepository userRepository;
 
-    public TopicServiceImpl(TopicRepository repository, UserRepository userRepository) {
+    private final QuestionRepository questionRepository;
+
+    private final TestRepository testRepository;
+
+    public TopicServiceImpl(TopicRepository repository,
+                            UserRepository userRepository,
+                            QuestionRepository questionRepository,
+                            TestRepository testRepository) {
         this.userRepository = userRepository;
         this.topicRepository = repository;
+        this.questionRepository = questionRepository;
+        this.testRepository = testRepository;
     }
 
     @Override
@@ -49,7 +64,16 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public void remove(int id) {
+    public void remove(int id, String transferToTopicName) {
+        Topic topicToTransfer = topicRepository.findByName(transferToTopicName);
+        Topic topicToDelete = topicRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+
+        List<Question> questions = questionRepository.findByTopic(topicToDelete);
+        questions.forEach(x -> x.setTopic(topicToTransfer));
+
+        List<Test> tests = testRepository.findByTopics(Collections.singletonList(topicToDelete));
+        tests.forEach(x -> x.setTopics(Collections.singletonList(topicToTransfer)));
+
         topicRepository.deleteById(id);
     }
 
