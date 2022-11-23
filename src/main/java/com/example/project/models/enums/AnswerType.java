@@ -1,13 +1,14 @@
 package com.example.project.models.enums;
 
-public enum QuestionDifficulty {
-    LOW("Low"),
-    MEDIUM("Medium"),
-    HIGH("High");
+public enum AnswerType {
+    SINGLE("Single"),
+    MULTIPLE("Multiple"),
+    MATCH("Match"),
+    CUSTOM("Custom");
 
     private final String text;
 
-    QuestionDifficulty(String text) {
+    AnswerType(String text) {
         this.text = text;
     }
 

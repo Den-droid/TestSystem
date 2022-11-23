@@ -1,5 +1,6 @@
 package com.example.project.models.entities;
 
+import com.example.project.models.enums.AnswerType;
 import com.example.project.models.enums.QuestionDifficulty;
 import com.example.project.models.enums.QuestionType;
 
@@ -25,6 +26,10 @@ public class Question {
     @Column(length = 6)
     private QuestionDifficulty difficulty;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 8)
+    private AnswerType answerType;
+
     @ManyToOne
     @JoinColumn(name = "topic_id", referencedColumnName = "id")
     private Topic topic;
@@ -45,6 +50,9 @@ public class Question {
 
     @OneToMany(mappedBy = "question")
     private List<Answer> answers;
+
+    @OneToMany(mappedBy = "question")
+    private List<TestAnswer> testAnswers;
 
     @OneToOne(mappedBy = "question")
     private QuestionStatistic statistic;
@@ -162,5 +170,21 @@ public class Question {
 
     public void setTopic(Topic topic) {
         this.topic = topic;
+    }
+
+    public AnswerType getAnswerType() {
+        return answerType;
+    }
+
+    public void setAnswerType(AnswerType answerType) {
+        this.answerType = answerType;
+    }
+
+    public List<TestAnswer> getTestAnswers() {
+        return testAnswers;
+    }
+
+    public void setTestAnswers(List<TestAnswer> testAnswers) {
+        this.testAnswers = testAnswers;
     }
 }

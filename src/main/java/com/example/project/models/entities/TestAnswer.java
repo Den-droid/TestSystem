@@ -11,8 +11,12 @@ public class TestAnswer {
     private String answer;
 
     @ManyToOne
-    @JoinColumn(name = "test_question_id")
-    private TestQuestion question;
+    @JoinColumn(name = "test_id")
+    private Test test;
+
+    @ManyToOne
+    @JoinColumn(name = "question_id")
+    private Question question;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -37,11 +41,19 @@ public class TestAnswer {
         this.answer = answer;
     }
 
-    public TestQuestion getQuestion() {
+    public Test getTest() {
+        return test;
+    }
+
+    public void setTest(Test test) {
+        this.test = test;
+    }
+
+    public Question getQuestion() {
         return question;
     }
 
-    public void setQuestion(TestQuestion question) {
+    public void setQuestion(Question question) {
         this.question = question;
     }
 

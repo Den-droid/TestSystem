@@ -28,6 +28,9 @@ public class Test {
     private List<User> usersAssigned;
 
     @OneToMany(mappedBy = "test")
+    private List<TestAnswer> testAnswers;
+
+    @OneToMany(mappedBy = "test")
     private List<CurrentTest> currentTests;
 
     @OneToMany(mappedBy = "test")
@@ -136,5 +139,13 @@ public class Test {
 
     public void setTopics(List<Topic> topics) {
         this.topics = topics;
+    }
+
+    public List<TestAnswer> getTestAnswers() {
+        return testAnswers;
+    }
+
+    public void setTestAnswers(List<TestAnswer> testAnswers) {
+        this.testAnswers = testAnswers;
     }
 }

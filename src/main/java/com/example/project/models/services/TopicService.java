@@ -19,4 +19,6 @@ public interface TopicService {
     Page<Topic> getSearchPageByName(int page, int limit, String name);
 
     Page<Topic> getSearchPageByNameAndUsername(int page, int limit, String username, String name);
+
+    boolean existsById(int id);
 }

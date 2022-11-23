@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Edit topic</title>
+    <link href="/static/styles/error.css" rel="stylesheet">
 </head>
 <body>
 <h1>Edit topic</h1>
@@ -11,7 +12,8 @@
     <label for="name"> Name:
         <input id="name" name="name" th:value="${topic.name}" type="text"/>
     </label>
-    <br>
+    <div id="error" th:text="${error} ?: ''">
+    </div>
     <input type="submit" value="Edit Topic">
 </form>
 </body>

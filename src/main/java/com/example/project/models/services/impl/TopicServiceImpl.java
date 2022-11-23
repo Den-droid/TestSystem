@@ -71,7 +71,7 @@ public class TopicServiceImpl implements TopicService {
         List<Question> questions = questionRepository.findByTopic(topicToDelete);
         questions.forEach(x -> x.setTopic(topicToTransfer));
 
-        List<Test> tests = testRepository.findByTopics(Collections.singletonList(topicToDelete));
+        List<Test> tests = testRepository.findByTopicsIn(Collections.singletonList(topicToDelete));
         tests.forEach(x -> x.setTopics(Collections.singletonList(topicToTransfer)));
 
         topicRepository.deleteById(id);
@@ -108,5 +108,10 @@ public class TopicServiceImpl implements TopicService {
             throw new IllegalArgumentException();
         return topicRepository.findAllByNameContainsIgnoreCaseAndUser(name, user,
                 PageRequest.of(page - 1, limit));
+    }
+
+    @Override
+    public boolean existsById(int id) {
+        return topicRepository.existsById(id);
     }
 }
