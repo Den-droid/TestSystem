@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.*;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -19,18 +22,21 @@ public class FileServiceImpl implements FileService {
 
     @Value("${upload.path}")
     private String uploadPath;
-    private String dirPrefix = "classpath:/static";
 
     @Override
     public String put(MultipartFile file) throws IOException {
-        File uploadDir = new File(dirPrefix + uploadPath);
-        if (!uploadDir.exists())
-            uploadDir.mkdir();
-
         String uuidFile = UUID.randomUUID().toString();
-        String resultFilename = uuidFile + "." + file.getOriginalFilename();
-        String mediaPath = uploadPath + "/" + resultFilename;
-        file.transferTo(new File(mediaPath));
+        String resultFilename = uuidFile + "-" + file.getOriginalFilename();
+
+        Path uploadDir = Paths.get(uploadPath);
+        if (!Files.exists(uploadDir)) {
+            Files.createDirectories(uploadDir);
+        }
+
+        try (InputStream is = file.getInputStream()) {
+            Path filePath = uploadDir.resolve(resultFilename);
+            Files.copy(is, filePath, StandardCopyOption.REPLACE_EXISTING);
+        }
 
         return resultFilename;
     }

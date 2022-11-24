@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Add Question</title>
+    <link href="/static/styles/error.css" rel="stylesheet">
 </head>
 <body>
-<form name="addQuestion" method="post" enctype="multipart/form-data">
+<form name="addQuestion" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
     <label for="selectQuestionType">Select question type: </label>
     <select id="selectQuestionType" name="questionType">
         <option th:each="questionType, questionTypeStat : ${questionTypes}" th:value="${questionType}"
@@ -47,7 +48,10 @@
 
     <br>
     <div id="answersDiv">
+    </div>
 
+    <br>
+    <div id="error">
     </div>
 
     <button type="submit">Add Question</button>

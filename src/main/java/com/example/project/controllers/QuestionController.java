@@ -41,7 +41,7 @@ public class QuestionController {
 
     @PostMapping("/topic/{id}/questions/add")
     public String addQuestion(@PathVariable int id,
-                              @RequestParam(name = "media") MultipartFile file,
+                              @RequestParam(name = "media", required = false) MultipartFile file,
                               @ModelAttribute(name = "addQuestion") AddQuestionDto addQuestionDto) throws IOException {
         try {
             questionService.add(id, addQuestionDto, file);

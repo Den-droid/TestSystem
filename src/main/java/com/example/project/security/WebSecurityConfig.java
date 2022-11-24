@@ -13,12 +13,16 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class WebSecurityConfig {
     private final static String[] USER_PATTERNS = new String[]{
-            "/user/**", "/topics/add", "/topics/delete/*", "/topics/edit/*",
-            "/topic/*/questions/add"
+            "/user/**", "/topics/add", "/topics/delete/{id}", "/topics/edit/{id}",
+            "/topic/{id}/questions/add", "/topic/*/questions/edit/*", "/topic/*/questions/delete/*"
     };
 
     private final static String[] ADMIN_PATTERNS = new String[]{
             "/admin/**"
+    };
+
+    private final static String[] PERMITTED_PATTERNS = new String[]{
+            "/", "/register", "/static/**", "/topics", "/topics/{page}", "/topics/search/*"
     };
 
     @Bean
@@ -31,7 +35,7 @@ public class WebSecurityConfig {
         security.authorizeRequests()
                 .antMatchers(USER_PATTERNS).hasAuthority(Role.USER.name())
                 .antMatchers(ADMIN_PATTERNS).hasAuthority(Role.ADMIN.name())
-                .antMatchers("/", "/register", "/static/**").permitAll()
+                .antMatchers(PERMITTED_PATTERNS).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

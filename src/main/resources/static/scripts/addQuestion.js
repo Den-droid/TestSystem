@@ -195,6 +195,66 @@ function setCustomAnswer() {
     answers.appendChild(input);
 }
 
+function validateForm() {
+    let errorDiv = document.getElementById("error");
+
+    let questionText = document.getElementById("questionText");
+    if (questionText.value.trim().length === 0) {
+        errorDiv.textContent = "Enter question text!!!";
+        return false;
+    }
+
+    let media = document.getElementById("media");
+    if (media.disabled === false) {
+        if (media.value === '') {
+            errorDiv.textContent = "Insert media!!!";
+            return false;
+        }
+    }
+
+    let answerDescription = document.getElementById("answerDescription");
+    if (answerDescription.value.trim().length === 0) {
+        errorDiv.textContent = "Enter answer description!!!";
+        return false;
+    }
+
+    let answerType = document.getElementById("selectAnswerType");
+    if (answerType.value === 'Custom') {
+        if (document.getElementById("answer").value.length === 0) {
+            errorDiv.textContent = "Enter custom answer!!!";
+            return false;
+        }
+    } else if (answerType.value === 'Single' || answerType.value === 'Multiple') {
+        let answers = document.getElementsByClassName("answer");
+        let isCorrect = document.getElementsByClassName("isCorrect");
+        let isCorrectNumber = 0;
+        for (let i = 0; i < answers.length; i++) {
+            if (answers.item(i).value.length === 0) {
+                errorDiv.textContent = "Enter all options!!!";
+                return false;
+            }
+            if (isCorrect.item(i).checked) {
+                isCorrectNumber++;
+            }
+        }
+        if (isCorrectNumber === 0) {
+            errorDiv.textContent = "Set at least one option correct!!!";
+            return false;
+        }
+    } else if (answerType.value === 'Match') {
+        let answers = document.getElementsByClassName("answer");
+        let subQuestions = document.getElementsByClassName("subQuestion");
+        for (let i = 0; i < answers.length; i++) {
+            if (answers.item(i).value.length === 0 || subQuestions.item(i).value.length === 0) {
+                errorDiv.textContent = "Enter all fields!!!";
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 let questionTextSelect = document.getElementById("selectQuestionType");
 questionTextSelect.addEventListener('change', questionTypeChange);
 

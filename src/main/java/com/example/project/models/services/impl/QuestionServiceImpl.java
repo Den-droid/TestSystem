@@ -1,12 +1,14 @@
 package com.example.project.models.services.impl;
 
 import com.example.project.dto.question.AddQuestionDto;
+import com.example.project.models.entities.Answer;
 import com.example.project.models.entities.Question;
 import com.example.project.models.entities.Topic;
 import com.example.project.models.enums.AnswerType;
 import com.example.project.models.enums.QuestionDifficulty;
 import com.example.project.models.enums.QuestionType;
 import com.example.project.models.mappers.AddQuestionMapper;
+import com.example.project.models.repositories.AnswerRepository;
 import com.example.project.models.repositories.QuestionRepository;
 import com.example.project.models.repositories.TopicRepository;
 import com.example.project.models.services.FileService;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 public class QuestionServiceImpl implements QuestionService {
     private QuestionRepository questionRepository;
     private TopicRepository topicRepository;
+    private AnswerRepository answerRepository;
 
     private UserService userService;
 
@@ -34,11 +37,13 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionServiceImpl(QuestionRepository questionRepository,
                                FileService fileService,
                                UserService userService,
-                               TopicRepository topicRepository) {
+                               TopicRepository topicRepository,
+                               AnswerRepository answerRepository) {
         this.questionRepository = questionRepository;
         this.fileService = fileService;
         this.userService = userService;
         this.topicRepository = topicRepository;
+        this.answerRepository = answerRepository;
     }
 
     @Override
@@ -47,13 +52,25 @@ public class QuestionServiceImpl implements QuestionService {
                 .orElseThrow(IllegalArgumentException::new);
 
         Question question = AddQuestionMapper.map(dto);
-        String mediaName = fileService.put(file);
+        if (file != null) {
+            String mediaName = fileService.put(file);
+            question.setMediaUrl(mediaName);
+        }
 
         question.setTopic(topic);
-        question.setMediaUrl(mediaName);
         question.setUser(userService.getCurrentLoggedIn());
 
         questionRepository.save(question);
+
+        if (question.getAnswerType() == AnswerType.MATCH) {
+            questionRepository.saveAll(question.getSubQuestions());
+            for (Question subQuestion : question.getSubQuestions()) {
+                answerRepository.saveAll(subQuestion.getAnswers());
+            }
+        } else {
+            List<Answer> answers = question.getAnswers();
+            answerRepository.saveAll(answers);
+        }
     }
 
     @Override
