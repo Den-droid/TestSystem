@@ -1,6 +1,6 @@
 package com.example.project.dto.question;
 
-public class AddQuestionDto {
+public class AddEditQuestionDto {
     private String questionType;
     private String questionText;
     private String questionDifficulty;

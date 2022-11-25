@@ -260,5 +260,3 @@ questionTextSelect.addEventListener('change', questionTypeChange);
 
 let answerTypeSelect = document.getElementById("selectAnswerType");
 answerTypeSelect.addEventListener('change', answerTypeChange);
-
-addSingleAnswer();

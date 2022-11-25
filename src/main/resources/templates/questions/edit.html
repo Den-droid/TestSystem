@@ -3,8 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link href="/static/styles/error.css" rel="stylesheet">
 </head>
 <body>
+<form name="addQuestion" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+    <label for="selectQuestionType">Select question type: </label>
+    <select id="selectQuestionType" name="questionType">
+        <option th:each="questionType: ${questionTypes}" th:value="${questionType}"
+                th:text="${questionType}"
+                th:selected="${questionType} eq ${question.type.text}">
+        </option>
+    </select>
 
+    <div id="questionTypeInfo">
+        <label for="questionText">Enter question text: </label>
+        <textarea id="questionText" name="questionText" th:text="${question.text}">
+        </textarea>
+        <input type="file" name="media" id="media" disabled>
+    </div>
+
+    <br>
+    <label for="selectQuestionDifficulty">Select question difficulty: </label>
+    <select id="selectQuestionDifficulty" name="questionDifficulty">
+        <option th:each="questionDifficulty : ${questionDifficulties}"
+                th:value="${questionDifficulty}"
+                th:text="${questionDifficulty}"
+                th:selected="${questionDifficulty} eq ${question.difficulty.text}">
+        </option>
+    </select>
+
+    <br>
+    <label for="answerDescription">Enter answer description (notes): </label>
+    <textarea name="answerDescription" id="answerDescription" th:text="${question.answerDescription}">
+    </textarea>
+
+    <br>
+    <label for="selectAnswerType">Select answer type: </label>
+    <select id="selectAnswerType" name="answerType">
+        <option th:each="answerType: ${answerTypes}" th:value="${answerType}"
+                th:text="${answerType}"
+                th:selected="${answerType} eq ${question.answerType.text}">
+        </option>
+    </select>
+
+    <br>
+    <div id="answersDiv">
+        <button type="button" id="addAnswerButton" th:if="${question.answerType.text ne 'Custom'}">
+            Add answer
+        </button>
+        <div class="answerDiv" th:each="answer, answerStat : ${answers}">
+            <label th:if="${question.answerType.text} eq 'Match'"
+                   th:for="'subQuestion' + ${answerStat.index}">Enter first part: </label>
+            <input th:if="${question.answerType.text} eq 'Match'"
+                   th:id="'subQuestion' + ${answerStat.index}"
+                   th:value="${subQuestions[answerStat]}"
+                   type="text" name="subQuestions" class="subQuestion"/>
+            <br th:if="${question.answerType.text} eq 'Match'">
+            <label th:if="${question.answerType.text} eq 'Custom'" for="answer">
+                Enter custom answer:
+            </label>
+
+        </div>
+
+    </div>
+
+    <br>
+    <div id="error">
+    </div>
+
+    <button type="submit">Edit Question</button>
+</form>
+<script src="/static/scripts/questionPage.js" type="text/javascript"></script>
 </body>
 </html>

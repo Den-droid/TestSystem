@@ -6,4 +6,6 @@ import java.io.IOException;
 
 public interface FileService {
     String put(MultipartFile file) throws IOException;
+
+    void delete(String filename) throws IOException;
 }

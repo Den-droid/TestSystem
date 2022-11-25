@@ -39,7 +39,7 @@ public class TopicController {
             model.addAttribute("error", ex.getMessage());
             return "topics/add";
         }
-        String url = getRedirectUrlToMainUserPage();
+        String url = getRedirectUrlToUserTopicPage();
         return "redirect:" + url;
     }
 
@@ -66,7 +66,7 @@ public class TopicController {
             model.addAttribute("error", ex.getMessage());
             return "topics/edit";
         }
-        String url = getRedirectUrlToMainUserPage();
+        String url = getRedirectUrlToUserTopicPage();
         return "redirect:" + url;
     }
 
@@ -84,7 +84,7 @@ public class TopicController {
         } catch (IllegalArgumentException ex) {
             return "redirect:/error";
         }
-        String url = getRedirectUrlToMainUserPage();
+        String url = getRedirectUrlToUserTopicPage();
         return "redirect:" + url;
     }
 
@@ -95,7 +95,7 @@ public class TopicController {
     }
 
     @GetMapping("/admin/topics/search")
-    public String redirectToSearchTopicsByNameForAdmin(@RequestParam(name = "name") String name) {
+    public String redirectToSearchTopicsByNameForAdmin(@RequestParam(name = "name", required = false) String name) {
         String url = "admin/topics/search/" + 1 + "?name=" + name;
         return "redirect:" + url;
     }
@@ -107,7 +107,7 @@ public class TopicController {
     }
 
     @GetMapping("/topics/search")
-    public String redirectToSearchTopicsByName(@RequestParam(name = "name") String name) {
+    public String redirectToSearchTopicsByName(@RequestParam(name = "name", required = false) String name) {
         String url = "/topics/search/" + 1 + "?name=" + name;
         return "redirect:" + url;
     }
@@ -120,7 +120,7 @@ public class TopicController {
 
     @GetMapping("/user/{username}/topics/search")
     public String redirectToSearchUserTopicsByName(@PathVariable String username,
-                                                   @RequestParam(name = "name") String name) {
+                                                   @RequestParam(name = "name", required = false) String name) {
         String url = "/user/" + username + "/topics/search/" + 1 + "?name=" + name;
         return "redirect:" + url;
     }
@@ -136,7 +136,7 @@ public class TopicController {
     }
 
     @GetMapping("/admin/topics/search/{page}")
-    public String searchTopicsByNameForAdmin(@RequestParam(name = "name") String name,
+    public String searchTopicsByNameForAdmin(@RequestParam(name = "name", required = false) String name,
                                              @PathVariable int page,
                                              Model model) {
         Page<Topic> topics = topicService.getSearchPageByName(page, 10, name);
@@ -157,7 +157,7 @@ public class TopicController {
     }
 
     @GetMapping("/topics/search/{page}")
-    public String searchTopicsByName(@RequestParam(name = "name") String name,
+    public String searchTopicsByName(@RequestParam(name = "name", required = false) String name,
                                      @PathVariable int page,
                                      Model model) {
         Page<Topic> topics = topicService.getSearchPageByName(page, 10, name);
@@ -185,7 +185,7 @@ public class TopicController {
     @GetMapping("/user/{username}/topics/search/{page}")
     public String searchUserTopicsByName(@PathVariable String username,
                                          @PathVariable int page,
-                                         @RequestParam(name = "name") String name,
+                                         @RequestParam(name = "name", required = false) String name,
                                          Model model) {
         try {
             Page<Topic> topics = topicService.getSearchPageByNameAndUsername(page, 10, username, name);
@@ -198,7 +198,7 @@ public class TopicController {
         }
     }
 
-    private String getRedirectUrlToMainUserPage() {
+    private String getRedirectUrlToUserTopicPage() {
         User user = userService.getCurrentLoggedIn();
         switch (user.getRole()) {
             case USER:
