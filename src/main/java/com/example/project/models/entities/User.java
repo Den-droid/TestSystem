@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class User {
@@ -45,7 +46,7 @@ public class User {
             name = "users_assigned",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "test_id"))
-    private List<Test> assignedTests;
+    private Set<Test> assignedTests;
 
     public User() {
     }
@@ -74,22 +75,6 @@ public class User {
         this.username = username;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     public String getFirstName() {
         return firstName;
     }
@@ -112,5 +97,77 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public List<Topic> getTopics() {
+        return topics;
+    }
+
+    public void setTopics(List<Topic> topics) {
+        this.topics = topics;
+    }
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
+
+    public List<CurrentTest> getCurrentTests() {
+        return currentTests;
+    }
+
+    public void setCurrentTests(List<CurrentTest> currentTests) {
+        this.currentTests = currentTests;
+    }
+
+    public List<FinishedTest> getFinishedTests() {
+        return finishedTests;
+    }
+
+    public void setFinishedTests(List<FinishedTest> finishedTests) {
+        this.finishedTests = finishedTests;
+    }
+
+    public List<Test> getTestsCreated() {
+        return testsCreated;
+    }
+
+    public void setTestsCreated(List<Test> testsCreated) {
+        this.testsCreated = testsCreated;
+    }
+
+    public List<TestAnswer> getTestAnswers() {
+        return testAnswers;
+    }
+
+    public void setTestAnswers(List<TestAnswer> testAnswers) {
+        this.testAnswers = testAnswers;
+    }
+
+    public Set<Test> getAssignedTests() {
+        return assignedTests;
+    }
+
+    public void setAssignedTests(Set<Test> assignedTests) {
+        this.assignedTests = assignedTests;
     }
 }

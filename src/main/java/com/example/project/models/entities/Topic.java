@@ -2,6 +2,7 @@ package com.example.project.models.entities;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Topic {
@@ -15,7 +16,7 @@ public class Topic {
     private User user;
 
     @ManyToMany(mappedBy = "topics")
-    private List<Test> tests;
+    private Set<Test> tests;
 
     @OneToMany(mappedBy = "topic")
     private List<Question> questions;
@@ -48,11 +49,11 @@ public class Topic {
     }
 
 
-    public List<Test> getTests() {
+    public Set<Test> getTests() {
         return tests;
     }
 
-    public void setTests(List<Test> tests) {
+    public void setTests(Set<Test> tests) {
         this.tests = tests;
     }
 

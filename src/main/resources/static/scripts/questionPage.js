@@ -56,7 +56,7 @@ function addSingleAnswer() {
 
     let inputLabel = document.createElement("label");
     inputLabel.setAttribute("for", "answer" + answerDivs.length)
-    inputLabel.textContent = "Enter answer: ";
+    inputLabel.textContent = " Enter answer: ";
 
     let checkbox = document.createElement("input");
     checkbox.setAttribute("type", "checkbox")
@@ -71,11 +71,11 @@ function addSingleAnswer() {
 
     let checkboxLabel = document.createElement("label");
     checkboxLabel.setAttribute("for", "checkbox" + answerDivs.length)
-    checkboxLabel.textContent = "Set correct";
+    checkboxLabel.textContent = " Set correct ";
 
     let deleteAnswerButton = document.createElement("button");
     deleteAnswerButton.setAttribute("type", "button");
-    deleteAnswerButton.textContent = "Delete answer";
+    deleteAnswerButton.textContent = " Delete answer ";
     deleteAnswerButton.addEventListener("click", deleteAnswer);
 
     answerDiv.appendChild(inputLabel);
@@ -93,7 +93,7 @@ function addSingleAnswer() {
             let addAnswerButton = document.createElement("button");
             addAnswerButton.setAttribute("type", "button");
             addAnswerButton.setAttribute("id", "addAnswerButton");
-            addAnswerButton.textContent = "Add answer";
+            addAnswerButton.textContent = " Add answer ";
             addAnswerButton.addEventListener("click", addSingleAnswer);
             answersDiv.appendChild(addAnswerButton);
         }
@@ -117,7 +117,7 @@ function addMatchAnswer() {
 
     let subQuestionLabel = document.createElement("label");
     subQuestionLabel.setAttribute("for", "subQuestion" + answerDivs.length);
-    subQuestionLabel.textContent = "Enter first part: ";
+    subQuestionLabel.textContent = " Enter first part: ";
 
     let br = document.createElement("br");
 
@@ -129,11 +129,11 @@ function addMatchAnswer() {
 
     let inputLabel = document.createElement("label");
     inputLabel.setAttribute("for", "answer" + answerDivs.length)
-    inputLabel.textContent = "Enter second part: ";
+    inputLabel.textContent = " Enter second part: ";
 
     let deleteAnswerButton = document.createElement("button");
     deleteAnswerButton.setAttribute("type", "button");
-    deleteAnswerButton.textContent = "Delete answer";
+    deleteAnswerButton.textContent = " Delete answer ";
     deleteAnswerButton.addEventListener("click", deleteAnswer);
 
     answerDiv.appendChild(subQuestionLabel);
@@ -195,7 +195,23 @@ function setCustomAnswer() {
     answers.appendChild(input);
 }
 
-function validateForm() {
+function validateAddForm() {
+    if (!validateQuestionText())
+        return false;
+
+    if (!validateMedia())
+        return false;
+
+    if (!validateAnswerDescription())
+        return false;
+
+    if (!validateAnswers())
+        return false;
+
+    return true;
+}
+
+function validateQuestionText() {
     let errorDiv = document.getElementById("error");
 
     let questionText = document.getElementById("questionText");
@@ -203,6 +219,11 @@ function validateForm() {
         errorDiv.textContent = "Enter question text!!!";
         return false;
     }
+    return true;
+}
+
+function validateMedia() {
+    let errorDiv = document.getElementById("error");
 
     let media = document.getElementById("media");
     if (media.disabled === false) {
@@ -211,12 +232,22 @@ function validateForm() {
             return false;
         }
     }
+    return true;
+}
+
+function validateAnswerDescription() {
+    let errorDiv = document.getElementById("error");
 
     let answerDescription = document.getElementById("answerDescription");
     if (answerDescription.value.trim().length === 0) {
         errorDiv.textContent = "Enter answer description!!!";
         return false;
     }
+    return true;
+}
+
+function validateAnswers() {
+    let errorDiv = document.getElementById("error");
 
     let answerType = document.getElementById("selectAnswerType");
     if (answerType.value === 'Custom') {

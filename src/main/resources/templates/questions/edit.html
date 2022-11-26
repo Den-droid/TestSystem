@@ -2,28 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Edit Question</title>
     <link href="/static/styles/error.css" rel="stylesheet">
 </head>
 <body>
-<form name="addQuestion" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
-    <label for="selectQuestionType">Select question type: </label>
+<form name="editQuestion" method="post" enctype="multipart/form-data" onsubmit="return validateEditForm()">
+    <label for="selectQuestionType">
+        Select question type:
+    </label>
     <select id="selectQuestionType" name="questionType">
-        <option th:each="questionType: ${questionTypes}" th:value="${questionType}"
+        <option th:each="questionType: ${questionTypes}"
+                th:value="${questionType}"
                 th:text="${questionType}"
                 th:selected="${questionType} eq ${question.type.text}">
         </option>
     </select>
 
     <div id="questionTypeInfo">
-        <label for="questionText">Enter question text: </label>
-        <textarea id="questionText" name="questionText" th:text="${question.text}">
+        <label for="questionText">
+            Enter question text:
+        </label>
+        <textarea th:text="${question.text}"
+                  id="questionText" name="questionText">
         </textarea>
-        <input type="file" name="media" id="media" disabled>
+        <input th:disabled="${question.type.text} eq 'Text'"
+               type="file" name="media" id="media">
     </div>
 
     <br>
-    <label for="selectQuestionDifficulty">Select question difficulty: </label>
+    <label for="selectQuestionDifficulty">
+        Select question difficulty:
+    </label>
     <select id="selectQuestionDifficulty" name="questionDifficulty">
         <option th:each="questionDifficulty : ${questionDifficulties}"
                 th:value="${questionDifficulty}"
@@ -34,13 +43,15 @@
 
     <br>
     <label for="answerDescription">Enter answer description (notes): </label>
-    <textarea name="answerDescription" id="answerDescription" th:text="${question.answerDescription}">
+    <textarea th:text="${question.answerDescription}"
+              name="answerDescription" id="answerDescription">
     </textarea>
 
     <br>
     <label for="selectAnswerType">Select answer type: </label>
     <select id="selectAnswerType" name="answerType">
-        <option th:each="answerType: ${answerTypes}" th:value="${answerType}"
+        <option th:each="answerType: ${answerTypes}"
+                th:value="${answerType}"
                 th:text="${answerType}"
                 th:selected="${answerType} eq ${question.answerType.text}">
         </option>
@@ -48,20 +59,57 @@
 
     <br>
     <div id="answersDiv">
-        <button type="button" id="addAnswerButton" th:if="${question.answerType.text ne 'Custom'}">
+        <button type="button" id="addAnswerButton" th:unless="${question.answerType.text eq 'Custom'}">
             Add answer
         </button>
         <div class="answerDiv" th:each="answer, answerStat : ${answers}">
-            <label th:if="${question.answerType.text} eq 'Match'"
-                   th:for="'subQuestion' + ${answerStat.index}">Enter first part: </label>
-            <input th:if="${question.answerType.text} eq 'Match'"
-                   th:id="'subQuestion' + ${answerStat.index}"
-                   th:value="${subQuestions[answerStat]}"
-                   type="text" name="subQuestions" class="subQuestion"/>
-            <br th:if="${question.answerType.text} eq 'Match'">
-            <label th:if="${question.answerType.text} eq 'Custom'" for="answer">
-                Enter custom answer:
-            </label>
+            <th:block th:if="${question.answerType.text} eq 'Match'">
+                <label th:for="'subQuestion' + ${answerStat.index}">
+                    Enter first part:
+                </label>
+                <input th:id="'subQuestion' + ${answerStat.index}"
+                       th:value="${subQuestions[answerStat.index]}"
+                       type="text" name="subQuestions" class="subQuestion"/>
+                <br>
+                <label th:for="'answer' + ${answerStat.index}">
+                    Enter second part:
+                </label>
+                <input th:value="${answer.text}"
+                       th:id="'answer' + ${answerStat.index}"
+                       type="text" name="answers" class="answer"/>
+                <button type="button">
+                    Delete answer
+                </button>
+            </th:block>
+
+            <th:block th:if="${question.answerType.text} eq 'Custom'">
+                <label for="answer">
+                    Enter custom answer:
+                </label>
+                <input th:if="${question.answerType.text} eq 'Custom'"
+                       th:value="${answer.text}" type="text" name="answers" id="answer"/>
+            </th:block>
+
+
+            <th:block th:if="${question.answerType.text} eq 'Single' or
+                            ${question.answerType.text} eq 'Multiple'">
+                <label th:for="'answer' + ${answerStat.index}">
+                    Enter answer:
+                </label>
+                <input th:value="${answer.text}"
+                       th:id="'answer' + ${answerStat.index}"
+                       type="text" name="answers" class="answer"/>
+                <input th:value="${answerStat.index}"
+                       th:checked="${answer.isCorrect}"
+                       th:id="'checkbox' + ${answerStat.index}"
+                       type="checkbox" name="isCorrect" class="isCorrect"/>
+                <label th:for="'checkbox' + ${answerStat.index}">
+                    Set correct
+                </label>
+                <button type="button">
+                    Delete answer
+                </button>
+            </th:block>
 
         </div>
 
@@ -74,5 +122,6 @@
     <button type="submit">Edit Question</button>
 </form>
 <script src="/static/scripts/questionPage.js" type="text/javascript"></script>
+<script src="/static/scripts/editQuestion.js" type="text/javascript"></script>
 </body>
 </html>

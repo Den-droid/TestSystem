@@ -1,17 +1,16 @@
 package com.example.project.models.services.impl;
 
-import com.example.project.dto.question.AddEditQuestionDto;
-import com.example.project.models.entities.Answer;
-import com.example.project.models.entities.Question;
-import com.example.project.models.entities.Test;
-import com.example.project.models.entities.Topic;
+import com.example.project.dto.question.AddQuestionDto;
+import com.example.project.dto.question.EditQuestionDto;
+import com.example.project.models.entities.*;
 import com.example.project.models.enums.AnswerType;
 import com.example.project.models.enums.QuestionDifficulty;
 import com.example.project.models.enums.QuestionType;
-import com.example.project.models.mappers.AddEditQuestionMapper;
+import com.example.project.models.mappers.AddQuestionMapper;
+import com.example.project.models.mappers.EditQuestionMapper;
 import com.example.project.models.repositories.AnswerRepository;
 import com.example.project.models.repositories.QuestionRepository;
-import com.example.project.models.repositories.TestRepository;
+import com.example.project.models.repositories.TestQuestionRepository;
 import com.example.project.models.repositories.TopicRepository;
 import com.example.project.models.services.FileService;
 import com.example.project.models.services.QuestionService;
@@ -21,7 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,8 +32,7 @@ public class QuestionServiceImpl implements QuestionService {
     private QuestionRepository questionRepository;
     private TopicRepository topicRepository;
     private AnswerRepository answerRepository;
-    private TestRepository testRepository;
-
+    private TestQuestionRepository testQuestionRepository;
     private UserService userService;
 
     private FileService fileService;
@@ -41,21 +42,21 @@ public class QuestionServiceImpl implements QuestionService {
                                UserService userService,
                                TopicRepository topicRepository,
                                AnswerRepository answerRepository,
-                               TestRepository testRepository) {
+                               TestQuestionRepository testQuestionRepository) {
         this.questionRepository = questionRepository;
         this.fileService = fileService;
         this.userService = userService;
         this.topicRepository = topicRepository;
         this.answerRepository = answerRepository;
-        this.testRepository = testRepository;
+        this.testQuestionRepository = testQuestionRepository;
     }
 
     @Override
-    public void add(int topicId, AddEditQuestionDto dto, MultipartFile file) throws IOException {
+    public void add(int topicId, AddQuestionDto dto, MultipartFile file) throws IOException {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        Question question = AddEditQuestionMapper.map(dto);
+        Question question = AddQuestionMapper.map(dto);
         if (file != null) {
             String mediaName = fileService.put(file);
             question.setMediaUrl(mediaName);
@@ -78,13 +79,13 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public void edit(long questionId, AddEditQuestionDto dto, MultipartFile file) throws IOException {
+    public void edit(long questionId, EditQuestionDto dto, MultipartFile file) throws IOException {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(NoSuchElementException::new);
 
-        Question editQuestion = AddEditQuestionMapper.map(dto);
+        Question editQuestion = EditQuestionMapper.map(dto);
 
-        if (file != null) {
+        if (!file.isEmpty()) {
             if (question.getMediaUrl() != null)
                 fileService.delete(question.getMediaUrl());
             String mediaName = fileService.put(file);
@@ -95,25 +96,7 @@ public class QuestionServiceImpl implements QuestionService {
                 fileService.delete(question.getMediaUrl());
         }
 
-        question.setText(editQuestion.getText());
-        question.setAnswerDescription(editQuestion.getAnswerDescription());
-        question.setType(editQuestion.getType());
-        question.setAnswerType(editQuestion.getAnswerType());
-        question.setDifficulty(editQuestion.getDifficulty());
-        question.setSubQuestions(editQuestion.getSubQuestions());
-        question.setAnswers(editQuestion.getAnswers());
-
-        questionRepository.save(question);
-
-        if (question.getAnswerType() == AnswerType.MATCH) {
-            questionRepository.saveAll(question.getSubQuestions());
-            for (Question subQuestion : question.getSubQuestions()) {
-                answerRepository.saveAll(subQuestion.getAnswers());
-            }
-        } else {
-            List<Answer> answers = question.getAnswers();
-            answerRepository.saveAll(answers);
-        }
+        // need to write
     }
 
     @Override
@@ -162,8 +145,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public boolean canBeChanged(Question question) {
-        List<Test> tests = testRepository
-                .findByQuestionsIn(Collections.singletonList(question));
+        List<TestQuestion> tests = testQuestionRepository.findByQuestion(question);
         return tests == null || tests.size() == 0;
     }
 

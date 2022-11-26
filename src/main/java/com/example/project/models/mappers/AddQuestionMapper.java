@@ -1,6 +1,6 @@
 package com.example.project.models.mappers;
 
-import com.example.project.dto.question.AddEditQuestionDto;
+import com.example.project.dto.question.AddQuestionDto;
 import com.example.project.models.entities.Answer;
 import com.example.project.models.entities.Question;
 import com.example.project.models.enums.AnswerType;
@@ -12,8 +12,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class AddEditQuestionMapper {
-    public static Question map(AddEditQuestionDto dto) {
+public class AddQuestionMapper {
+    public static Question map(AddQuestionDto dto) {
         Question question = new Question();
         question.setText(dto.getQuestionText().trim());
         question.setAnswerDescription(dto.getAnswerDescription().trim());

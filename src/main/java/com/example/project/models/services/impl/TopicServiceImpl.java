@@ -71,8 +71,8 @@ public class TopicServiceImpl implements TopicService {
         List<Question> questions = questionRepository.findByTopic(topicToDelete);
         questions.forEach(x -> x.setTopic(topicToTransfer));
 
-        List<Test> tests = testRepository.findByTopicsIn(Collections.singletonList(topicToDelete));
-        tests.forEach(x -> x.setTopics(Collections.singletonList(topicToTransfer)));
+//        List<Test> tests = testRepository.findByTopics(Collections.singletonList(topicToDelete));
+//        tests.forEach(x -> x.setTopics(Collections.singleton(topicToTransfer)));
 
         topicRepository.deleteById(id);
     }

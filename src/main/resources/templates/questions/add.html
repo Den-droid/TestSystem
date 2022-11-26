@@ -6,7 +6,7 @@
     <link href="/static/styles/error.css" rel="stylesheet">
 </head>
 <body>
-<form name="addQuestion" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+<form name="addQuestion" method="post" enctype="multipart/form-data" onsubmit="return validateAddForm()">
     <label for="selectQuestionType">Select question type: </label>
     <select id="selectQuestionType" name="questionType">
         <option th:each="questionType, questionTypeStat : ${questionTypes}" th:value="${questionType}"

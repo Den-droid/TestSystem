@@ -1,7 +1,6 @@
 package com.example.project.models.entities;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "tests_questions")
@@ -19,9 +18,6 @@ public class TestQuestion {
     @ManyToOne
     @JoinColumn(name = "question_id")
     private Question question;
-
-    @OneToMany(mappedBy = "question")
-    private List<TestAnswer> answers;
 
     public TestQuestion() {
     }
@@ -56,13 +52,5 @@ public class TestQuestion {
 
     public void setQuestion(Question question) {
         this.question = question;
-    }
-
-    public List<TestAnswer> getAnswers() {
-        return answers;
-    }
-
-    public void setAnswers(List<TestAnswer> answers) {
-        this.answers = answers;
     }
 }

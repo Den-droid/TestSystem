@@ -1,6 +1,6 @@
 package com.example.project.dto.question;
 
-public class AddEditQuestionDto {
+public class EditQuestionDto {
     private String questionType;
     private String questionText;
     private String questionDifficulty;
@@ -9,6 +9,9 @@ public class AddEditQuestionDto {
     private String[] subQuestions;
     private String[] answers;
     private String[] isCorrect;
+
+    private String[] answerIds;
+    private String[] subQuestionIds;
 
     public String getQuestionType() {
         return questionType;
@@ -72,5 +75,21 @@ public class AddEditQuestionDto {
 
     public void setIsCorrect(String[] isCorrect) {
         this.isCorrect = isCorrect;
+    }
+
+    public String[] getAnswerIds() {
+        return answerIds;
+    }
+
+    public void setAnswerIds(String[] answerIds) {
+        this.answerIds = answerIds;
+    }
+
+    public String[] getSubQuestionIds() {
+        return subQuestionIds;
+    }
+
+    public void setSubQuestionIds(String[] subQuestionIds) {
+        this.subQuestionIds = subQuestionIds;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.project.models.services;
 
-import com.example.project.dto.question.AddEditQuestionDto;
+import com.example.project.dto.question.AddQuestionDto;
+import com.example.project.dto.question.EditQuestionDto;
 import com.example.project.models.entities.Answer;
 import com.example.project.models.entities.Question;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,9 +10,9 @@ import java.io.IOException;
 import java.util.List;
 
 public interface QuestionService {
-    void add(int topicId, AddEditQuestionDto dto, MultipartFile file) throws IOException;
+    void add(int topicId, AddQuestionDto dto, MultipartFile file) throws IOException;
 
-    void edit(long questionId, AddEditQuestionDto dto, MultipartFile file) throws IOException;
+    void edit(long questionId, EditQuestionDto dto, MultipartFile file) throws IOException;
 
     void delete(long id) throws IOException;
 

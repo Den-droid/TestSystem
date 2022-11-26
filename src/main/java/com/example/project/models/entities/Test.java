@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Test {
@@ -25,7 +26,7 @@ public class Test {
     private TestDifficulty testDifficulty;
 
     @ManyToMany(mappedBy = "assignedTests")
-    private List<User> usersAssigned;
+    private Set<User> usersAssigned;
 
     @OneToMany(mappedBy = "test")
     private List<TestAnswer> testAnswers;
@@ -48,7 +49,7 @@ public class Test {
             name = "test_topics",
             joinColumns = @JoinColumn(name = "test_id"),
             inverseJoinColumns = @JoinColumn(name = "topic_id"))
-    private List<Topic> topics;
+    private Set<Topic> topics;
 
     public Test() {
     }
@@ -93,11 +94,11 @@ public class Test {
         this.testDifficulty = testDifficulty;
     }
 
-    public List<User> getUsersAssigned() {
+    public Set<User> getUsersAssigned() {
         return usersAssigned;
     }
 
-    public void setUsersAssigned(List<User> usersAssigned) {
+    public void setUsersAssigned(Set<User> usersAssigned) {
         this.usersAssigned = usersAssigned;
     }
 
@@ -133,11 +134,11 @@ public class Test {
         this.userCreated = userCreated;
     }
 
-    public List<Topic> getTopics() {
+    public Set<Topic> getTopics() {
         return topics;
     }
 
-    public void setTopics(List<Topic> topics) {
+    public void setTopics(Set<Topic> topics) {
         this.topics = topics;
     }
 

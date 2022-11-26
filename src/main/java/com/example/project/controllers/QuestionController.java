@@ -1,6 +1,7 @@
 package com.example.project.controllers;
 
-import com.example.project.dto.question.AddEditQuestionDto;
+import com.example.project.dto.question.AddQuestionDto;
+import com.example.project.dto.question.EditQuestionDto;
 import com.example.project.models.entities.Question;
 import com.example.project.models.entities.User;
 import com.example.project.models.enums.AnswerType;
@@ -43,9 +44,9 @@ public class QuestionController {
     @PostMapping("/topic/{id}/questions/add")
     public String addQuestion(@PathVariable int id,
                               @RequestParam(name = "media", required = false) MultipartFile file,
-                              @ModelAttribute(name = "addQuestion") AddEditQuestionDto addEditQuestionDto) throws IOException {
+                              @ModelAttribute(name = "addQuestion") AddQuestionDto addQuestionDto) throws IOException {
         try {
-            questionService.add(id, addEditQuestionDto, file);
+            questionService.add(id, addQuestionDto, file);
         } catch (IllegalArgumentException ex) {
             return "redirect:/error";
         }
@@ -86,9 +87,11 @@ public class QuestionController {
     public String editQuestion(@PathVariable int id,
                                @PathVariable long questionId,
                                @RequestParam(name = "media", required = false) MultipartFile file,
-                               @ModelAttribute(name = "editQuestion") AddEditQuestionDto dto) throws IOException {
+                               @ModelAttribute(name = "editQuestion") EditQuestionDto dto) throws IOException {
         questionService.edit(questionId, dto, file);
-        return "questions/edit";
+
+        String url = getRedirectUrlToUserQuestionPage(id);
+        return "redirect:" + url;
     }
 
     @GetMapping("/topic/{id}/questions/delete/{questionId}")
