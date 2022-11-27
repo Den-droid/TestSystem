@@ -15,9 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 @Transactional
@@ -56,7 +54,9 @@ public class TopicServiceImpl implements TopicService {
     public void edit(int topicId, String topicName) {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(NoSuchElementException::new);
-        if (topicRepository.existsTopicByName(topicName)) {
+        if (Objects.equals(topic.getName(), topicName)) {
+            throw new IllegalArgumentException("Enter another name!!!");
+        } else if (topicRepository.existsTopicByName(topicName)) {
             throw new IllegalArgumentException("There is already topic with such name!!!");
         }
         topic.setName(topicName);
@@ -72,8 +72,9 @@ public class TopicServiceImpl implements TopicService {
         questions.forEach(x -> x.setTopic(topicToTransfer));
         questionRepository.saveAll(questions);
 
-//        List<Test> tests = testRepository.findByTopics(Collections.singletonList(topicToDelete));
-//        tests.forEach(x -> x.setTopics(Collections.singleton(topicToTransfer)));
+        List<Test> tests = testRepository.findTestsByTopicsId(topicToDelete.getId());
+        tests.forEach(x -> x.setTopics(Collections.singleton(topicToTransfer)));
+        testRepository.saveAll(tests);
 
         topicRepository.delete(topicToDelete);
     }
