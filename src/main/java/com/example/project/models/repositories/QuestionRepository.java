@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface QuestionRepository extends PagingAndSortingRepository<Question, Long> {
     List<Question> findByTopic(Topic topic);
+
+    List<Question> findByIdNotInAndSupQuestion(List<Long> ids, Question supQuestion);
 }

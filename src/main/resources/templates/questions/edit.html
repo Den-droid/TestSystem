@@ -49,7 +49,7 @@
 
     <br>
     <label for="selectAnswerType">Select answer type: </label>
-    <select id="selectAnswerType" name="answerType">
+    <select id="selectAnswerType" name="answerType" read>
         <option th:each="answerType: ${answerTypes}"
                 th:value="${answerType}"
                 th:text="${answerType}"
@@ -59,16 +59,20 @@
 
     <br>
     <div id="answersDiv">
-        <button type="button" id="addAnswerButton" th:unless="${question.answerType.text eq 'Custom'}">
+        <button type="button" id="addAnswerButton">
             Add answer
         </button>
         <div class="answerDiv" th:each="answer, answerStat : ${answers}">
             <th:block th:if="${question.answerType.text} eq 'Match'">
+                <input th:value="${subQuestions[answerStat.index].id}"
+                       type="hidden" name="subQuestionIds"/>
+                <input th:value="${answer.id}"
+                       type="hidden" name="answerIds"/>
                 <label th:for="'subQuestion' + ${answerStat.index}">
                     Enter first part:
                 </label>
                 <input th:id="'subQuestion' + ${answerStat.index}"
-                       th:value="${subQuestions[answerStat.index]}"
+                       th:value="${subQuestions[answerStat.index].text}"
                        type="text" name="subQuestions" class="subQuestion"/>
                 <br>
                 <label th:for="'answer' + ${answerStat.index}">
@@ -83,16 +87,23 @@
             </th:block>
 
             <th:block th:if="${question.answerType.text} eq 'Custom'">
+                <input th:value="${answer.id}"
+                       type="hidden" name="answerIds"/>
                 <label for="answer">
                     Enter custom answer:
                 </label>
                 <input th:if="${question.answerType.text} eq 'Custom'"
                        th:value="${answer.text}" type="text" name="answers" id="answer"/>
+                <button type="button">
+                    Delete answer
+                </button>
             </th:block>
 
 
             <th:block th:if="${question.answerType.text} eq 'Single' or
                             ${question.answerType.text} eq 'Multiple'">
+                <input th:value="${answer.id}"
+                       type="hidden" name="answerIds"/>
                 <label th:for="'answer' + ${answerStat.index}">
                     Enter answer:
                 </label>

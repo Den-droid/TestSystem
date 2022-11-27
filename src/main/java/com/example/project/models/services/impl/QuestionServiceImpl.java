@@ -20,10 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +31,6 @@ public class QuestionServiceImpl implements QuestionService {
     private AnswerRepository answerRepository;
     private TestQuestionRepository testQuestionRepository;
     private UserService userService;
-
     private FileService fileService;
 
     public QuestionServiceImpl(QuestionRepository questionRepository,
@@ -57,7 +53,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .orElseThrow(IllegalArgumentException::new);
 
         Question question = AddQuestionMapper.map(dto);
-        if (file != null) {
+        if (file != null && !file.isEmpty()) {
             String mediaName = fileService.put(file);
             question.setMediaUrl(mediaName);
         }
@@ -66,16 +62,6 @@ public class QuestionServiceImpl implements QuestionService {
         question.setUser(userService.getCurrentLoggedIn());
 
         questionRepository.save(question);
-
-        if (question.getAnswerType() == AnswerType.MATCH) {
-            questionRepository.saveAll(question.getSubQuestions());
-            for (Question subQuestion : question.getSubQuestions()) {
-                answerRepository.saveAll(subQuestion.getAnswers());
-            }
-        } else {
-            List<Answer> answers = question.getAnswers();
-            answerRepository.saveAll(answers);
-        }
     }
 
     @Override
@@ -85,7 +71,85 @@ public class QuestionServiceImpl implements QuestionService {
 
         Question editQuestion = EditQuestionMapper.map(dto);
 
-        if (!file.isEmpty()) {
+        if (question.getAnswerType() != editQuestion.getAnswerType()) {
+            if (question.getAnswerType() == AnswerType.MATCH) {
+                question.deleteAllSubQuestions();
+            } else {
+                question.deleteAllAnswers();
+            }
+
+            if (editQuestion.getAnswerType() == AnswerType.MATCH) {
+                for (Question subQuestion : editQuestion.getSubQuestions()) {
+                    question.addSubQuestion(subQuestion);
+                }
+            } else {
+                for (Answer answer : editQuestion.getAnswers()) {
+                    question.addAnswer(answer);
+                }
+            }
+        } else {
+            if (question.getAnswerType() == AnswerType.MATCH) {
+                List<Long> notDeletedIds = editQuestion.getSubQuestions().stream()
+                        .map(Question::getId)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                List<Question> deletedSubQuestions = questionRepository.findByIdNotInAndSupQuestion(
+                        notDeletedIds, question
+                );
+
+                for (Question subQuestion : deletedSubQuestions) {
+                    question.deleteSubQuestion(subQuestion);
+                }
+            } else {
+                List<Long> notDeletedIds = editQuestion.getAnswers().stream()
+                        .map(Answer::getId)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                List<Answer> deletedAnswers = answerRepository.findAnswersByIdNotInAndQuestion(
+                        notDeletedIds, question
+                );
+
+                for (Answer answer : deletedAnswers) {
+                    question.deleteAnswer(answer);
+                }
+            }
+
+            if (editQuestion.getAnswerType() == AnswerType.MATCH) {
+                List<Question> addedSubQuestions = editQuestion.getSubQuestions().stream()
+                        .filter(x -> x.getId() == null)
+                        .collect(Collectors.toList());
+
+                List<Question> existedSubQuestions = editQuestion.getSubQuestions().stream()
+                        .filter(x -> x.getId() != null)
+                        .collect(Collectors.toList());
+
+                for (Question existedSubQuestion : existedSubQuestions) {
+                    question.setSubQuestion(existedSubQuestion);
+                }
+
+                for (Question subQuestion : addedSubQuestions) {
+                    question.addSubQuestion(subQuestion);
+                }
+            } else {
+                List<Answer> addedAnswers = editQuestion.getAnswers().stream()
+                        .filter(x -> x.getId() == null)
+                        .collect(Collectors.toList());
+
+                List<Answer> existedAnswers = editQuestion.getAnswers().stream()
+                        .filter(x -> x.getId() != null)
+                        .collect(Collectors.toList());
+
+                for (Answer existedAnswer : existedAnswers) {
+                    question.setAnswer(existedAnswer);
+                }
+
+                for (Answer answer : addedAnswers) {
+                    question.addAnswer(answer);
+                }
+            }
+        }
+
+        if (file != null && !file.isEmpty()) {
             if (question.getMediaUrl() != null)
                 fileService.delete(question.getMediaUrl());
             String mediaName = fileService.put(file);
@@ -96,7 +160,12 @@ public class QuestionServiceImpl implements QuestionService {
                 fileService.delete(question.getMediaUrl());
         }
 
-        // need to write
+        question.setType(editQuestion.getType());
+        question.setDifficulty(editQuestion.getDifficulty());
+        question.setAnswerType(editQuestion.getAnswerType());
+        question.setText(editQuestion.getText());
+        question.setAnswerDescription(editQuestion.getAnswerDescription());
+        questionRepository.save(question);
     }
 
     @Override
@@ -104,16 +173,6 @@ public class QuestionServiceImpl implements QuestionService {
         Question question = questionRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new);
         if (canBeChanged(question)) {
-            if (question.getAnswerType() == AnswerType.MATCH) {
-                for (Question subQuestion : question.getSubQuestions()) {
-                    answerRepository.deleteAll(subQuestion.getAnswers());
-                }
-                questionRepository.deleteAll(question.getSubQuestions());
-            } else {
-                List<Answer> answers = question.getAnswers();
-                answerRepository.deleteAll(answers);
-            }
-
             if (question.getMediaUrl() != null)
                 fileService.delete(question.getMediaUrl());
 

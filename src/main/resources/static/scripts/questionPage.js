@@ -16,28 +16,14 @@ function answerTypeChange() {
     let value = answerTypeSelect.value;
     switch (value) {
         case "Single":
-            setSingleAnswer()
-            break
         case "Multiple":
-            setMultipleAnswer()
+            addSingleAnswer()
             break
         case "Match":
-            setMatchAnswer()
+            addMatchAnswer()
             break
         case "Custom":
-            setCustomAnswer()
-    }
-}
-
-function validateSingleCorrectAnswer(e) {
-    if (e.target.checked === true) {
-        let isCorrectElems = document.getElementsByClassName("isCorrect");
-        for (let i = 0; i < isCorrectElems.length; i++) {
-            if (isCorrectElems.item(i) !== e.target && isCorrectElems.item(i).checked === true) {
-                e.target.checked = false;
-                break;
-            }
-        }
+            addCustomAnswer()
     }
 }
 
@@ -47,6 +33,10 @@ function addSingleAnswer() {
 
     let answerDiv = document.createElement("div");
     answerDiv.setAttribute("class", "answerDiv")
+
+    let hidden = document.createElement("input");
+    hidden.setAttribute("type", "hidden");
+    hidden.setAttribute("name", "answerIds");
 
     let input = document.createElement("input");
     input.setAttribute("type", "text");
@@ -78,6 +68,7 @@ function addSingleAnswer() {
     deleteAnswerButton.textContent = " Delete answer ";
     deleteAnswerButton.addEventListener("click", deleteAnswer);
 
+    answerDiv.appendChild(hidden);
     answerDiv.appendChild(inputLabel);
     answerDiv.appendChild(input);
     answerDiv.appendChild(checkbox);
@@ -109,6 +100,14 @@ function addMatchAnswer() {
     let answerDiv = document.createElement("div");
     answerDiv.setAttribute("class", "answerDiv")
 
+    let hiddenAnswerIds = document.createElement("input");
+    hiddenAnswerIds.setAttribute("type", "hidden");
+    hiddenAnswerIds.setAttribute("name", "answerIds");
+
+    let hiddenSubQuestionIds = document.createElement("input");
+    hiddenSubQuestionIds.setAttribute("type", "hidden");
+    hiddenSubQuestionIds.setAttribute("name", "subQuestionIds");
+
     let subQuestion = document.createElement("input");
     subQuestion.setAttribute("type", "text");
     subQuestion.setAttribute("name", "subQuestions");
@@ -136,6 +135,8 @@ function addMatchAnswer() {
     deleteAnswerButton.textContent = " Delete answer ";
     deleteAnswerButton.addEventListener("click", deleteAnswer);
 
+    answerDiv.appendChild(hiddenSubQuestionIds)
+    answerDiv.appendChild(hiddenAnswerIds)
     answerDiv.appendChild(subQuestionLabel);
     answerDiv.appendChild(subQuestion);
     answerDiv.appendChild(br);
@@ -161,38 +162,59 @@ function addMatchAnswer() {
     }
 }
 
+function addCustomAnswer() {
+    let answersDiv = document.getElementById("answersDiv");
+    let answerDivs = answersDiv.getElementsByClassName("answerDiv");
+
+    let answerDiv = document.createElement("div");
+    answerDiv.setAttribute("class", "answerDiv");
+
+    let hidden = document.createElement("input");
+    hidden.setAttribute("type", "hidden");
+    hidden.setAttribute("name", "answerIds");
+
+    let input = document.createElement("input");
+    input.setAttribute("type", "text");
+    input.setAttribute("name", "answers");
+    input.setAttribute("class", "answer")
+    input.setAttribute("id", "answer" + answerDivs.length);
+
+    let label = document.createElement("label");
+    label.setAttribute("for", "answer" + answerDivs.length);
+    label.textContent = "Enter custom answer: ";
+
+    let deleteAnswerButton = document.createElement("button");
+    deleteAnswerButton.setAttribute("type", "button");
+    deleteAnswerButton.textContent = " Delete answer ";
+    deleteAnswerButton.addEventListener("click", deleteAnswer);
+
+    answerDiv.appendChild(hidden);
+    answerDiv.appendChild(label);
+    answerDiv.appendChild(input);
+    answerDiv.appendChild(deleteAnswerButton);
+
+    if (answerDivs.length !== 0) {
+        let lastAnswerDiv = answerDivs.item(answerDivs.length - 1)
+
+        answersDiv.insertBefore(answerDiv, lastAnswerDiv.nextSibling);
+    } else {
+        if (document.getElementById("addAnswerButton") === null) {
+            let addAnswerButton = document.createElement("button");
+            addAnswerButton.setAttribute("type", "button");
+            addAnswerButton.setAttribute("id", "addAnswerButton");
+            addAnswerButton.textContent = " Add answer ";
+            addAnswerButton.addEventListener("click", addCustomAnswer);
+            answersDiv.appendChild(addAnswerButton);
+        }
+
+        answersDiv.appendChild(answerDiv);
+    }
+}
+
 function deleteAnswer(e) {
     let answerDiv = e.target.parentNode;
     let answersDiv = answerDiv.parentNode;
     answersDiv.removeChild(answerDiv);
-}
-
-function setSingleAnswer() {
-    addSingleAnswer();
-}
-
-function setMultipleAnswer() {
-    addSingleAnswer()
-}
-
-function setMatchAnswer() {
-    addMatchAnswer();
-}
-
-function setCustomAnswer() {
-    let answers = document.getElementById("answersDiv");
-    let input = document.createElement("input");
-
-    input.setAttribute("type", "text");
-    input.setAttribute("name", "answers");
-    input.setAttribute("id", "answer");
-
-    let label = document.createElement("label");
-    label.setAttribute("for", "answer");
-    label.textContent = "Enter custom answer: ";
-
-    answers.appendChild(label);
-    answers.appendChild(input);
 }
 
 function validateAddForm() {
@@ -251,9 +273,12 @@ function validateAnswers() {
 
     let answerType = document.getElementById("selectAnswerType");
     if (answerType.value === 'Custom') {
-        if (document.getElementById("answer").value.length === 0) {
-            errorDiv.textContent = "Enter custom answer!!!";
-            return false;
+        let answers = document.getElementsByClassName("answer");
+        for (let i = 0; i < answers.length; i++) {
+            if (answers.item(i).value.length === 0) {
+                errorDiv.textContent = "Enter all options!!!";
+                return false;
+            }
         }
     } else if (answerType.value === 'Single' || answerType.value === 'Multiple') {
         let answers = document.getElementsByClassName("answer");
@@ -284,6 +309,18 @@ function validateAnswers() {
     }
 
     return true;
+}
+
+function validateSingleCorrectAnswer(e) {
+    if (e.target.checked === true) {
+        let isCorrectElems = document.getElementsByClassName("isCorrect");
+        for (let i = 0; i < isCorrectElems.length; i++) {
+            if (isCorrectElems.item(i) !== e.target && isCorrectElems.item(i).checked === true) {
+                e.target.checked = false;
+                break;
+            }
+        }
+    }
 }
 
 let questionTextSelect = document.getElementById("selectQuestionType");

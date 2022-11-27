@@ -24,8 +24,6 @@ function validateMediaEditQuestion() {
         ?.split("=")[1];
     let media = document.getElementById("media");
 
-    console.log(initialQuestionType)
-    console.log(newQuestionType)
     if (newQuestionType !== initialQuestionType && newQuestionType !== 'Text') {
         if (media.value === '') {
             errorDiv.textContent = "Insert media!!!";
@@ -36,23 +34,22 @@ function validateMediaEditQuestion() {
     return true;
 }
 
-if (answerTypeSelect.value === "Single" || answerTypeSelect.value === "Multiple"
-    || answerTypeSelect.value === "Match") {
-    let answerDivs = document.getElementsByClassName("answerDiv");
-    let addAnswerButton = document.getElementById("addAnswerButton");
-    for (let i = 0; i < answerDivs.length; i++) {
-        answerDivs.item(i).lastElementChild.addEventListener("click", deleteAnswer);
-    }
-    if (answerTypeSelect.value === "Single" || answerTypeSelect.value === "Multiple") {
-        addAnswerButton.addEventListener("click", addSingleAnswer);
-    } else {
-        addAnswerButton.addEventListener("click", addMatchAnswer);
-    }
-    if (answerTypeSelect.value === "Single") {
-        let checkboxes = document.getElementsByClassName("isCorrect");
-        for (let i = 0; i < checkboxes.length; i++) {
-            checkboxes.item(i).addEventListener("click", validateSingleCorrectAnswer);
-        }
+let answerDivs = document.getElementsByClassName("answerDiv");
+let addAnswerButton = document.getElementById("addAnswerButton");
+for (let i = 0; i < answerDivs.length; i++) {
+    answerDivs.item(i).lastElementChild.addEventListener("click", deleteAnswer);
+}
+if (answerTypeSelect.value === "Single" || answerTypeSelect.value === "Multiple") {
+    addAnswerButton.addEventListener("click", addSingleAnswer);
+} else if (answerTypeSelect.value === "Match") {
+    addAnswerButton.addEventListener("click", addMatchAnswer);
+} else if (answerTypeSelect.value === "Custom") {
+    addAnswerButton.addEventListener("click", addCustomAnswer);
+}
+if (answerTypeSelect.value === "Single") {
+    let checkboxes = document.getElementsByClassName("isCorrect");
+    for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes.item(i).addEventListener("click", validateSingleCorrectAnswer);
     }
 }
 

@@ -6,6 +6,7 @@ import com.example.project.models.enums.QuestionType;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Question {
@@ -45,10 +46,10 @@ public class Question {
     @OneToMany(mappedBy = "question")
     private List<TestQuestion> inTests;
 
-    @OneToMany(mappedBy = "supQuestion")
+    @OneToMany(mappedBy = "supQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> subQuestions;
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Answer> answers;
 
     @OneToMany(mappedBy = "question")
@@ -59,6 +60,51 @@ public class Question {
 
     public Question() {
     }
+
+    public void setAnswer(Answer answer) {
+        Answer originalAnswer = this.answers.stream()
+                .filter(x -> Objects.equals(x.getId(), answer.getId()))
+                .findFirst()
+                .get();
+        originalAnswer.setCorrect(answer.isCorrect());
+        originalAnswer.setText(answer.getText());
+    }
+
+    public void setSubQuestion(Question question) {
+        Question originalSubQuestion = this.subQuestions.stream()
+                .filter(x -> Objects.equals(x.getId(), question.getId()))
+                .findFirst()
+                .get();
+        originalSubQuestion.setText(question.getText());
+        originalSubQuestion.setAnswer(question.getAnswers().get(0));
+    }
+
+    public void deleteAllAnswers() {
+        this.answers.clear();
+    }
+
+    public void deleteAllSubQuestions() {
+        this.subQuestions.clear();
+    }
+
+    public void addAnswer(Answer answer) {
+        answer.setQuestion(this);
+        this.answers.add(answer);
+    }
+
+    public void deleteAnswer(Answer answer) {
+        this.answers.remove(answer);
+    }
+
+    public void addSubQuestion(Question question) {
+        question.setSupQuestion(this);
+        this.subQuestions.add(question);
+    }
+
+    public void deleteSubQuestion(Question question) {
+        this.subQuestions.remove(question);
+    }
+
 
     public Long getId() {
         return id;

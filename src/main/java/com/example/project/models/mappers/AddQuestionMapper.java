@@ -60,11 +60,15 @@ public class AddQuestionMapper {
             }
             question.setAnswers(answers);
         } else if (question.getAnswerType() == AnswerType.CUSTOM) {
-            Answer answer = new Answer();
-            answer.setText(dto.getAnswers()[0]);
-            answer.setQuestion(question);
-            answer.setCorrect(true);
-            question.setAnswers(Collections.singletonList(answer));
+            List<Answer> answers = new ArrayList<>();
+            for (int i = 0; i < dto.getAnswers().length; i++) {
+                Answer answer = new Answer();
+                answer.setText(dto.getAnswers()[i]);
+                answer.setQuestion(question);
+                answer.setCorrect(true);
+                answers.add(answer);
+            }
+            question.setAnswers(answers);
         }
         return question;
     }
