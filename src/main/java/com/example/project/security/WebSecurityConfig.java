@@ -22,7 +22,7 @@ public class WebSecurityConfig {
     };
 
     private final static String[] SHARED_PATTERNS = new String[]{
-            "/topics/delete/{id}", "/topic/{id}/questions/delete/{questionId}"
+            "/topics/delete/*", "/topic/{id}/questions/delete/{questionId}"
     };
 
     private final static String[] PERMITTED_PATTERNS = new String[]{

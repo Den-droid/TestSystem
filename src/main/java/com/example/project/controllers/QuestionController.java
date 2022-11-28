@@ -8,19 +8,20 @@ import com.example.project.models.enums.AnswerType;
 import com.example.project.models.services.QuestionService;
 import com.example.project.models.services.TopicService;
 import com.example.project.models.services.UserService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
 @Controller
 public class QuestionController {
-    private QuestionService questionService;
-    private TopicService topicService;
-
-    private UserService userService;
+    private final QuestionService questionService;
+    private final TopicService topicService;
+    private final UserService userService;
 
     public QuestionController(QuestionService questionService,
                               TopicService topicService,
@@ -109,6 +110,141 @@ public class QuestionController {
         }
 
         return "redirect:" + url;
+    }
+
+    @GetMapping("/admin/topic/{id}/questions")
+    public String redirectToAdminQuestionPage(@PathVariable int id) {
+        String url = "admin/topic/" + id + "/questions/" + 1;
+        return "redirect:" + url;
+    }
+
+    @GetMapping("/topic/{id}/questions")
+    public String redirectToQuestionPage(@PathVariable int id) {
+        String url = "/topic/" + id + "/questions/" + 1;
+        return "redirect:" + url;
+    }
+
+    @GetMapping("/user/{username}/questions")
+    public String redirectToUserQuestionPage(@PathVariable String username) {
+        String url = "/user/" + username + "/questions/" + 1;
+        return "redirect:" + url;
+    }
+
+    @GetMapping("/admin/topic/{id}/questions/{page}")
+    public String getByPageForAdmin(@PathVariable int id,
+                                    @PathVariable int page,
+                                    Model model) {
+        if (page < 1)
+            return "redirect:/error";
+
+        try {
+            Page<Question> questions = questionService.getPageByTopic(id, page, 10);
+            model.addAttribute("questions", questions.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", questions.getTotalPages());
+        } catch (NoSuchElementException ex) {
+            return "redirect:/error";
+        }
+
+        return "admin/questions";
+    }
+
+    @GetMapping("/admin/topic/{id}/questions/search/{page}")
+    public String searchTopicsByNameForAdmin(@RequestParam(name = "text", required = false) String text,
+                                             @PathVariable int page,
+                                             @PathVariable int id,
+                                             Model model) {
+        if (page < 1)
+            return "redirect:/error";
+
+        try {
+            Page<Question> topics = questionService.getPageByTopicAndName(text, id, page, 10);
+            model.addAttribute("questions", topics.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", topics.getTotalPages());
+        } catch (NoSuchElementException ex) {
+            return "redirect:/error";
+        }
+
+        return "admin/questions";
+    }
+
+    @GetMapping("/topic/{id}/questions/{page}")
+    public String getByPage(@PathVariable int page,
+                            @PathVariable int id,
+                            Model model) {
+        if (page < 1)
+            return "redirect:/error";
+
+        try {
+            Page<Question> questions = questionService.getPageByTopic(id, page, 10);
+            model.addAttribute("questions", questions.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", questions.getTotalPages());
+        } catch (NoSuchElementException ex) {
+            return "redirect:/error";
+        }
+
+        return "main/questions";
+    }
+
+    @GetMapping("/topic/{id}/questions/search/{page}")
+    public String searchTopicsByName(@RequestParam(name = "text", required = false) String text,
+                                     @PathVariable int page,
+                                     @PathVariable int id,
+                                     Model model) {
+        if (page < 1)
+            return "redirect:/error";
+
+        try {
+            Page<Question> topics = questionService.getPageByTopicAndName(text, id, page, 10);
+            model.addAttribute("questions", topics.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", topics.getTotalPages());
+        } catch (NoSuchElementException ex) {
+            return "redirect:/error";
+        }
+
+        return "main/questions";
+    }
+
+    @GetMapping("/user/{username}/questions/{page}")
+    public String getByPageAndUsername(@PathVariable int page,
+                                       @PathVariable String username,
+                                       Model model) {
+        if (page < 1)
+            return "redirect:/error";
+
+        try {
+            Page<Question> questions = questionService.getPageByUser(username, page, 10);
+            model.addAttribute("questions", questions.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", questions.getTotalPages());
+        } catch (NoSuchElementException ex) {
+            return "redirect:/error";
+        }
+
+        return "user/questions";
+    }
+
+    @GetMapping("/user/{username}/questions/search/{page}")
+    public String searchUserTopicsByName(@PathVariable String username,
+                                         @PathVariable int page,
+                                         @RequestParam(name = "text", required = false) String text,
+                                         Model model) {
+        if (page < 1)
+            return "redirect:/error";
+
+        try {
+            Page<Question> questions = questionService.getPageByUserAndName(username, text, page, 10);
+            model.addAttribute("questions", questions.getContent());
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", questions.getTotalPages());
+        } catch (NoSuchElementException ex) {
+            return "redirect:/error";
+        }
+
+        return "user/questions";
     }
 
     private String getRedirectUrlToUserQuestionPage(int topicId) {

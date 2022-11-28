@@ -8,13 +8,12 @@ import com.example.project.models.enums.QuestionDifficulty;
 import com.example.project.models.enums.QuestionType;
 import com.example.project.models.mappers.AddQuestionMapper;
 import com.example.project.models.mappers.EditQuestionMapper;
-import com.example.project.models.repositories.AnswerRepository;
-import com.example.project.models.repositories.QuestionRepository;
-import com.example.project.models.repositories.TestQuestionRepository;
-import com.example.project.models.repositories.TopicRepository;
+import com.example.project.models.repositories.*;
 import com.example.project.models.services.FileService;
 import com.example.project.models.services.QuestionService;
 import com.example.project.models.services.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,25 +25,28 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class QuestionServiceImpl implements QuestionService {
-    private QuestionRepository questionRepository;
-    private TopicRepository topicRepository;
-    private AnswerRepository answerRepository;
-    private TestQuestionRepository testQuestionRepository;
-    private UserService userService;
-    private FileService fileService;
+    private final QuestionRepository questionRepository;
+    private final TopicRepository topicRepository;
+    private final AnswerRepository answerRepository;
+    private final TestQuestionRepository testQuestionRepository;
+    private final UserRepository userRepository;
+    private final UserService userService;
+    private final FileService fileService;
 
     public QuestionServiceImpl(QuestionRepository questionRepository,
                                FileService fileService,
                                UserService userService,
                                TopicRepository topicRepository,
                                AnswerRepository answerRepository,
-                               TestQuestionRepository testQuestionRepository) {
+                               TestQuestionRepository testQuestionRepository,
+                               UserRepository userRepository) {
         this.questionRepository = questionRepository;
         this.fileService = fileService;
         this.userService = userService;
         this.topicRepository = topicRepository;
         this.answerRepository = answerRepository;
         this.testQuestionRepository = testQuestionRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -206,6 +208,39 @@ public class QuestionServiceImpl implements QuestionService {
     public boolean canBeChanged(Question question) {
         List<TestQuestion> tests = testQuestionRepository.findByQuestion(question);
         return tests == null || tests.size() == 0;
+    }
+
+    @Override
+    public Page<Question> getPageByTopic(int topicId, int page, int limit) {
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(NoSuchElementException::new);
+        return questionRepository.findAllByTopic(topic,
+                PageRequest.of(page - 1, limit));
+    }
+
+    @Override
+    public Page<Question> getPageByTopicAndName(String text, int topicId, int page, int limit) {
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(NoSuchElementException::new);
+        return questionRepository.findAllByTopicAndTextContainsIgnoreCase(topic, text,
+                PageRequest.of(page - 1, limit));
+    }
+
+    @Override
+    public Page<Question> getPageByUser(String username, int page, int limit) {
+        User user = userRepository.findByUsernameIgnoreCase(username);
+        if (user == null)
+            throw new NoSuchElementException();
+        return questionRepository.findAllByUser(user, PageRequest.of(page - 1, limit));
+    }
+
+    @Override
+    public Page<Question> getPageByUserAndName(String username, String text, int page, int limit) {
+        User user = userRepository.findByUsernameIgnoreCase(username);
+        if (user == null)
+            throw new NoSuchElementException();
+        return questionRepository.findAllByUserAndTextContainsIgnoreCase(user, text,
+                PageRequest.of(page - 1, limit));
     }
 
     @Override

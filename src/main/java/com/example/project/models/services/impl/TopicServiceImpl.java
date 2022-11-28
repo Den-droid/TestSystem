@@ -22,9 +22,7 @@ import java.util.*;
 public class TopicServiceImpl implements TopicService {
     private final TopicRepository topicRepository;
     private final UserRepository userRepository;
-
     private final QuestionRepository questionRepository;
-
     private final TestRepository testRepository;
 
     public TopicServiceImpl(TopicRepository repository,
@@ -66,7 +64,7 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public void remove(int id, String transferToTopicName) {
         Topic topicToTransfer = topicRepository.findByName(transferToTopicName);
-        Topic topicToDelete = topicRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Topic topicToDelete = topicRepository.findById(id).orElseThrow(NoSuchElementException::new);
 
         List<Question> questions = questionRepository.findByTopic(topicToDelete);
         questions.forEach(x -> x.setTopic(topicToTransfer));
@@ -82,7 +80,12 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public Topic getById(int id) {
         return topicRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    @Override
+    public List<Topic> getByNameContains(String part) {
+        return topicRepository.findAllByNameContainsIgnoreCase(part);
     }
 
     @Override
@@ -94,20 +97,20 @@ public class TopicServiceImpl implements TopicService {
     public Page<Topic> getPageByUsername(int page, int limit, String username) {
         User user = userRepository.findByUsernameIgnoreCase(username);
         if (user == null)
-            throw new IllegalArgumentException();
+            throw new NoSuchElementException();
         return topicRepository.findAllByUser(user, PageRequest.of(page - 1, limit));
     }
 
     @Override
-    public Page<Topic> getSearchPageByName(int page, int limit, String name) {
+    public Page<Topic> getPageByName(int page, int limit, String name) {
         return topicRepository.findAllByNameContainsIgnoreCase(name, PageRequest.of(page - 1, limit));
     }
 
     @Override
-    public Page<Topic> getSearchPageByNameAndUsername(int page, int limit, String username, String name) {
+    public Page<Topic> getPageByNameAndUsername(int page, int limit, String username, String name) {
         User user = userRepository.findByUsernameIgnoreCase(username);
         if (user == null)
-            throw new IllegalArgumentException();
+            throw new NoSuchElementException();
         return topicRepository.findAllByNameContainsIgnoreCaseAndUser(name, user,
                 PageRequest.of(page - 1, limit));
     }

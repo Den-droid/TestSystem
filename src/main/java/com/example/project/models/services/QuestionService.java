@@ -4,6 +4,7 @@ import com.example.project.dto.question.AddQuestionDto;
 import com.example.project.dto.question.EditQuestionDto;
 import com.example.project.models.entities.Answer;
 import com.example.project.models.entities.Question;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -21,6 +22,14 @@ public interface QuestionService {
     Question getById(long id);
 
     boolean canBeChanged(Question question);
+
+    Page<Question> getPageByTopic(int topicId, int page, int limit);
+
+    Page<Question> getPageByTopicAndName(String text, int topicId, int page, int limit);
+
+    Page<Question> getPageByUser(String username, int page, int limit);
+
+    Page<Question> getPageByUserAndName(String username, String text, int page, int limit);
 
     List<Answer> getSubQuestionAnswers(Question question);
 
