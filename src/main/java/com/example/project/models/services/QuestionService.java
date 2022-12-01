@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface QuestionService {
-    void add(int topicId, AddQuestionDto dto, MultipartFile file) throws IOException;
+    void add(int topicId, String username, AddQuestionDto dto, MultipartFile file) throws IOException;
 
     void edit(long questionId, EditQuestionDto dto, MultipartFile file) throws IOException;
 

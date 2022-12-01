@@ -11,7 +11,6 @@ import com.example.project.models.mappers.EditQuestionMapper;
 import com.example.project.models.repositories.*;
 import com.example.project.models.services.FileService;
 import com.example.project.models.services.QuestionService;
-import com.example.project.models.services.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -30,19 +29,16 @@ public class QuestionServiceImpl implements QuestionService {
     private final AnswerRepository answerRepository;
     private final TestQuestionRepository testQuestionRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
     private final FileService fileService;
 
     public QuestionServiceImpl(QuestionRepository questionRepository,
                                FileService fileService,
-                               UserService userService,
                                TopicRepository topicRepository,
                                AnswerRepository answerRepository,
                                TestQuestionRepository testQuestionRepository,
                                UserRepository userRepository) {
         this.questionRepository = questionRepository;
         this.fileService = fileService;
-        this.userService = userService;
         this.topicRepository = topicRepository;
         this.answerRepository = answerRepository;
         this.testQuestionRepository = testQuestionRepository;
@@ -50,7 +46,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public void add(int topicId, AddQuestionDto dto, MultipartFile file) throws IOException {
+    public void add(int topicId, String username, AddQuestionDto dto, MultipartFile file) throws IOException {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(IllegalArgumentException::new);
 
@@ -61,7 +57,7 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         question.setTopic(topic);
-        question.setUser(userService.getCurrentLoggedIn());
+        question.setUser(userRepository.findByUsernameIgnoreCase(username));
 
         questionRepository.save(question);
     }

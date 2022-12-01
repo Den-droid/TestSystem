@@ -47,7 +47,8 @@ public class QuestionController {
                               @RequestParam(name = "media", required = false) MultipartFile file,
                               @ModelAttribute(name = "addQuestion") AddQuestionDto addQuestionDto) throws IOException {
         try {
-            questionService.add(id, addQuestionDto, file);
+            questionService.add(id, userService.getCurrentLoggedIn().getUsername(),
+                    addQuestionDto, file);
         } catch (IllegalArgumentException ex) {
             return "redirect:/error";
         }
@@ -120,7 +121,7 @@ public class QuestionController {
 
     @GetMapping("/admin/topic/{id}/questions")
     public String redirectToAdminQuestionPage(@PathVariable int id) {
-        String url = "admin/topic/" + id + "/questions/" + 1;
+        String url = "/admin/topic/" + id + "/questions/" + 1;
         return "redirect:" + url;
     }
 
