@@ -52,15 +52,14 @@ public class QuestionController {
             return "redirect:/error";
         }
 
-        String url = getRedirectUrlToUserQuestionPage(id);
+        String url = getRedirectUrlToUserQuestionPage();
         return "redirect:" + url;
     }
 
-    @GetMapping("/topic/{id}/questions/edit/{questionId}")
-    public String getEditPage(@PathVariable int id,
-                              @PathVariable long questionId,
+    @GetMapping("/questions/edit/{questionId}")
+    public String getEditPage(@PathVariable long questionId,
                               Model model) {
-        if (!topicService.existsById(id) || !questionService.existsById(questionId))
+        if (!questionService.existsById(questionId))
             return "redirect:/error";
 
         Question question = questionService.getById(questionId);
@@ -77,31 +76,38 @@ public class QuestionController {
                 model.addAttribute("answers", question.getAnswers());
             }
         } else {
-            String url = getRedirectUrlToUserQuestionPage(id) + "?error=edit";
+            String url = getRedirectUrlToUserQuestionPage() + "?error=edit";
             return "redirect:" + url;
         }
 
         return "questions/edit";
     }
 
-    @PostMapping("/topic/{id}/questions/edit/{questionId}")
-    public String editQuestion(@PathVariable int id,
-                               @PathVariable long questionId,
+    @PostMapping("/questions/edit/{questionId}")
+    public String editQuestion(@PathVariable long questionId,
                                @RequestParam(name = "media", required = false) MultipartFile file,
                                @ModelAttribute(name = "editQuestion") EditQuestionDto dto) throws IOException {
         questionService.edit(questionId, dto, file);
 
-        String url = getRedirectUrlToUserQuestionPage(id);
+        String url = getRedirectUrlToUserQuestionPage();
         return "redirect:" + url;
     }
 
-    @GetMapping("/topic/{id}/questions/delete/{questionId}")
-    public String deleteQuestion(@PathVariable int id,
-                                 @PathVariable long questionId) throws IOException {
-        if (!topicService.existsById(id) || !questionService.existsById(questionId))
+    @GetMapping("/questions/delete/{questionId}")
+    public String deleteQuestion(@PathVariable long questionId) throws IOException {
+        if (!questionService.existsById(questionId))
             return "redirect:/error";
 
-        String url = getRedirectUrlToUserQuestionPage(id);
+        String url = "";
+
+        switch (userService.getCurrentLoggedIn().getRole()) {
+            case USER:
+                url = getRedirectUrlToUserQuestionPage();
+                break;
+            case ADMIN:
+                url = getRedirectUrlToAdminQuestionPage(questionService
+                        .getById(questionId).getTopic().getId());
+        }
 
         try {
             questionService.delete(questionId);
@@ -247,14 +253,18 @@ public class QuestionController {
         return "user/questions";
     }
 
-    private String getRedirectUrlToUserQuestionPage(int topicId) {
+//    To be implemented
+//    @GetMapping("/questions/statistic/{questionId}")
+//    public String getQuestionStatistic(@PathVariable long questionId) {
+//        return null;
+//    }
+
+    private String getRedirectUrlToUserQuestionPage() {
         User user = userService.getCurrentLoggedIn();
-        switch (user.getRole()) {
-            case USER:
-                return "/user/" + user.getUsername() + "/topic/" + topicId + "/questions";
-            case ADMIN:
-                return "/admin/topic/" + topicId + "/questions";
-        }
-        return null;
+        return "/user/" + user.getUsername() + "/questions";
+    }
+
+    private String getRedirectUrlToAdminQuestionPage(int topicId) {
+        return "/admin/topic/" + topicId + "/questions";
     }
 }
