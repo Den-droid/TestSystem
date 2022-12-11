@@ -9,7 +9,8 @@
 <form name="addQuestion" method="post" enctype="multipart/form-data" onsubmit="return validateAddForm()">
     <label for="selectQuestionType">Select question type: </label>
     <select id="selectQuestionType" name="questionType">
-        <option th:each="questionType, questionTypeStat : ${questionTypes}" th:value="${questionType}"
+        <option th:each="questionType, questionTypeStat : ${questionTypes}"
+                th:value="${questionType}"
                 th:text="${questionType}"
                 th:selected="${questionTypeStat.count == 1}">
         </option>

@@ -17,7 +17,8 @@
     <input type="submit" value="Search topic">
 </form>
 <form method="post" name="deleteTopic" onsubmit="return validateDeleteTopic()">
-    <th:block th:if="${!#lists.isEmpty(topics)} or ${topics} ne null" th:each="topic : ${topics}">
+    <th:block th:if="${topics} ne null or ${!#lists.isEmpty(topics)}"
+              th:each="topic : ${topics}">
         <label>
             <input th:value="${topic.name}"
                    type="radio" name="topicName" class="topicRadio">

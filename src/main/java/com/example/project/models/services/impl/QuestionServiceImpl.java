@@ -1,5 +1,6 @@
 package com.example.project.models.services.impl;
 
+import com.example.project.dto.page.PageDto;
 import com.example.project.dto.question.AddQuestionDto;
 import com.example.project.dto.question.EditQuestionDto;
 import com.example.project.models.entities.*;
@@ -46,7 +47,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public void add(int topicId, String username, AddQuestionDto dto, MultipartFile file) throws IOException {
+    public void add(int topicId, User user, AddQuestionDto dto, MultipartFile file) throws IOException {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(IllegalArgumentException::new);
 
@@ -57,7 +58,7 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         question.setTopic(topic);
-        question.setUser(userRepository.findByUsernameIgnoreCase(username));
+        question.setUser(user);
 
         questionRepository.save(question);
     }
@@ -207,36 +208,42 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Page<Question> getPageByTopic(int topicId, int page, int limit) {
+    public PageDto<Question> getPageByTopic(int topicId, int page, int limit) {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(NoSuchElementException::new);
-        return questionRepository.findAllByTopic(topic,
+        Page<Question> questionPage = questionRepository.findAllByTopic(topic,
                 PageRequest.of(page - 1, limit));
+        return new PageDto<>(questionPage.getContent(), page, questionPage.getTotalPages());
     }
 
     @Override
-    public Page<Question> getPageByTopicAndName(String text, int topicId, int page, int limit) {
+    public PageDto<Question> getPageByTopicAndName(String text, int topicId, int page, int limit) {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(NoSuchElementException::new);
-        return questionRepository.findAllByTopicAndTextContainsIgnoreCase(topic, text,
-                PageRequest.of(page - 1, limit));
+        Page<Question> questionPage = questionRepository
+                .findAllByTopicAndTextContainsIgnoreCase(topic, text,
+                        PageRequest.of(page - 1, limit));
+        return new PageDto<>(questionPage.getContent(), page, questionPage.getTotalPages());
     }
 
     @Override
-    public Page<Question> getPageByUser(String username, int page, int limit) {
+    public PageDto<Question> getPageByUsername(String username, int page, int limit) {
         User user = userRepository.findByUsernameIgnoreCase(username);
         if (user == null)
             throw new NoSuchElementException();
-        return questionRepository.findAllByUser(user, PageRequest.of(page - 1, limit));
+        Page<Question> questionPage = questionRepository.findAllByUser(user,
+                PageRequest.of(page - 1, limit));
+        return new PageDto<>(questionPage.getContent(), page, questionPage.getTotalPages());
     }
 
     @Override
-    public Page<Question> getPageByUserAndName(String username, String text, int page, int limit) {
+    public PageDto<Question> getPageByUsernameAndName(String username, String text, int page, int limit) {
         User user = userRepository.findByUsernameIgnoreCase(username);
         if (user == null)
             throw new NoSuchElementException();
-        return questionRepository.findAllByUserAndTextContainsIgnoreCase(user, text,
+        Page<Question> questionPage = questionRepository.findAllByUserAndTextContainsIgnoreCase(user, text,
                 PageRequest.of(page - 1, limit));
+        return new PageDto<>(questionPage.getContent(), page, questionPage.getTotalPages());
     }
 
     @Override

@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 public class AddTestDto {
+    private String name;
     private String difficulty;
     private LocalDateTime startDate;
     private LocalDateTime finishDate;
@@ -12,6 +13,15 @@ public class AddTestDto {
     private List<String> topics;
     private List<String> usernames;
     private Integer questionsCount;
+    private String includeMe;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getDifficulty() {
         return difficulty;
@@ -67,5 +77,13 @@ public class AddTestDto {
 
     public void setQuestionsCount(Integer questionsCount) {
         this.questionsCount = questionsCount;
+    }
+
+    public String getIncludeMe() {
+        return includeMe;
+    }
+
+    public void setIncludeMe(String includeMe) {
+        this.includeMe = includeMe;
     }
 }

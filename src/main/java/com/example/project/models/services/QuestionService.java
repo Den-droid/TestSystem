@@ -1,17 +1,18 @@
 package com.example.project.models.services;
 
+import com.example.project.dto.page.PageDto;
 import com.example.project.dto.question.AddQuestionDto;
 import com.example.project.dto.question.EditQuestionDto;
 import com.example.project.models.entities.Answer;
 import com.example.project.models.entities.Question;
-import org.springframework.data.domain.Page;
+import com.example.project.models.entities.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface QuestionService {
-    void add(int topicId, String username, AddQuestionDto dto, MultipartFile file) throws IOException;
+    void add(int topicId, User user, AddQuestionDto dto, MultipartFile file) throws IOException;
 
     void edit(long questionId, EditQuestionDto dto, MultipartFile file) throws IOException;
 
@@ -23,13 +24,13 @@ public interface QuestionService {
 
     boolean canBeChanged(Question question);
 
-    Page<Question> getPageByTopic(int topicId, int page, int limit);
+    PageDto<Question> getPageByTopic(int topicId, int page, int limit);
 
-    Page<Question> getPageByTopicAndName(String text, int topicId, int page, int limit);
+    PageDto<Question> getPageByTopicAndName(String text, int topicId, int page, int limit);
 
-    Page<Question> getPageByUser(String username, int page, int limit);
+    PageDto<Question> getPageByUsername(String username, int page, int limit);
 
-    Page<Question> getPageByUserAndName(String username, String text, int page, int limit);
+    PageDto<Question> getPageByUsernameAndName(String username, String text, int page, int limit);
 
     List<Answer> getSubQuestionAnswers(Question question);
 

@@ -1,24 +1,32 @@
 package com.example.project.models.services;
 
+import com.example.project.dto.page.PageDto;
 import com.example.project.dto.test.AddTestDto;
 import com.example.project.dto.test.TestWalkthroughDto;
-import com.example.project.models.entities.CurrentTest;
-import com.example.project.models.entities.FinishedTest;
+import com.example.project.models.entities.Question;
 import com.example.project.models.entities.Test;
-import org.springframework.data.domain.Page;
+import com.example.project.models.entities.Topic;
+import com.example.project.models.entities.User;
+
+import java.util.List;
+import java.util.Set;
 
 public interface TestService {
-    void add(String username, AddTestDto dto);
+    void add(User user, AddTestDto dto);
 
-    void start(String username, String testId);
+    void start(User user, String testId);
 
-    void finish(String username, String testId, TestWalkthroughDto dto);
+    void finish(User user, String testId, TestWalkthroughDto dto);
 
-    Page<Test> getAssignedToUser(String username, int page, int limit);
-
-    Page<FinishedTest> getFinishedByUser(String username, int page, int limit);
-
-    Page<CurrentTest> getCurrentOfUser(String username, int page, int limit);
+    PageDto<Test> getByUser(String type, String username, int page, int limit);
 
     Test getById(String id);
+
+    boolean canWalkthrough(User user, String testId);
+
+    List<Question> getTestQuestions(Test test);
+
+    Set<Topic> getTestTopics(Test test);
+
+    List<String> getTestDifficulties();
 }

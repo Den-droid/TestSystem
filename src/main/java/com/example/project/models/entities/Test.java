@@ -15,6 +15,7 @@ public class Test {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
+    private String name;
     @Column(name = "time_limit")
     private LocalTime timeLimit;
     @Column(name = "start_date")
@@ -60,6 +61,14 @@ public class Test {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public LocalTime getTimeLimit() {

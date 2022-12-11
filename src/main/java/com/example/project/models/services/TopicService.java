@@ -1,12 +1,14 @@
 package com.example.project.models.services;
 
+import com.example.project.dto.page.PageDto;
 import com.example.project.models.entities.Topic;
+import com.example.project.models.entities.User;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface TopicService {
-    void add(String username, String topicName);
+    void add(User user, String topicName);
 
     void edit(int topicId, String topicName);
 
@@ -16,13 +18,13 @@ public interface TopicService {
 
     List<Topic> getByNameContains(String part);
 
-    Page<Topic> getPage(int page, int limit);
+    PageDto<Topic> getPage(int page, int limit);
 
-    Page<Topic> getPageByUsername(int page, int limit, String username);
+    PageDto<Topic> getPageByUsername(int page, int limit, String username);
 
-    Page<Topic> getPageByName(int page, int limit, String name);
+    PageDto<Topic> getPageByName(int page, int limit, String name);
 
-    Page<Topic> getPageByNameAndUsername(int page, int limit, String username, String name);
+    PageDto<Topic> getPageByNameAndUsername(int page, int limit, String username, String name);
 
     boolean existsById(int id);
 }

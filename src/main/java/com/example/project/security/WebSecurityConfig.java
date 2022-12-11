@@ -13,8 +13,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class WebSecurityConfig {
     private final static String[] USER_PATTERNS = new String[]{
-            "/user/**", "/topics/add", "/topics/edit/{id}",
-            "/topic/{id}/questions/add", "/questions/edit/{questionId}"
+            "/user/**", "/test/**", "/topics/add", "/topics/edit/{id}",
+            "/topic/{id}/questions/add", "/questions/edit/{questionId}",
+            "/tests/generate"
     };
 
     private final static String[] ADMIN_PATTERNS = new String[]{
