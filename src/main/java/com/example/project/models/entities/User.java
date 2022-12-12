@@ -43,7 +43,7 @@ public class User {
 
     @ManyToMany
     @JoinTable(
-            name = "users_assigned",
+            name = "test_users_assigned",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "test_id"))
     private Set<Test> assignedTests;

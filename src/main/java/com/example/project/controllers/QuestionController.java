@@ -249,11 +249,6 @@ public class QuestionController {
         return "user/questions";
     }
 
-    @GetMapping("/questions/statistic/{questionId}")
-    public String getQuestionStatistic(@PathVariable long questionId) {
-        return null;
-    }
-
     private String getRedirectUrlToQuestionPage(Integer topicId) {
         User user = userService.getCurrentLoggedIn();
         switch (user.getRole()) {

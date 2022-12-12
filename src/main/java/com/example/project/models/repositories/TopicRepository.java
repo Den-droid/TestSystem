@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface TopicRepository extends PagingAndSortingRepository<Topic, Integer> {
@@ -20,4 +21,6 @@ public interface TopicRepository extends PagingAndSortingRepository<Topic, Integ
     Page<Topic> findAllByUser(User user, Pageable pageable);
 
     Topic findByName(String name);
+
+    List<Topic> findAllByNameContainsIgnoreCaseAndNameNotIn(String name, Collection<String> namesNotIn);
 }

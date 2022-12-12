@@ -1,6 +1,7 @@
 package com.example.project.models.services.impl;
 
 import com.example.project.dto.auth.RegisterDto;
+import com.example.project.models.enums.Role;
 import com.example.project.models.mappers.RegisterMapper;
 import com.example.project.models.entities.User;
 import com.example.project.models.repositories.UserRepository;
@@ -12,6 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -47,5 +51,20 @@ public class UserServiceImpl implements UserService {
             return userRepository.findByUsernameIgnoreCase(((UserDetails) userObject).getUsername());
         }
         return null;
+    }
+
+    @Override
+    public List<User> getByUsernameContainsAndUsernamesNotInAndRole(String usernamePart,
+                                                                    List<String> usernamesNotIn,
+                                                                    Role role) {
+        List<User> users;
+        if (usernamesNotIn == null || usernamesNotIn.size() == 0)
+            users = userRepository.findAllByUsernameContainsIgnoreCase(usernamePart);
+        else
+            users = userRepository.findAllByUsernameContainsIgnoreCaseAndUsernameNotIn
+                    (usernamePart, usernamesNotIn);
+        return users.stream()
+                .filter(x -> x.getRole().equals(Role.USER))
+                .collect(Collectors.toList());
     }
 }

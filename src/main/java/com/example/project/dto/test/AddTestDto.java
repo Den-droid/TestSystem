@@ -7,13 +7,16 @@ import java.util.List;
 public class AddTestDto {
     private String name;
     private String difficulty;
-    private LocalDateTime startDate;
-    private LocalDateTime finishDate;
+    private String startDate;
+    private String finishDate;
     private LocalTime timeLimit;
     private List<String> topics;
     private List<String> usernames;
     private Integer questionsCount;
     private String includeMe;
+    private String action;
+    private String topicPart;
+    private String usernamePart;
 
     public String getName() {
         return name;
@@ -31,19 +34,19 @@ public class AddTestDto {
         this.difficulty = difficulty;
     }
 
-    public LocalDateTime getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDateTime getFinishDate() {
+    public String getFinishDate() {
         return finishDate;
     }
 
-    public void setFinishDate(LocalDateTime finishDate) {
+    public void setFinishDate(String finishDate) {
         this.finishDate = finishDate;
     }
 
@@ -85,5 +88,29 @@ public class AddTestDto {
 
     public void setIncludeMe(String includeMe) {
         this.includeMe = includeMe;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public String getTopicPart() {
+        return topicPart;
+    }
+
+    public void setTopicPart(String topicPart) {
+        this.topicPart = topicPart;
+    }
+
+    public String getUsernamePart() {
+        return usernamePart;
+    }
+
+    public void setUsernamePart(String usernamePart) {
+        this.usernamePart = usernamePart;
     }
 }

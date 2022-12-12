@@ -4,7 +4,6 @@ import com.example.project.dto.page.PageDto;
 import com.example.project.dto.test.AddTestDto;
 import com.example.project.dto.test.TestWalkthroughDto;
 import com.example.project.models.entities.*;
-import com.example.project.models.enums.AnswerType;
 import com.example.project.models.enums.TestDifficulty;
 import com.example.project.models.enums.TestType;
 import com.example.project.models.repositories.CurrentTestRepository;
@@ -81,6 +80,10 @@ public class TestServiceImpl implements TestService {
                         .map(FinishedTest::getTest)
                         .collect(Collectors.toList());
                 return new PageDto<>(finishedTestsList, page, finishedTests.getTotalPages());
+            case CREATED:
+                Page<Test> userCreatedTest = getCreatedByUser(username, page, limit);
+                List<Test> userCreatedTestsList = userCreatedTest.getContent();
+                return new PageDto<>(userCreatedTestsList, page, userCreatedTest.getTotalPages());
             default:
                 throw new IllegalArgumentException();
         }
@@ -131,5 +134,10 @@ public class TestServiceImpl implements TestService {
         return currentTestRepository.findCurrentTestsByUser(
                 userRepository.findByUsernameIgnoreCase(username), PageRequest.of(page - 1, limit)
         );
+    }
+
+    private Page<Test> getCreatedByUser(String username, int page, int limit) {
+        return testRepository.findAllByUserCreated(
+                userRepository.findByUsernameIgnoreCase(username), PageRequest.of(page - 1, limit));
     }
 }

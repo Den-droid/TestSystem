@@ -8,50 +8,111 @@
 <h2>
     Generate test
 </h2>
-<form name="generateTest" method="post">
+<form name="generateTest" method="post" onsubmit="return addTestSubmit()">
     <label for="name"> Enter name:
-        <input th:value="${previous.name eq null ? '' : previous.name}"
+        <input th:value="${previous?.name}"
                id="name" name="name" type="text">
     </label>
+    <br>
     <label for="selectTestDifficulty"> Select difficulty
         <select id="selectTestDifficulty" name="difficulty">
             <option th:each="testDifficulty, testDifficultyStat : ${difficulties}"
                     th:value="${testDifficulty}"
                     th:text="${testDifficulty}"
-                    th:selected="${previous.difficulty eq null
-                    ? testDifficultyStat.count == 1
-                    : testDifficulty eq previous.difficulty}">
+                    th:selected="${previous ne null and previous.difficulty ne null
+                    ? testDifficulty eq previous.difficulty
+                    : testDifficultyStat.count == 1}">
             </option>
         </select>
     </label>
+    <br>
     <label for="startDate"> Select start date:
-        <input th:value="${previous.startDate eq null
-                ? '' : #temporals.format(previous.startDate, 'dd-MM-yyyy HH:mm')}"
-               th:min="${#temporals.createNow()}"
+        <input th:min="${currentDate}"
+               th:value="${currentDate}"
                type="datetime-local" id="startDate" name="startDate">
     </label>
+    <br>
     <label for="finishDate"> Select finish date:
-        <input th:value="${previous.finishDate eq null
-                ? '' : #temporals.format(previous.finishDate, 'dd-MM-yyyy HH:mm')}"
-               th:min="${#temporals.createNow()}"
+        <input th:min="${currentDate}"
+               th:value="${currentDate}"
                type="datetime-local" id="finishDate" name="finishDate">
     </label>
+    <br>
     <label for="timeLimit"> Select time limit (select 0 for unlimited time)
-        <input th:value="${previous.timeLimit eq null
-                ? '' : #temporals.format(previous.timeLimit, 'HH:mm')}"
+        <input th:value="${previous ne null and previous.timeLimit ne null
+                ?  previous.timeLimit : '00:00'}"
                type="time" id="timeLimit" name="timeLimit">
     </label>
-    <label for="questionCount">
-        <input th:value="${previous.questionsCount eq null
-                        ? 0 : previous.questionsCount}"
-               type="number" min="0" id="questionCount" name="questionCount">
+    <br>
+    <label for="questionCount"> Enter question count:
+        <input th:value="${previous?.questionsCount}"
+               type="number" min="0" id="questionCount" name="questionsCount"
+               style="width: 60px">
     </label>
+    <br>
     <label>
-        <input th:selected="${previous.includeMe ne null}"
+        <input th:selected="${previous?.includeMe}"
                type="checkbox" value="includeMe"
                name="includeMe" id="includeMe">
+        <span> Include me </span>
     </label>
+    <br>
 
+    <label>
+        <input type="text" name="topicPart">
+    </label>
+    <input type="submit" id="searchTopics" value="Search for topics">
+    <br>
+
+    <div th:if="${newTopics ne null} or ${!#lists.isEmpty(newTopics)}">
+        <p>Choose topics: </p>
+        <th:block th:each="newTopic : ${newTopics}">
+            <input th:value="${newTopic.name}"
+                   type="checkbox" name="topics" class="newTopics">
+            <span th:text="${newTopic.name}"></span>
+        </th:block>
+    </div>
+    <br>
+
+    <label>
+        <input type="text" name="usernamePart">
+    </label>
+    <input type="submit" id="searchUsers" value="Search for users">
+    <br>
+
+    <div th:if="${newUsers ne null} or ${!#lists.isEmpty(newUsers)}">
+        <p>Choose users: </p>
+        <th:block th:each="newUser : ${newUsers}">
+            <input th:value="${newUser.username}"
+                   type="checkbox" name="usernames" class="newUsers">
+            <span th:text="${newUser.username}"></span>
+        </th:block>
+    </div>
+    <br>
+
+    <p>Already added topics: </p>
+    <div th:if="${previous ne null and previous.topics ne null}
+                    and ${!#lists.isEmpty(previous.topics)}">
+        <input th:each="existingTopic : ${previous.topics}"
+               th:value="${existingTopic}"
+               name="topics" type="text" disabled class="oldTopics">
+    </div>
+
+    <p>Already added users: </p>
+    <div th:if="${previous ne null and previous.usernames ne null}
+                    and ${!#lists.isEmpty(previous.usernames)}">
+        <input th:each="existingUser : ${previous.usernames}"
+               th:value="${existingUser}"
+               name="usernames" type="text" disabled class="oldUsers">
+    </div>
+
+    <div id="error">
+    </div>
+
+    <button id="submit">
+        Generate test
+    </button>
 </form>
+<script src="/static/scripts/generateTest.js" type="text/javascript"></script>
 </body>
 </html>

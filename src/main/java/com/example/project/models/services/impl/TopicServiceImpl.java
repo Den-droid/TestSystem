@@ -128,4 +128,13 @@ public class TopicServiceImpl implements TopicService {
     public boolean existsById(int id) {
         return topicRepository.existsById(id);
     }
+
+    @Override
+    public List<Topic> getByNameContainsAndNamesNot(String namePart, List<String> namesNotIn) {
+        if (namesNotIn == null || namesNotIn.size() == 0)
+            return topicRepository.findAllByNameContainsIgnoreCase(namePart);
+        return topicRepository.findAllByNameContainsIgnoreCaseAndNameNotIn(
+                namePart, namesNotIn);
+    }
+
 }

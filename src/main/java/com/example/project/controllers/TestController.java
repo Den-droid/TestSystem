@@ -3,38 +3,69 @@ package com.example.project.controllers;
 import com.example.project.dto.page.PageDto;
 import com.example.project.dto.test.AddTestDto;
 import com.example.project.models.entities.Test;
+import com.example.project.models.entities.Topic;
 import com.example.project.models.entities.User;
+import com.example.project.models.enums.Role;
 import com.example.project.models.services.TestService;
+import com.example.project.models.services.TopicService;
 import com.example.project.models.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Controller
 public class TestController {
     private final UserService userService;
     private final TestService testService;
+    private final TopicService topicService;
 
     public TestController(UserService userService,
-                          TestService testService) {
+                          TestService testService,
+                          TopicService topicService) {
         this.testService = testService;
         this.userService = userService;
+        this.topicService = topicService;
     }
 
     @GetMapping("/tests/generate")
-    public String getAddPage(@ModelAttribute(name = "generateTest") AddTestDto addTestDto,
-                             Model model) {
+    public String getAddPage(Model model) {
         model.addAttribute("difficulties", testService.getTestDifficulties());
-        model.addAttribute("previous", addTestDto);
+        model.addAttribute("currentDate", LocalDateTime.now());
         return "test/generate";
     }
 
     @PostMapping("/tests/generate")
-    public String add(@ModelAttribute(name = "generateTest") AddTestDto addTestDto) {
-        return null;
+    public String add(@ModelAttribute(name = "generateTest") AddTestDto addTestDto,
+                      Model model) {
+        if (!Objects.equals(addTestDto.getAction(), "submit")) {
+            if (addTestDto.getAction().equals("searchTopics")) {
+                List<Topic> topics = topicService.getByNameContainsAndNamesNot(
+                        addTestDto.getTopicPart(), addTestDto.getTopics());
+                model.addAttribute("newTopics", topics);
+            }
+
+            if (addTestDto.getAction().equals("searchUsers")) {
+                List<User> users = userService.getByUsernameContainsAndUsernamesNotInAndRole(
+                        addTestDto.getUsernamePart(), addTestDto.getUsernames(), Role.USER);
+                model.addAttribute("newUsers", users);
+            }
+
+            model.addAttribute("difficulties", testService.getTestDifficulties());
+            model.addAttribute("currentDate", LocalDateTime.now());
+            model.addAttribute("previous", addTestDto);
+            return "test/generate";
+        }
+
+        User user = userService.getCurrentLoggedIn();
+        testService.add(user, addTestDto);
+
+        String url = "/user/" + user.getUsername() + "/tests";
+        return "redirect:" + url;
     }
 
     @GetMapping("/test/{testId}/intro")

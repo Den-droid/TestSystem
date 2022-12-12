@@ -27,4 +27,6 @@ public interface TopicService {
     PageDto<Topic> getPageByNameAndUsername(int page, int limit, String username, String name);
 
     boolean existsById(int id);
+
+    List<Topic> getByNameContainsAndNamesNot(String namePart, List<String> namesNotIn);
 }

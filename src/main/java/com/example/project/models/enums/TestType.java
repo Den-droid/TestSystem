@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 public enum TestType {
     ALL("All"),
+    CREATED("Created"),
     CURRENT("Current"),
     FINISHED("Finished");
 
