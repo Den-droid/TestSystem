@@ -22,12 +22,12 @@ public class Test {
     private LocalDateTime startDate;
     @Column(name = "finish_date")
     private LocalDateTime finishDate;
+    @Column(name = "questions_count")
+    private Integer questionsCount;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
-    private TestDifficulty testDifficulty;
-
-    @ManyToMany(mappedBy = "assignedTests")
-    private Set<User> usersAssigned;
+    private TestDifficulty difficulty;
 
     @OneToMany(mappedBy = "test")
     private List<TestAnswer> testAnswers;
@@ -42,7 +42,7 @@ public class Test {
     private List<FinishedTest> finishedTests;
 
     @ManyToOne
-    @JoinColumn(name = "test_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_created_id", referencedColumnName = "id")
     private User userCreated;
 
     @ManyToMany
@@ -51,6 +51,13 @@ public class Test {
             joinColumns = @JoinColumn(name = "test_id"),
             inverseJoinColumns = @JoinColumn(name = "topic_id"))
     private Set<Topic> topics;
+
+    @ManyToMany
+    @JoinTable(
+            name = "test_users_assigned",
+            joinColumns = @JoinColumn(name = "test_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> usersAssigned;
 
     public Test() {
     }
@@ -69,6 +76,14 @@ public class Test {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getQuestionsCount() {
+        return questionsCount;
+    }
+
+    public void setQuestionsCount(Integer questionsCount) {
+        this.questionsCount = questionsCount;
     }
 
     public LocalTime getTimeLimit() {
@@ -95,12 +110,12 @@ public class Test {
         this.finishDate = finishDate;
     }
 
-    public TestDifficulty getTestDifficulty() {
-        return testDifficulty;
+    public TestDifficulty getDifficulty() {
+        return difficulty;
     }
 
-    public void setTestDifficulty(TestDifficulty testDifficulty) {
-        this.testDifficulty = testDifficulty;
+    public void setTestDifficulty(TestDifficulty difficulty) {
+        this.difficulty = difficulty;
     }
 
     public Set<User> getUsersAssigned() {

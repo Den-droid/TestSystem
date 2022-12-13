@@ -41,11 +41,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<TestAnswer> testAnswers;
 
-    @ManyToMany
-    @JoinTable(
-            name = "test_users_assigned",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "test_id"))
+    @ManyToMany(mappedBy = "usersAssigned")
     private Set<Test> assignedTests;
 
     public User() {

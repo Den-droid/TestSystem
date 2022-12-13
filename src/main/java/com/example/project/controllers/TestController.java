@@ -34,8 +34,12 @@ public class TestController {
 
     @GetMapping("/tests/generate")
     public String getAddPage(Model model) {
+        LocalDateTime now = LocalDateTime.now();
+        now = now.withMinute(now.getMinute() + 1);
+        now = now.withSecond(0);
+        now = now.withNano(0);
         model.addAttribute("difficulties", testService.getTestDifficulties());
-        model.addAttribute("currentDate", LocalDateTime.now());
+        model.addAttribute("currentDate", now);
         return "test/generate";
     }
 
@@ -55,8 +59,13 @@ public class TestController {
                 model.addAttribute("newUsers", users);
             }
 
+            LocalDateTime now = LocalDateTime.now();
+            now = now.plusMinutes(1);
+            now = now.withSecond(0);
+            now = now.withNano(0);
+
             model.addAttribute("difficulties", testService.getTestDifficulties());
-            model.addAttribute("currentDate", LocalDateTime.now());
+            model.addAttribute("currentDate", now);
             model.addAttribute("previous", addTestDto);
             return "test/generate";
         }

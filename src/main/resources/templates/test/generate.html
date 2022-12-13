@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Generate Test</title>
+    <link href="/static/styles/error.css" rel="stylesheet">
 </head>
 <body>
 <h2>
@@ -11,7 +12,7 @@
 <form name="generateTest" method="post" onsubmit="return addTestSubmit()">
     <label for="name"> Enter name:
         <input th:value="${previous?.name}"
-               id="name" name="name" type="text">
+               id="name" name="name" type="text" style="width: 200px">
     </label>
     <br>
     <label for="selectTestDifficulty"> Select difficulty
@@ -51,7 +52,7 @@
     </label>
     <br>
     <label>
-        <input th:selected="${previous?.includeMe}"
+        <input th:checked="${previous?.includeMe}"
                type="checkbox" value="includeMe"
                name="includeMe" id="includeMe">
         <span> Include me </span>
@@ -93,17 +94,21 @@
     <p>Already added topics: </p>
     <div th:if="${previous ne null and previous.topics ne null}
                     and ${!#lists.isEmpty(previous.topics)}">
-        <input th:each="existingTopic : ${previous.topics}"
-               th:value="${existingTopic}"
-               name="topics" type="text" disabled class="oldTopics">
+        <th:block th:each="existingTopic : ${previous.topics}">
+            <input th:value="${existingTopic}"
+                   name="topics" type="text" readonly class="oldTopics">
+            <br>
+        </th:block>
     </div>
 
     <p>Already added users: </p>
     <div th:if="${previous ne null and previous.usernames ne null}
                     and ${!#lists.isEmpty(previous.usernames)}">
-        <input th:each="existingUser : ${previous.usernames}"
-               th:value="${existingUser}"
-               name="usernames" type="text" disabled class="oldUsers">
+        <th:block th:each="existingUser : ${previous.usernames}">
+            <input th:value="${existingUser}"
+                   name="usernames" type="text" readonly class="oldUsers">
+            <br>
+        </th:block>
     </div>
 
     <div id="error">

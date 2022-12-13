@@ -6,20 +6,15 @@ import com.example.project.dto.test.TestWalkthroughDto;
 import com.example.project.models.entities.*;
 import com.example.project.models.enums.TestDifficulty;
 import com.example.project.models.enums.TestType;
-import com.example.project.models.repositories.CurrentTestRepository;
-import com.example.project.models.repositories.FinishedTestRepository;
-import com.example.project.models.repositories.TestRepository;
-import com.example.project.models.repositories.UserRepository;
+import com.example.project.models.mappers.AddTestMapper;
+import com.example.project.models.repositories.*;
 import com.example.project.models.services.TestService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,20 +23,43 @@ public class TestServiceImpl implements TestService {
     private final CurrentTestRepository currentTestRepository;
     private final FinishedTestRepository finishedTestRepository;
     private final UserRepository userRepository;
+    private final TopicRepository topicRepository;
 
     public TestServiceImpl(TestRepository testRepository,
                            CurrentTestRepository currentTestRepository,
                            FinishedTestRepository finishedTestRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository,
+                           TopicRepository topicRepository) {
         this.finishedTestRepository = finishedTestRepository;
         this.testRepository = testRepository;
         this.currentTestRepository = currentTestRepository;
         this.userRepository = userRepository;
+        this.topicRepository = topicRepository;
     }
 
     @Override
     public void add(User user, AddTestDto dto) {
+        Test test = AddTestMapper.map(dto);
+        test.setUserCreated(user);
 
+        Set<Topic> topics = new LinkedHashSet<>();
+        for (String topicName : dto.getTopics()) {
+            Topic topic = topicRepository.findByName(topicName);
+            topics.add(topic);
+        }
+        test.setTopics(topics);
+
+        Set<User> users = new LinkedHashSet<>();
+        for (String username : dto.getUsernames()) {
+            User assignedUser = userRepository.findByUsernameIgnoreCase(username);
+            users.add(assignedUser);
+        }
+        if (dto.getIncludeMe() != null)
+            users.add(user);
+        test.setUsersAssigned(users);
+
+        generate(test);
+        testRepository.save(test);
     }
 
     @Override
@@ -62,7 +80,9 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public PageDto<Test> getByUser(String type, String username, int page, int limit) {
-        TestType testType = TestType.getByText(type);
+        TestType testType = TestType.ALL;
+        if (type != null)
+            testType = TestType.getByText(type);
         switch (testType) {
             case ALL:
                 Page<Test> tests = getAssignedToUserByUsername(username, page, limit);
@@ -123,6 +143,10 @@ public class TestServiceImpl implements TestService {
         return Arrays.stream(TestDifficulty.values())
                 .map(TestDifficulty::getText)
                 .collect(Collectors.toList());
+    }
+
+    private void generate(Test test) {
+
     }
 
     private Page<Test> getAssignedToUserByUsername(String username, int page, int limit) {

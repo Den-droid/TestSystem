@@ -7,15 +7,35 @@ function addTestSubmit() {
             let topicPart = document.getElementsByName("topicPart")[0];
             if (topicPart.value.length === 0) {
                 errorDiv.textContent = "Enter search phrase for searching topics!!!";
+                return false;
             } else return true;
         } else if (action.value === "searchUsers") {
             let userPart = document.getElementsByName("usernamePart")[0];
             if (userPart.value.length === 0) {
                 errorDiv.textContent = "Enter search phrase for searching users!!!";
+                return false;
             } else return true;
         }
     } else {
-        // to write
+        let name = document.getElementById("name");
+        if (name.value.length === 0) {
+            errorDiv.textContent = "Enter name!!!";
+            return false
+        }
+
+        let startDateString = document.getElementById("startDate").value;
+        let finishDateString = document.getElementById("finishDate").value;
+
+        if (new Date(finishDateString).getTime() - new Date(startDateString).getTime() < 60 * 1000) {
+            errorDiv.textContent = "Start date must be before finish date on 1 minute or more!!!";
+            return false;
+        }
+
+        let questionsCount = document.getElementById("questionCount");
+        if (questionsCount.value.length === 0 || +questionsCount.value === 0) {
+            errorDiv.textContent = "You must have at least 1 question!!!";
+            return false;
+        }
 
         let topicsCount = document.getElementsByClassName("oldTopics").length;
         let newTopics = document.getElementsByClassName("newTopics");
@@ -31,15 +51,17 @@ function addTestSubmit() {
 
         let usersCount = document.getElementsByClassName("oldUsers").length;
         let newUsers = document.getElementsByClassName("newUsers");
-        for (let i = 0; i < newTopics.length; i++) {
+        for (let i = 0; i < newUsers.length; i++) {
             if (newUsers.item(i).checked)
                 usersCount++;
         }
 
         if (usersCount === 0) {
-            errorDiv.textContent = "Choose at least one user!!!";
+            errorDiv.textContent = "Choose at least one user (except yourself)!!!";
             return false;
         }
+
+        return true;
     }
 }
 
@@ -49,13 +71,18 @@ function addHiddenAction(e) {
 
     let form = document.getElementsByName("generateTest")[0];
 
-    let hidden = document.createElement("input");
-    hidden.setAttribute("type", "hidden");
-    hidden.setAttribute("name", "action");
-    hidden.setAttribute("id", "action");
-    hidden.setAttribute("value", id);
+    let existingHidden = document.getElementById("action");
+    if (existingHidden !== null) {
+        existingHidden.setAttribute("value", id);
+    } else {
+        let hidden = document.createElement("input");
+        hidden.setAttribute("type", "hidden");
+        hidden.setAttribute("name", "action");
+        hidden.setAttribute("id", "action");
+        hidden.setAttribute("value", id);
 
-    form.append(hidden);
+        form.append(hidden);
+    }
 }
 
 let searchTopicsButton = document.getElementById("searchTopics");
