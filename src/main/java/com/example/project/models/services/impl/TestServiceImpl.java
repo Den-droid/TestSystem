@@ -98,8 +98,14 @@ public class TestServiceImpl implements TestService {
     @Override
     public boolean canWalkthrough(User user, String testId) {
         Test test = testRepository.findById(testId).orElseThrow(NoSuchElementException::new);
-        Set<User> usersAssigned = test.getUsersAssigned();
-        return usersAssigned.contains(user);
+        Set<Test> testAssigned = user.getAssignedTests();
+
+        List<FinishedTest> finishedTests = user.getFinishedTests();
+        List<Test> finishedTestsList = finishedTests.stream()
+                .map(FinishedTest::getTest)
+                .collect(Collectors.toList());
+
+        return testAssigned.contains(test) && !finishedTestsList.contains(test);
     }
 
     @Override

@@ -112,9 +112,9 @@ public class TopicController {
         return "redirect:" + url;
     }
 
-    @GetMapping("/user/{username}/topics")
-    public String redirectToUserPage(@PathVariable String username) {
-        String url = "/user/" + username + "/topics/" + 1;
+    @GetMapping("/user/topics")
+    public String redirectToUserPage() {
+        String url = "/user/topics/" + 1;
         return "redirect:" + url;
     }
 
@@ -172,15 +172,15 @@ public class TopicController {
         return "main/topics";
     }
 
-    @GetMapping("/user/{username}/topics/{page}")
+    @GetMapping("/user/topics/{page}")
     public String getByPageAndUsername(@PathVariable int page,
-                                       @PathVariable String username,
                                        Model model) {
         if (page < 1)
             return "redirect:/error";
 
         try {
-            PageDto<Topic> topics = topicService.getPageByUsername(page, 10, username);
+            PageDto<Topic> topics = topicService.getPageByUsername(page, 10,
+                    userService.getCurrentLoggedIn().getUsername());
             model.addAttribute("topics", topics.getElements());
             model.addAttribute("currentPage", topics.getCurrentPage());
             model.addAttribute("totalPages", topics.getTotalPages());
@@ -191,16 +191,16 @@ public class TopicController {
         return "user/topics";
     }
 
-    @GetMapping("/user/{username}/topics/search/{page}")
-    public String getByTopicsAndNameAndUsername(@PathVariable String username,
-                                                @PathVariable int page,
+    @GetMapping("/user/topics/search/{page}")
+    public String getByTopicsAndNameAndUsername(@PathVariable int page,
                                                 @RequestParam(name = "name", required = false) String name,
                                                 Model model) {
         if (page < 1)
             return "redirect:/error";
 
         try {
-            PageDto<Topic> topics = topicService.getPageByNameAndUsername(page, 10, username, name);
+            PageDto<Topic> topics = topicService.getPageByNameAndUsername(page, 10,
+                    userService.getCurrentLoggedIn().getUsername(), name);
             model.addAttribute("topics", topics.getElements());
             model.addAttribute("currentPage", topics.getCurrentPage());
             model.addAttribute("totalPages", topics.getTotalPages());
@@ -215,7 +215,7 @@ public class TopicController {
         User user = userService.getCurrentLoggedIn();
         switch (user.getRole()) {
             case USER:
-                return "/user/" + user.getUsername() + "/topics";
+                return "/user/topics";
             case ADMIN:
                 return "/admin/topics";
         }

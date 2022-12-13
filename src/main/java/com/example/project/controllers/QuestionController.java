@@ -125,9 +125,9 @@ public class QuestionController {
         return "redirect:" + url;
     }
 
-    @GetMapping("/user/{username}/questions")
-    public String redirectToUserPage(@PathVariable String username) {
-        String url = "/user/" + username + "/questions/" + 1;
+    @GetMapping("/user/questions")
+    public String redirectToUserPage() {
+        String url = "/user/questions/" + 1;
         return "redirect:" + url;
     }
 
@@ -210,15 +210,15 @@ public class QuestionController {
         return "main/questions";
     }
 
-    @GetMapping("/user/{username}/questions/{page}")
+    @GetMapping("/user/questions/{page}")
     public String getByPageAndUsername(@PathVariable int page,
-                                       @PathVariable String username,
                                        Model model) {
         if (page < 1)
             return "redirect:/error";
 
         try {
-            PageDto<Question> questions = questionService.getPageByUsername(username, page, 10);
+            PageDto<Question> questions = questionService.getPageByUsername(
+                    userService.getCurrentLoggedIn().getUsername(), page, 10);
             model.addAttribute("questions", questions.getElements());
             model.addAttribute("currentPage", questions.getCurrentPage());
             model.addAttribute("totalPages", questions.getTotalPages());
@@ -229,16 +229,16 @@ public class QuestionController {
         return "user/questions";
     }
 
-    @GetMapping("/user/{username}/questions/search/{page}")
-    public String getByPageAndUsernameAndText(@PathVariable String username,
-                                              @PathVariable int page,
+    @GetMapping("/user/questions/search/{page}")
+    public String getByPageAndUsernameAndText(@PathVariable int page,
                                               @RequestParam(name = "text", required = false) String text,
                                               Model model) {
         if (page < 1)
             return "redirect:/error";
 
         try {
-            PageDto<Question> questions = questionService.getPageByUsernameAndName(username, text, page, 10);
+            PageDto<Question> questions = questionService.getPageByUsernameAndName(
+                    userService.getCurrentLoggedIn().getUsername(), text, page, 10);
             model.addAttribute("questions", questions.getElements());
             model.addAttribute("currentPage", questions.getCurrentPage());
             model.addAttribute("totalPages", questions.getTotalPages());
@@ -253,7 +253,7 @@ public class QuestionController {
         User user = userService.getCurrentLoggedIn();
         switch (user.getRole()) {
             case USER:
-                return "/user/" + user.getUsername() + "/questions";
+                return "/user/questions";
             case ADMIN:
                 return "/admin/topic/" + topicId + "/questions";
         }

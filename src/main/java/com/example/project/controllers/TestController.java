@@ -64,7 +64,7 @@ public class TestController {
         User user = userService.getCurrentLoggedIn();
         testService.add(user, addTestDto);
 
-        String url = "/user/" + user.getUsername() + "/tests";
+        String url = "/user/tests";
         return "redirect:" + url;
     }
 
@@ -78,7 +78,7 @@ public class TestController {
                 model.addAttribute("test", test);
                 model.addAttribute("testTopics", testService.getTestTopics(test));
             } else {
-                String url = "/user/" + user.getUsername() + "/tests";
+                String url = "/user/tests";
                 return "redirect:" + url;
             }
         } catch (NoSuchElementException ex) {
@@ -130,19 +130,19 @@ public class TestController {
         return null;
     }
 
-    @GetMapping("/user/{username}/tests")
-    public String redirectToUserTestPage(@PathVariable String username) {
-        String url = "/user/" + username + "/tests/" + 1;
+    @GetMapping("/user/tests")
+    public String redirectToUserTestPage() {
+        String url = "/user/tests/" + 1;
         return "redirect:" + url;
     }
 
-    @GetMapping("/user/{username}/tests/{page}")
-    public String getByUsernameAndPageAndType(@PathVariable String username,
-                                              @PathVariable int page,
+    @GetMapping("/user/tests/{page}")
+    public String getByUsernameAndPageAndType(@PathVariable int page,
                                               @RequestParam(name = "type", required = false) String type,
                                               Model model) {
         try {
-            PageDto<Test> tests = testService.getByUser(type, username, page, 10);
+            PageDto<Test> tests = testService.getByUser(type,
+                    userService.getCurrentLoggedIn().getUsername(), page, 10);
             model.addAttribute("tests", tests.getElements());
             model.addAttribute("currentPage", tests.getCurrentPage());
             model.addAttribute("totalPages", tests.getTotalPages());
