@@ -34,10 +34,8 @@ public class TestController {
 
     @GetMapping("/tests/generate")
     public String getAddPage(Model model) {
-        LocalDateTime now = LocalDateTime.now();
-        now = now.withMinute(now.getMinute() + 1);
-        now = now.withSecond(0);
-        now = now.withNano(0);
+        LocalDateTime now = LocalDateTime.now().plusMinutes(1)
+                .withSecond(0).withNano(0);
         model.addAttribute("difficulties", testService.getTestDifficulties());
         model.addAttribute("currentDate", now);
         return "test/generate";
@@ -59,10 +57,8 @@ public class TestController {
                 model.addAttribute("newUsers", users);
             }
 
-            LocalDateTime now = LocalDateTime.now();
-            now = now.plusMinutes(1);
-            now = now.withSecond(0);
-            now = now.withNano(0);
+            LocalDateTime now = LocalDateTime.now().plusMinutes(1)
+                    .withSecond(0).withNano(0);
 
             model.addAttribute("difficulties", testService.getTestDifficulties());
             model.addAttribute("currentDate", now);
@@ -71,7 +67,19 @@ public class TestController {
         }
 
         User user = userService.getCurrentLoggedIn();
-        testService.add(user, addTestDto);
+        try {
+            testService.add(user, addTestDto);
+        } catch (IllegalArgumentException ex) {
+            LocalDateTime now = LocalDateTime.now().plusMinutes(1)
+                    .withSecond(0).withNano(0);
+            model.addAttribute("error", "System doesn't have necessary amount " +
+                    "of questions for this topic. Try another topics or add questions " +
+                    "to topics you've chosen!!!");
+            model.addAttribute("difficulties", testService.getTestDifficulties());
+            model.addAttribute("currentDate", now);
+            model.addAttribute("previous", addTestDto);
+            return "test/generate";
+        }
 
         String url = "/user/tests";
         return "redirect:" + url;

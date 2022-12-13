@@ -3,16 +3,19 @@ package com.example.project.models.enums;
 import java.util.Arrays;
 
 public enum TestDifficulty {
-    LOW("Low"),
-    LOW_MEDIUM("Low medium"),
-    MEDIUM("Medium"),
-    LOW_HIGH("Low high"),
-    HIGH("High");
+    LOW("Low", 0.2),
+    LOW_MEDIUM("Low medium", 0.4),
+    MEDIUM("Medium", 0.6),
+    LOW_HIGH("Low high", 0.8),
+    HIGH("High", 1.0);
 
     private final String text;
 
-    TestDifficulty(String text) {
+    private final double coefficient;
+
+    TestDifficulty(String text, double coefficient) {
         this.text = text;
+        this.coefficient = coefficient;
     }
 
     public static TestDifficulty getByText(String text) {
@@ -23,5 +26,9 @@ public enum TestDifficulty {
 
     public String getText() {
         return text;
+    }
+
+    public double getCoefficient() {
+        return coefficient;
     }
 }

@@ -29,13 +29,17 @@
     <br>
     <label for="startDate"> Select start date:
         <input th:min="${currentDate}"
-               th:value="${currentDate}"
+               th:value="${previous ne null and previous.startDate ne null
+               ? previous.startDate
+               : currentDate}"
                type="datetime-local" id="startDate" name="startDate">
     </label>
     <br>
     <label for="finishDate"> Select finish date:
         <input th:min="${currentDate}"
-               th:value="${currentDate}"
+               th:value="${previous ne null and previous.finishDate ne null
+               ? previous.finishDate
+               : currentDate}"
                type="datetime-local" id="finishDate" name="finishDate">
     </label>
     <br>
@@ -112,6 +116,7 @@
     </div>
 
     <div id="error">
+        <span th:if="${error}" th:text="${error}"></span>
     </div>
 
     <button id="submit">
