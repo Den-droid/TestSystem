@@ -2,7 +2,9 @@ package com.example.project.controllers;
 
 import com.example.project.dto.page.PageDto;
 import com.example.project.dto.test.AddTestDto;
+import com.example.project.dto.test.TestAnswerDto;
 import com.example.project.dto.test.TestQuestionDto;
+import com.example.project.dto.test.TestWalkthroughDto;
 import com.example.project.models.entities.Test;
 import com.example.project.models.entities.Topic;
 import com.example.project.models.entities.User;
@@ -91,12 +93,18 @@ public class TestController {
                                Model model) {
         try {
             User user = userService.getCurrentLoggedIn();
+            boolean hasStarted = testService.hasStarted(user, testId);
+            if (hasStarted) {
+                String url = "/test/" + testId + "/walkthrough";
+                return "redirect:" + url;
+            }
             if (testService.canWalkthrough(user, testId)) {
                 Test test = testService.getById(testId);
                 model.addAttribute("test", test);
+                model.addAttribute("difficulty", test.getDifficulty().getText());
                 model.addAttribute("testTopics", testService.getTestTopics(test));
             } else {
-                String url = "/user/tests";
+                String url = "/user/tests/1?error=notAssigned";
                 return "redirect:" + url;
             }
         } catch (NoSuchElementException ex) {
@@ -120,17 +128,34 @@ public class TestController {
 
     @GetMapping("/test/{testId}/walkthrough")
     public String getWalkthroughPage(@PathVariable String testId,
+                                     @RequestParam(name = "question", required = false) Integer number,
                                      Model model) {
+        if (number == null) {
+            String url = "/test/" + testId + "/walkthrough?question=" + 1;
+            return "redirect:" + url;
+        }
+
         try {
             User user = userService.getCurrentLoggedIn();
-            if (testService.canWalkthrough(user, testId)) {
-                List<TestQuestionDto> questions = testService.getTestQuestions(testId);
-                model.addAttribute("questions", questions);
-            } else {
-                String url = "/user/tests";
+            boolean hasStarted = testService.hasStarted(user, testId);
+            boolean hasFinished = testService.hasFinished(user, testId);
+            boolean hasTimeToComplete = testService.hasTimeToComplete(user, testId);
+            if (!hasStarted) {
+                String url = "/test/" + testId + "/intro";
                 return "redirect:" + url;
+            } else if (hasFinished) {
+                String url = "/test/" + testId + "/user/" + user.getUsername() + "/results";
+                return "redirect:" + url;
+            } else if (!hasTimeToComplete) {
+                model.addAttribute("hasTimeToComplete", false);
             }
-        } catch (NoSuchElementException ex) {
+
+            TestQuestionDto question = testService.getTestQuestionByNumber(testId, number);
+            TestAnswerDto answer = testService.getTestQuestionAnswerByUserAndNumber(user,
+                    testId, number);
+            model.addAttribute("question", question);
+            model.addAttribute("answer", answer);
+        } catch (NoSuchElementException | IllegalArgumentException ex) {
             return "redirect:/error";
         }
 
@@ -138,8 +163,26 @@ public class TestController {
     }
 
     @PostMapping("/test/{testId}/walkthrough")
-    public String finish(@PathVariable String testId) {
-        return null;
+    public String finish(@PathVariable String testId,
+                         @ModelAttribute("testWalkthrough") TestWalkthroughDto dto) {
+        User user = userService.getCurrentLoggedIn();
+
+        testService.saveAnswer(user, testId, dto);
+
+        if (!dto.getAction().equals("submit")) {
+            String url;
+            if (dto.getAction().equals("previous")) {
+                url = "/test/" + testId + "/walkthrough?question=" + dto.getPreviousNumber();
+            } else {
+                url = "/test/" + testId + "/walkthrough?question=" + dto.getNextNumber();
+            }
+            return "redirect:" + url;
+        }
+
+        testService.finish(user, testId);
+
+        String url = "/test/" + testId + "/user/" + user.getUsername() + "/results";
+        return "redirect:" + url;
     }
 
     @GetMapping("/test/{testId}/user/{username}/results")
@@ -158,6 +201,7 @@ public class TestController {
     @GetMapping("/user/tests/{page}")
     public String getByUsernameAndPageAndType(@PathVariable int page,
                                               @RequestParam(name = "type", required = false) String type,
+                                              @RequestParam(name = "error", required = false) String error,
                                               Model model) {
         try {
             PageDto<Test> tests = testService.getByUser(type,
@@ -165,6 +209,8 @@ public class TestController {
             model.addAttribute("tests", tests.getElements());
             model.addAttribute("currentPage", tests.getCurrentPage());
             model.addAttribute("totalPages", tests.getTotalPages());
+            if (error.equals("notAssigned"))
+                model.addAttribute("error", "You are not assigned to this test!!!");
         } catch (IllegalArgumentException ex) {
             return "redirect:/error";
         }

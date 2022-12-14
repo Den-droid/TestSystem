@@ -1,6 +1,7 @@
 package com.example.project.models.repositories;
 
 import com.example.project.models.entities.FinishedTest;
+import com.example.project.models.entities.Test;
 import com.example.project.models.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,4 +14,6 @@ public interface FinishedTestRepository extends PagingAndSortingRepository<Finis
                                                Pageable pageable);
 
     List<FinishedTest> findFinishedTestsByUser(User user);
+
+    FinishedTest findByUserAndTest(User user, Test test);
 }

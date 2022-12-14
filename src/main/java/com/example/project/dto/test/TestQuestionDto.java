@@ -10,6 +10,9 @@ public class TestQuestionDto {
     private String questionAnswerDescription;
     private String answerType;
     private List<String> answers;
+    private Integer nextNumber;
+    private Integer previousNumber;
+    private boolean isLast;
 
     public long getQuestionId() {
         return questionId;
@@ -65,5 +68,29 @@ public class TestQuestionDto {
 
     public void setAnswers(List<String> answers) {
         this.answers = answers;
+    }
+
+    public Integer getNextNumber() {
+        return nextNumber;
+    }
+
+    public void setNextNumber(Integer nextNumber) {
+        this.nextNumber = nextNumber;
+    }
+
+    public Integer getPreviousNumber() {
+        return previousNumber;
+    }
+
+    public void setPreviousNumber(Integer previousNumber) {
+        this.previousNumber = previousNumber;
+    }
+
+    public boolean isLast() {
+        return isLast;
+    }
+
+    public void setLast(boolean last) {
+        isLast = last;
     }
 }
