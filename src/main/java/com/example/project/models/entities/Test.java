@@ -35,7 +35,7 @@ public class Test {
     @OneToMany(mappedBy = "test")
     private List<CurrentTest> currentTests;
 
-    @OneToMany(mappedBy = "test")
+    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL)
     private List<TestQuestion> questions;
 
     @OneToMany(mappedBy = "test")

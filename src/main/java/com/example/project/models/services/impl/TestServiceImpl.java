@@ -24,17 +24,20 @@ public class TestServiceImpl implements TestService {
     private final FinishedTestRepository finishedTestRepository;
     private final UserRepository userRepository;
     private final TopicRepository topicRepository;
+    private final TestQuestionRepository testQuestionRepository;
 
     public TestServiceImpl(TestRepository testRepository,
                            CurrentTestRepository currentTestRepository,
                            FinishedTestRepository finishedTestRepository,
                            UserRepository userRepository,
-                           TopicRepository topicRepository) {
+                           TopicRepository topicRepository,
+                           TestQuestionRepository testQuestionRepository) {
         this.finishedTestRepository = finishedTestRepository;
         this.testRepository = testRepository;
         this.currentTestRepository = currentTestRepository;
         this.userRepository = userRepository;
         this.topicRepository = topicRepository;
+        this.testQuestionRepository = testQuestionRepository;
     }
 
     @Override
@@ -160,9 +163,10 @@ public class TestServiceImpl implements TestService {
         List<TestQuestion> testQuestions = new ArrayList<>(test.getQuestionsCount());
 
         double sumCoefficients = 0.0;
-        double minDifference = 0.0;
+        double minDifference;
         Question addToTest = questions.get(0);
         for (int i = 0; i < test.getQuestionsCount(); i++) {
+            minDifference = 1.0;
             for (Question question : questions) {
                 double tmpDifference = Math.abs(question.getDifficulty().getCoefficient()
                         - test.getDifficulty().getCoefficient());
@@ -176,6 +180,7 @@ public class TestServiceImpl implements TestService {
 
             TestQuestion testQuestion = new TestQuestion();
             testQuestion.setQuestion(addToTest);
+            testQuestion.setTest(test);
             testQuestions.add(testQuestion);
 
             questions.remove(addToTest);
@@ -188,7 +193,6 @@ public class TestServiceImpl implements TestService {
             testQuestion.setValue(value);
         }
 
-        testQuestions.forEach(x -> x.setTest(test));
         test.setQuestions(testQuestions);
     }
 
