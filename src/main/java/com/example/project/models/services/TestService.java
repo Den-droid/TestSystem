@@ -2,6 +2,7 @@ package com.example.project.models.services;
 
 import com.example.project.dto.page.PageDto;
 import com.example.project.dto.test.AddTestDto;
+import com.example.project.dto.test.TestQuestionDto;
 import com.example.project.dto.test.TestWalkthroughDto;
 import com.example.project.models.entities.Question;
 import com.example.project.models.entities.Test;
@@ -24,7 +25,7 @@ public interface TestService {
 
     boolean canWalkthrough(User user, String testId);
 
-    List<Question> getTestQuestions(Test test);
+    List<TestQuestionDto> getTestQuestions(String testId);
 
     Set<Topic> getTestTopics(Test test);
 

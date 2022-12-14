@@ -2,6 +2,7 @@ package com.example.project.controllers;
 
 import com.example.project.dto.page.PageDto;
 import com.example.project.dto.test.AddTestDto;
+import com.example.project.dto.test.TestQuestionDto;
 import com.example.project.models.entities.Test;
 import com.example.project.models.entities.Topic;
 import com.example.project.models.entities.User;
@@ -123,9 +124,10 @@ public class TestController {
         try {
             User user = userService.getCurrentLoggedIn();
             if (testService.canWalkthrough(user, testId)) {
-                // To write
+                List<TestQuestionDto> questions = testService.getTestQuestions(testId);
+                model.addAttribute("questions", questions);
             } else {
-                String url = "/user/" + user.getUsername() + "/tests";
+                String url = "/user/tests";
                 return "redirect:" + url;
             }
         } catch (NoSuchElementException ex) {

@@ -2,8 +2,10 @@ package com.example.project.models.services.impl;
 
 import com.example.project.dto.page.PageDto;
 import com.example.project.dto.test.AddTestDto;
+import com.example.project.dto.test.TestQuestionDto;
 import com.example.project.dto.test.TestWalkthroughDto;
 import com.example.project.models.entities.*;
+import com.example.project.models.enums.AnswerType;
 import com.example.project.models.enums.TestDifficulty;
 import com.example.project.models.enums.TestType;
 import com.example.project.models.mappers.AddTestMapper;
@@ -136,8 +138,10 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    public List<Question> getTestQuestions(Test test) {
-        return null;
+    public List<TestQuestionDto> getTestQuestions(String testId) {
+        Test test = testRepository.findById(testId)
+                .orElseThrow(NoSuchElementException::new);
+        return getTestQuestions(test);
     }
 
     @Override
@@ -150,6 +154,59 @@ public class TestServiceImpl implements TestService {
         return Arrays.stream(TestDifficulty.values())
                 .map(TestDifficulty::getText)
                 .collect(Collectors.toList());
+    }
+
+    private List<TestQuestionDto> getTestQuestions(Test test) {
+        List<TestQuestion> testQuestions = test.getQuestions();
+        List<TestQuestionDto> testQuestionDto = new ArrayList<>(testQuestions.size());
+
+        for (TestQuestion testQuestion : testQuestions) {
+            Question question = testQuestion.getQuestion();
+            TestQuestionDto dto = new TestQuestionDto();
+            dto.setQuestionId(question.getId());
+            dto.setQuestionText(question.getText());
+            dto.setQuestionMedia(question.getMediaUrl());
+            dto.setQuestionAnswerDescription(question.getAnswerDescription());
+            dto.setAnswerType(question.getAnswerType().getText());
+            if (question.getAnswerType().equals(AnswerType.MATCH)) {
+                List<Question> subQuestions = question.getSubQuestions();
+
+                List<String> subQuestionText = new ArrayList<>(subQuestions.size());
+                subQuestionText.addAll(
+                        subQuestions.stream()
+                                .map(Question::getText)
+                                .collect(Collectors.toList())
+                );
+                dto.setSubQuestionsText(subQuestionText);
+
+                List<Answer> subQuestionAnswers = subQuestions.stream()
+                        .map(Question::getAnswers)
+                        .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
+                List<String> answersText = new ArrayList<>(subQuestions.size());
+                answersText.addAll(
+                        subQuestionAnswers.stream()
+                                .map(Answer::getText)
+                                .collect(Collectors.toList())
+                );
+                dto.setAnswers(answersText);
+            }
+
+            if (question.getAnswerType().equals(AnswerType.SINGLE) ||
+                    question.getAnswerType().equals(AnswerType.MULTIPLE)) {
+                List<Answer> answers = question.getAnswers();
+                List<String> answersText = new ArrayList<>(answers.size());
+                answersText.addAll(
+                        answers.stream()
+                                .map(Answer::getText)
+                                .collect(Collectors.toList())
+                );
+                dto.setAnswers(answersText);
+            }
+
+            testQuestionDto.add(dto);
+        }
+
+        return testQuestionDto;
     }
 
     private void generate(Test test) {
