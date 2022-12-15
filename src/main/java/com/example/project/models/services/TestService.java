@@ -9,6 +9,7 @@ import com.example.project.models.entities.Test;
 import com.example.project.models.entities.Topic;
 import com.example.project.models.entities.User;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public interface TestService {
 
     boolean canWalkthrough(User user, String testId);
 
-    boolean hasTimeToComplete(User user, String testId);
+    LocalTime getTimeLeft(User user, String testId);
 
     boolean hasStarted(User user, String testId);
 

@@ -6,6 +6,7 @@ public class TestQuestionDto {
     private long questionId;
     private String questionText;
     private List<String> subQuestionsText;
+    private String questionType;
     private String questionMedia;
     private String questionAnswerDescription;
     private String answerType;
@@ -36,6 +37,14 @@ public class TestQuestionDto {
 
     public void setSubQuestionsText(List<String> subQuestionsText) {
         this.subQuestionsText = subQuestionsText;
+    }
+
+    public String getQuestionType() {
+        return questionType;
+    }
+
+    public void setQuestionType(String questionType) {
+        this.questionType = questionType;
     }
 
     public String getQuestionMedia() {

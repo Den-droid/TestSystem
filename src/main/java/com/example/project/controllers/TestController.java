@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -139,14 +140,14 @@ public class TestController {
             User user = userService.getCurrentLoggedIn();
             boolean hasStarted = testService.hasStarted(user, testId);
             boolean hasFinished = testService.hasFinished(user, testId);
-            boolean hasTimeToComplete = testService.hasTimeToComplete(user, testId);
+            LocalTime timeLeft = testService.getTimeLeft(user, testId);
             if (!hasStarted) {
                 String url = "/test/" + testId + "/intro";
                 return "redirect:" + url;
             } else if (hasFinished) {
                 String url = "/test/" + testId + "/user/" + user.getUsername() + "/results";
                 return "redirect:" + url;
-            } else if (!hasTimeToComplete) {
+            } else if (timeLeft.toSecondOfDay() == 0) {
                 model.addAttribute("hasTimeToComplete", false);
             }
 
@@ -154,7 +155,8 @@ public class TestController {
             TestAnswerDto answer = testService.getTestQuestionAnswerByUserAndNumber(user,
                     testId, number);
             model.addAttribute("question", question);
-            model.addAttribute("answer", answer);
+            model.addAttribute("answers", answer);
+            model.addAttribute("timeLeft", timeLeft);
         } catch (NoSuchElementException | IllegalArgumentException ex) {
             return "redirect:/error";
         }

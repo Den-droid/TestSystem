@@ -2,9 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Test walkthrough</title>
 </head>
 <body>
+<form name="testWalkthrough" method="post">
+    <input th:value="${question.questionId}"
+           type="hidden" name="questionId">
+    <input th:value="${question.answerType}"
+           type="hidden" name="answerType">
+    <p th:text="${question.questionText} + ': '"></p>
+    <br>
+    <img th:if="${question.questionType eq 'Text with photo'}"
+         th:src="${#strings.concat('/uploads/', ${question.questionMedia})}"
+         th:alt="${question.questionMedia}"/>
+    <audio th:if="${question.questionType eq 'Text with audio'}"
+           controls>
+        <source th:src="${#strings.concat('/uploads/', ${question.questionMedia})}"
+        />
+    </audio>
+    <video th:if="${question.questionType eq 'Text with video'}"
+           controls>
+        <source th:src="${#strings.concat('/uploads/', ${question.questionMedia})}"
+        />
+    </video>
+    <br>
+    <p th:text="${question.questionAnswerDescription}"></p>
+    <th:block th:if="${question.answerType eq 'Single'}">
+        <th:block th:each="answer : ${question.answers}">
+            <input th:readonly="${hasTimeToComplete ne null} and
+                                 ${hasTimeToComplete eq false}"
+                   th:checked="${answers ne null} and
+                                  ${#lists.contains(answers, answer)}"
+                   th:value="${answer}"
+                   type="radio" name="answers">
+            <span th:text="${answer}"></span>
+        </th:block>
+    </th:block>
+    <th:block th:if="${question.answerType eq 'Multiple'}">
+        <th:block th:each="answer : ${question.answers}">
+            <input th:readonly="${hasTimeToComplete ne null} and
+                                 ${hasTimeToComplete eq false}"
+                   th:checked="${answers ne null} and
+                                  ${#lists.contains(answers, answer)}"
+                   th:value="${answer}"
+                   type="checkbox" name="answers">
+            <span th:text="${answer}"></span>
+        </th:block>
+    </th:block>
+    <th:block th:if="${question.answerType eq 'Custom'}">
+        <label> Enter answer:
+            <input th:readonly="${hasTimeToComplete ne null} and
+                                 ${hasTimeToComplete eq false}"
+                   th:value="${answers ne null ? answers[0] : ''}"
+                   name="answers" type="text">
+        </label>
+    </th:block>
+    <th:block th:if="${question.answerType eq 'Match'}">
+        <th:block th:each="subQuestionText : ${}">
+            <input type="">
+        </th:block>
+    </th:block>
 
+    <br>
+    <input th:if="${question.previousNumber ne 0}"
+           th:value="${question.previousNumber}"
+           type="hidden" name="previousNumber" id="previous">
+    <br>
+    <input th:if="${!question.isLast}"
+           th:value="${question.nextNumber}"
+           type="hidden" name="nextNumber" id="next">
+    <br>
+    <input th:if="${question.isLast}"
+           type="submit" id="submit">
+</form>
 </body>
 </html>

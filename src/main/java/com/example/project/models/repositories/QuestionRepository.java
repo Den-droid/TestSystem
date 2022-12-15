@@ -14,6 +14,8 @@ public interface QuestionRepository extends PagingAndSortingRepository<Question,
 
     List<Question> findByIdNotInAndSupQuestion(List<Long> ids, Question supQuestion);
 
+    List<Question> findAllBySupQuestion(Question question);
+
     Page<Question> findAllByTopic(Topic topic, Pageable pageable);
 
     Page<Question> findAllByTopicAndTextContainsIgnoreCase(Topic topic, String text, Pageable pageable);
@@ -21,4 +23,6 @@ public interface QuestionRepository extends PagingAndSortingRepository<Question,
     Page<Question> findAllByUser(User user, Pageable pageable);
 
     Page<Question> findAllByUserAndTextContainsIgnoreCase(User user, String text, Pageable pageable);
+
+    Question findBySupQuestionAndText(Question supQuestion, String text);
 }

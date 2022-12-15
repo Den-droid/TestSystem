@@ -4,6 +4,7 @@ import java.util.List;
 
 public class TestWalkthroughDto {
     private Long questionId;
+    private String answerType;
     private List<Integer> subQuestionNumberOfAnswers;
     private List<String> subQuestionText;
     private List<String> answers;
@@ -17,6 +18,14 @@ public class TestWalkthroughDto {
 
     public void setQuestionId(Long questionId) {
         this.questionId = questionId;
+    }
+
+    public String getAnswerType() {
+        return answerType;
+    }
+
+    public void setAnswerType(String answerType) {
+        this.answerType = answerType;
     }
 
     public List<Integer> getSubQuestionNumberOfAnswers() {
