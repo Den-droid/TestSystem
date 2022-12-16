@@ -16,10 +16,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -74,7 +72,11 @@ public class TopicServiceImpl implements TopicService {
         questionRepository.saveAll(questions);
 
         List<Test> tests = testRepository.findTestsByTopicsId(topicToDelete.getId());
-        tests.forEach(x -> x.setTopics(Collections.singleton(topicToTransfer)));
+        tests.forEach(x -> {
+            x.getTopics().remove(topicToDelete);
+            x.getTopics().add(topicToTransfer);
+            x.setTopics(x.getTopics());
+        });
         testRepository.saveAll(tests);
 
         topicRepository.delete(topicToDelete);
@@ -136,5 +138,4 @@ public class TopicServiceImpl implements TopicService {
         return topicRepository.findAllByNameContainsIgnoreCaseAndNameNotIn(
                 namePart, namesNotIn);
     }
-
 }

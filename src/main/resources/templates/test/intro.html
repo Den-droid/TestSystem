@@ -8,10 +8,11 @@
 <div>
     <h2 th:text="${test.name}">
     </h2>
-    <p th:text="'Author username: ' + ${test.userCreated.username}"></p>
+    <p th:text="'Author username: ' + ${test.authorUsername}"></p>
+    <p th:text="'Topics: ' + ${#strings.listJoin(${test.topics}, ', ')}"></p>
     <p th:text="'Time limit: ' + ${#temporals.format(test.timeLimit, 'HH:mm')}"></p>
     <p th:text="'Amount of questions: ' + ${test.questionsCount}"></p>
-    <p th:text="'Difficulty: ' + ${difficulty}"></p>
+    <p th:text="'Difficulty: ' + ${test.difficulty}"></p>
     <form method="post">
         <input type="submit" value="Start">
     </form>

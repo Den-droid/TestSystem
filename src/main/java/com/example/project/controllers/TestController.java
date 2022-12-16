@@ -101,9 +101,7 @@ public class TestController {
             }
             if (testService.canWalkthrough(user, testId)) {
                 Test test = testService.getById(testId);
-                model.addAttribute("test", test);
-                model.addAttribute("difficulty", test.getDifficulty().getText());
-                model.addAttribute("testTopics", testService.getTestTopics(test));
+                model.addAttribute("test", testService.getIntro(test));
             } else {
                 String url = "/user/tests/1?error=notAssigned";
                 return "redirect:" + url;

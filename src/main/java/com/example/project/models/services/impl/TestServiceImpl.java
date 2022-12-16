@@ -1,10 +1,7 @@
 package com.example.project.models.services.impl;
 
 import com.example.project.dto.page.PageDto;
-import com.example.project.dto.test.AddTestDto;
-import com.example.project.dto.test.TestAnswerDto;
-import com.example.project.dto.test.TestQuestionDto;
-import com.example.project.dto.test.TestWalkthroughDto;
+import com.example.project.dto.test.*;
 import com.example.project.models.entities.*;
 import com.example.project.models.enums.AnswerType;
 import com.example.project.models.enums.TestDifficulty;
@@ -29,32 +26,26 @@ public class TestServiceImpl implements TestService {
     private final FinishedTestRepository finishedTestRepository;
     private final UserRepository userRepository;
     private final TopicRepository topicRepository;
-    private final TestQuestionRepository testQuestionRepository;
     private final TestAnswerRepository testAnswerRepository;
     private final QuestionRepository questionRepository;
     private final QuestionStatisticRepository questionStatisticRepository;
-    private final AnswerRepository answerRepository;
 
     public TestServiceImpl(TestRepository testRepository,
                            CurrentTestRepository currentTestRepository,
                            FinishedTestRepository finishedTestRepository,
                            UserRepository userRepository,
                            TopicRepository topicRepository,
-                           TestQuestionRepository testQuestionRepository,
                            TestAnswerRepository testAnswerRepository,
                            QuestionRepository questionRepository,
-                           QuestionStatisticRepository questionStatisticRepository,
-                           AnswerRepository answerRepository) {
+                           QuestionStatisticRepository questionStatisticRepository) {
         this.finishedTestRepository = finishedTestRepository;
         this.testRepository = testRepository;
         this.currentTestRepository = currentTestRepository;
         this.userRepository = userRepository;
         this.topicRepository = topicRepository;
-        this.testQuestionRepository = testQuestionRepository;
         this.testAnswerRepository = testAnswerRepository;
         this.questionRepository = questionRepository;
         this.questionStatisticRepository = questionStatisticRepository;
-        this.answerRepository = answerRepository;
     }
 
     @Override
@@ -284,6 +275,20 @@ public class TestServiceImpl implements TestService {
         if (number < 1 || number > test.getQuestionsCount())
             throw new IllegalArgumentException();
         return getTestQuestionAnswerByUserAndNumber(test, user, number);
+    }
+
+    @Override
+    public TestIntroDto getIntro(Test test) {
+        TestIntroDto dto = new TestIntroDto();
+        dto.setName(test.getName());
+        dto.setDifficulty(test.getDifficulty().getText());
+        dto.setAuthorUsername(test.getUserCreated().getUsername());
+        dto.setQuestionsCount(test.getQuestionsCount());
+        dto.setTimeLimit(test.getTimeLimit());
+        dto.setTopics(getTestTopics(test).stream()
+                .map(Topic::getName)
+                .collect(Collectors.toList()));
+        return dto;
     }
 
     @Override

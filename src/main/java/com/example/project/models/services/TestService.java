@@ -1,10 +1,7 @@
 package com.example.project.models.services;
 
 import com.example.project.dto.page.PageDto;
-import com.example.project.dto.test.AddTestDto;
-import com.example.project.dto.test.TestAnswerDto;
-import com.example.project.dto.test.TestQuestionDto;
-import com.example.project.dto.test.TestWalkthroughDto;
+import com.example.project.dto.test.*;
 import com.example.project.models.entities.Test;
 import com.example.project.models.entities.Topic;
 import com.example.project.models.entities.User;
@@ -37,6 +34,8 @@ public interface TestService {
     TestQuestionDto getTestQuestionByNumber(String testId, int number);
 
     TestAnswerDto getTestQuestionAnswerByUserAndNumber(User user, String testId, int number);
+
+    TestIntroDto getIntro(Test test);
 
     Set<Topic> getTestTopics(Test test);
 

@@ -3,8 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <title>Profile</title>
+    <link href="/static/styles/error.css" rel="stylesheet">
 </head>
 <body>
-
+<form name="editProfile" method="post" onsubmit="return validateUserProfile()">
+    <label> Username:
+        <input type="text" name="username" th:value="${user.username}">
+    </label>
+    <br>
+    <label> First Name:
+        <input type="text" name="firstName" th:value="${user.firstName}">
+    </label>
+    <br>
+    <label> Last Name:
+        <input type="text" name="lastName" th:value="${user.lastName}">
+    </label>
+    <br>
+    <label> Email:
+        <input type="text" name="email" th:value="${user.email}">
+    </label>
+    <br>
+    <label>
+        <input type="checkbox" name="changePassword" value="changePassword">
+        <span> Change password</span>
+    </label>
+    <div>
+        <label> Enter new password:
+            <input disabled type="password" name="password">
+        </label>
+        <label> Confirm new password:
+            <input disabled type="password" name="confirmPassword">
+        </label>
+    </div>
+    <div id="error" th:text="${error ?: ''}">
+    </div>
+    <input type="submit" value="Change" id="edit">
+    <br>
+    <input type="submit" value="Delete account" id="delete">
+</form>
+<script src="/static/scripts/userProfile.js"></script>
 </body>
 </html>

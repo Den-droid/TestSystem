@@ -1,6 +1,8 @@
 package com.example.project.models.services;
 
 import com.example.project.dto.auth.RegisterDto;
+import com.example.project.dto.user.EditUserDto;
+import com.example.project.dto.user.UserDto;
 import com.example.project.models.entities.User;
 import com.example.project.models.enums.Role;
 
@@ -10,6 +12,12 @@ public interface UserService {
     void register(RegisterDto user);
 
     User getByUsername(String username);
+
+    UserDto getProfile(User user);
+
+    void edit(User user, EditUserDto dto);
+
+    void delete(User user);
 
     User getCurrentLoggedIn();
 

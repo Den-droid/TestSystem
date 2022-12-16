@@ -29,16 +29,16 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Question> questions;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<CurrentTest> currentTests;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<FinishedTest> finishedTests;
 
     @OneToMany(mappedBy = "userCreated")
     private List<Test> testsCreated;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<TestAnswer> testAnswers;
 
     @ManyToMany(mappedBy = "usersAssigned")
