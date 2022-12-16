@@ -115,11 +115,10 @@ public class TestServiceImpl implements TestService {
             }
             testAnswerRepository.saveAll(testAnswers);
         } else if (answerType.equals(AnswerType.MATCH)) {
-            List<String> subQuestionText = testWalkthroughDto.getSubQuestionText();
-            List<Integer> subQuestionNumOfAnswers = testWalkthroughDto.getSubQuestionNumberOfAnswers();
+            List<String> subQuestionText = testWalkthroughDto.getSubQuestionsText();
             List<String> answers = testWalkthroughDto.getAnswers();
-            testAnswers = new ArrayList<>(subQuestionNumOfAnswers.size());
-            for (int i = 0; i < subQuestionNumOfAnswers.size(); i++) {
+            testAnswers = new ArrayList<>(answers.size());
+            for (int i = 0; i < answers.size(); i++) {
                 Question matchQuestion = questionRepository.findBySupQuestionAndText(question,
                         subQuestionText.get(i));
                 List<TestAnswer> matchQuestionAnswer = testAnswerRepository.
@@ -128,10 +127,10 @@ public class TestServiceImpl implements TestService {
                 TestAnswer testAnswer;
                 if (matchQuestionAnswer == null) {
                     testAnswer = getTestAnswer(test, user, matchQuestion,
-                            answers.get(subQuestionNumOfAnswers.get(i)));
+                            answers.get(i));
                 } else {
                     testAnswer = matchQuestionAnswer.get(0);
-                    testAnswer.setAnswer(answers.get(subQuestionNumOfAnswers.get(i)));
+                    testAnswer.setAnswer(answers.get(i));
                 }
                 testAnswers.add(testAnswer);
             }
@@ -414,17 +413,41 @@ public class TestServiceImpl implements TestService {
 
         TestAnswerDto dto = new TestAnswerDto();
         if (question.getAnswerType().equals(AnswerType.MATCH)) {
-            List<Question> subQuestions = question.getSubQuestions();
+            List<Question> subQuestions = questionRepository.findAllBySupQuestion(question);
             List<String> subQuestionsText = subQuestions.stream()
                     .map(Question::getText)
                     .collect(Collectors.toList());
             dto.setSubQuestionsText(subQuestionsText);
 
             List<TestAnswer> testAnswers = new ArrayList<>(subQuestions.size());
+            List<Question> nullTestAnswerQuestions = new ArrayList<>(subQuestions.size());
+            int numberOfPreviousAnswers = 0;
             for (Question subQuestion : subQuestions) {
-                testAnswers.addAll(testAnswerRepository.findByTestAndUserAndQuestion(
-                        test, user, subQuestion));
+                List<TestAnswer> subQuestionAnswer = testAnswerRepository.findByTestAndUserAndQuestion(
+                        test, user, subQuestion);
+                if (subQuestionAnswer == null) {
+                    nullTestAnswerQuestions.add(subQuestion);
+                    testAnswers.add(getTestAnswer(test, user, subQuestion, null));
+                } else {
+                    testAnswers.addAll(subQuestionAnswer);
+                    numberOfPreviousAnswers++;
+                }
             }
+            dto.setNumberOfPreviousAnswers(numberOfPreviousAnswers);
+
+            List<Answer> nullTestAnswers = nullTestAnswerQuestions.stream()
+                    .map(x -> x.getAnswers().get(0))
+                    .collect(Collectors.toList());
+            Collections.shuffle(nullTestAnswers);
+
+            int nullTestAnswersIndex = 0;
+            for (TestAnswer testAnswer : testAnswers) {
+                if (testAnswer.getAnswer() != null)
+                    continue;
+                Answer nullTestAnswer = nullTestAnswers.get(nullTestAnswersIndex++);
+                testAnswer.setAnswer(nullTestAnswer.getText());
+            }
+
             List<String> testAnswersText = testAnswers.stream()
                     .map(TestAnswer::getAnswer)
                     .collect(Collectors.toList());
@@ -455,40 +478,14 @@ public class TestServiceImpl implements TestService {
         dto.setQuestionMedia(question.getMediaUrl());
         dto.setQuestionAnswerDescription(question.getAnswerDescription());
         dto.setAnswerType(question.getAnswerType().getText());
-        if (question.getAnswerType().equals(AnswerType.MATCH)) {
-            List<Question> subQuestions = question.getSubQuestions();
-
-            List<String> subQuestionText = new ArrayList<>(subQuestions.size());
-            subQuestionText.addAll(
-                    subQuestions.stream()
-                            .map(Question::getText)
-                            .collect(Collectors.toList())
-            );
-            dto.setSubQuestionsText(subQuestionText);
-
-            List<Answer> subQuestionAnswers = subQuestions.stream()
-                    .map(Question::getAnswers)
-                    .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
-            List<String> answersText = new ArrayList<>(subQuestions.size());
-            answersText.addAll(
-                    subQuestionAnswers.stream()
-                            .map(Answer::getText)
-                            .collect(Collectors.toList())
-            );
-            Collections.shuffle(answersText);
-            dto.setAnswers(answersText);
-        }
 
         if (question.getAnswerType().equals(AnswerType.SINGLE) ||
                 question.getAnswerType().equals(AnswerType.MULTIPLE)) {
             List<Answer> answers = question.getAnswers();
-            List<String> answersText = new ArrayList<>(answers.size());
-            answersText.addAll(
-                    answers.stream()
-                            .map(Answer::getText)
-                            .collect(Collectors.toList())
-            );
-            dto.setAnswers(answersText);
+            List<String> answersText = answers.stream()
+                    .map(Answer::getText)
+                    .collect(Collectors.toList());
+            dto.setAnswersVariants(answersText);
         }
 
         dto.setNextNumber(number + 1);

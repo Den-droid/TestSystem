@@ -279,6 +279,12 @@ function validateAnswers() {
                 errorDiv.textContent = "Enter all options!!!";
                 return false;
             }
+            for (let j = i + 1; j < answers.length; j++) {
+                if (answers.item(i).value === answers.item(j).value) {
+                    errorDiv.textContent = "All variants must be different!!!";
+                    return false;
+                }
+            }
         }
     } else if (answerType.value === 'Single' || answerType.value === 'Multiple') {
         let answers = document.getElementsByClassName("answer");
@@ -292,6 +298,12 @@ function validateAnswers() {
             if (isCorrect.item(i).checked) {
                 isCorrectNumber++;
             }
+            for (let j = i + 1; j < answers.length; j++) {
+                if (answers.item(i).value === answers.item(j).value) {
+                    errorDiv.textContent = "All variants must be different!!!";
+                    return false;
+                }
+            }
         }
         if (isCorrectNumber === 0) {
             errorDiv.textContent = "Set at least one option correct!!!";
@@ -304,6 +316,16 @@ function validateAnswers() {
             if (answers.item(i).value.length === 0 || subQuestions.item(i).value.length === 0) {
                 errorDiv.textContent = "Enter all fields!!!";
                 return false;
+            }
+            for (let j = i + 1; j < answers.length; j++) {
+                if (subQuestions.item(i).value === subQuestions.item(j).value) {
+                    errorDiv.textContent = "All second parts must be different!!!";
+                    return false;
+                }
+                if (answers.item(i).value === answers.item(j).value) {
+                    errorDiv.textContent = "All first parts must be different!!!";
+                    return false;
+                }
             }
         }
     }

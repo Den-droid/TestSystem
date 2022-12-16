@@ -5,6 +5,7 @@ import java.util.List;
 public class TestAnswerDto {
     private List<String> answers;
     private List<String> subQuestionsText;
+    private int numberOfPreviousAnswers;
 
     public List<String> getAnswers() {
         return answers;
@@ -22,4 +23,11 @@ public class TestAnswerDto {
         this.subQuestionsText = subQuestionsText;
     }
 
+    public int getNumberOfPreviousAnswers() {
+        return numberOfPreviousAnswers;
+    }
+
+    public void setNumberOfPreviousAnswers(int numberOfPreviousAnswers) {
+        this.numberOfPreviousAnswers = numberOfPreviousAnswers;
+    }
 }

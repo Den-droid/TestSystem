@@ -6,6 +6,9 @@
 </head>
 <body>
 <form name="testWalkthrough" method="post">
+    <div th:text="${#temporals.format(${timeLeft}, 'HH:mm:ss')}"
+         id="timeLeft">
+    </div>
     <input th:value="${question.questionId}"
            type="hidden" name="questionId">
     <input th:value="${question.answerType}"
@@ -28,7 +31,7 @@
     <br>
     <p th:text="${question.questionAnswerDescription}"></p>
     <th:block th:if="${question.answerType eq 'Single'}">
-        <th:block th:each="answer : ${question.answers}">
+        <th:block th:each="answer : ${question.answersVariants}">
             <input th:readonly="${hasTimeToComplete ne null} and
                                  ${hasTimeToComplete eq false}"
                    th:checked="${answers ne null} and
@@ -39,7 +42,7 @@
         </th:block>
     </th:block>
     <th:block th:if="${question.answerType eq 'Multiple'}">
-        <th:block th:each="answer : ${question.answers}">
+        <th:block th:each="answer : ${question.answersVariants}">
             <input th:readonly="${hasTimeToComplete ne null} and
                                  ${hasTimeToComplete eq false}"
                    th:checked="${answers ne null} and
@@ -58,8 +61,20 @@
         </label>
     </th:block>
     <th:block th:if="${question.answerType eq 'Match'}">
-        <th:block th:each="subQuestionText : ${}">
-            <input type="">
+        <th:block th:each="subQuestionText, subQuestionTextStat : ${answers.subQuestionsText}">
+            <label> <span th:text="${subQuestionTextStat.count} + '. '"></span>
+                <input th:value="${subQuestionText}"
+                       type="text" readonly name="subQuestionsText">
+            </label>
+            <select name="answers" id="selectVariant">
+                <option th:each="answer, answerStat : ${answers}"
+                        th:value="${answer}"
+                        th:selected="${answers.numberOfPreviousAnswers > answerStat.count} and
+                                    ${subQuestionTextStat.count eq answerStat.count}"
+                        th:text="${answerStat.count}">
+                </option>
+            </select>
+            <span th:text="${answers.answers[subQuestionTextStat.index]} + '. '"></span>
         </th:block>
     </th:block>
 
@@ -75,5 +90,6 @@
     <input th:if="${question.isLast}"
            type="submit" id="submit">
 </form>
+
 </body>
 </html>

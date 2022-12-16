@@ -10,7 +10,7 @@ public class TestQuestionDto {
     private String questionMedia;
     private String questionAnswerDescription;
     private String answerType;
-    private List<String> answers;
+    private List<String> answersVariants;
     private Integer nextNumber;
     private Integer previousNumber;
     private boolean isLast;
@@ -71,12 +71,12 @@ public class TestQuestionDto {
         this.answerType = answerType;
     }
 
-    public List<String> getAnswers() {
-        return answers;
+    public List<String> getAnswersVariants() {
+        return answersVariants;
     }
 
-    public void setAnswers(List<String> answers) {
-        this.answers = answers;
+    public void setAnswersVariants(List<String> answersVariants) {
+        this.answersVariants = answersVariants;
     }
 
     public Integer getNextNumber() {

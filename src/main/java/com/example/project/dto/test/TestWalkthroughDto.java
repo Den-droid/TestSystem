@@ -5,8 +5,7 @@ import java.util.List;
 public class TestWalkthroughDto {
     private Long questionId;
     private String answerType;
-    private List<Integer> subQuestionNumberOfAnswers;
-    private List<String> subQuestionText;
+    private List<String> subQuestionsText;
     private List<String> answers;
     private String action;
     private Integer previousNumber;
@@ -28,20 +27,12 @@ public class TestWalkthroughDto {
         this.answerType = answerType;
     }
 
-    public List<Integer> getSubQuestionNumberOfAnswers() {
-        return subQuestionNumberOfAnswers;
+    public List<String> getSubQuestionsText() {
+        return subQuestionsText;
     }
 
-    public void setSubQuestionNumberOfAnswers(List<Integer> subQuestionNumberOfAnswers) {
-        this.subQuestionNumberOfAnswers = subQuestionNumberOfAnswers;
-    }
-
-    public List<String> getSubQuestionText() {
-        return subQuestionText;
-    }
-
-    public void setSubQuestionText(List<String> subQuestionText) {
-        this.subQuestionText = subQuestionText;
+    public void setSubQuestionsText(List<String> subQuestionsText) {
+        this.subQuestionsText = subQuestionsText;
     }
 
     public List<String> getAnswers() {
