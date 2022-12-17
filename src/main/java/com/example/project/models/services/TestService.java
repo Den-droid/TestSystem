@@ -27,6 +27,8 @@ public interface TestService {
 
     LocalTime getTimeLeft(User user, String testId);
 
+    boolean isTestOutdated(String testId);
+
     boolean hasStarted(User user, String testId);
 
     boolean hasFinished(User user, String testId);

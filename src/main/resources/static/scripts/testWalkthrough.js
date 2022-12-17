@@ -5,8 +5,33 @@ function timeOver() {
     }
 }
 
+function addHiddenAction(e) {
+    let button = e.target;
+    let id = button.id;
+
+    let form = document.getElementsByName("testWalkthrough")[0];
+
+    let existingHidden = document.getElementById("action");
+    if (existingHidden !== null) {
+        existingHidden.setAttribute("value", id);
+    } else {
+        let hidden = document.createElement("input");
+        hidden.setAttribute("type", "hidden");
+        hidden.setAttribute("name", "action");
+        hidden.setAttribute("id", "action");
+        hidden.setAttribute("value", id);
+
+        form.append(hidden);
+    }
+}
+
 function timer() {
     let timer = document.getElementById("timeLeft").innerHTML;
+    if (timer === '00:00:00' || timer === '00:00') {
+        document.getElementById("timeLeft").innerHTML = "EXPIRED";
+        return;
+    }
+
     let splitTimer = timer.split(":");
     let millis = +splitTimer[0] * (60 * 60 * 1000) + +splitTimer[1] * (60 * 1000) + +splitTimer[2] * 1000;
     let countDownDate = new Date().getTime() + millis;
@@ -36,5 +61,17 @@ function timer() {
         }
     }, 1000);
 }
+
+let previousButton = document.getElementById("previous");
+if (previousButton !== null)
+    previousButton.addEventListener("click", addHiddenAction);
+
+let nextButton = document.getElementById("next");
+if (nextButton !== null)
+    nextButton.addEventListener("click", addHiddenAction);
+
+let submitButton = document.getElementById("submit");
+if (submitButton !== null)
+    submitButton.addEventListener("click", addHiddenAction);
 
 timer();

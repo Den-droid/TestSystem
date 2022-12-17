@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Test walkthrough</title>
+    <link href="/static/styles/error.css" rel="stylesheet">
 </head>
 <body>
 <form name="testWalkthrough" method="post">
-    <div th:text="${#temporals.format(${timeLeft}, 'HH:mm:ss')}"
+    <div th:text="${timeLeft}"
          id="timeLeft">
     </div>
     <input th:value="${question.questionId}"
@@ -14,21 +15,20 @@
     <input th:value="${question.answerType}"
            type="hidden" name="answerType">
     <p th:text="${question.questionText} + ': '"></p>
-    <br>
     <img th:if="${question.questionType eq 'Text with photo'}"
-         th:src="${#strings.concat('/uploads/', ${question.questionMedia})}"
-         th:alt="${question.questionMedia}"/>
+         th:src="${#strings.concat('/uploads/', question.questionMedia)}"
+         th:alt="${question.questionMedia}"
+         style="width: 750px"/>
     <audio th:if="${question.questionType eq 'Text with audio'}"
            controls>
-        <source th:src="${#strings.concat('/uploads/', ${question.questionMedia})}"
+        <source th:src="${#strings.concat('/uploads/', question.questionMedia)}"
         />
     </audio>
     <video th:if="${question.questionType eq 'Text with video'}"
            controls>
-        <source th:src="${#strings.concat('/uploads/', ${question.questionMedia})}"
+        <source th:src="${#strings.concat('/uploads/', question.questionMedia)}"
         />
     </video>
-    <br>
     <p th:text="${question.questionAnswerDescription}"></p>
     <th:block th:if="${question.answerType eq 'Single'}">
         <th:block th:each="answer : ${question.answersVariants}">
@@ -45,7 +45,7 @@
         <th:block th:each="answer : ${question.answersVariants}">
             <input th:readonly="${hasTimeToComplete ne null} and
                                  ${hasTimeToComplete eq false}"
-                   th:checked="${answers ne null} and
+                   th:checked="${!#lists.isEmpty(answers.answers)} and
                                   ${#lists.contains(answers, answer)}"
                    th:value="${answer}"
                    type="checkbox" name="answers">
@@ -56,7 +56,7 @@
         <label> Enter answer:
             <input th:readonly="${hasTimeToComplete ne null} and
                                  ${hasTimeToComplete eq false}"
-                   th:value="${answers ne null ? answers[0] : ''}"
+                   th:value="${!#lists.isEmpty(answers.answers) ? answers.answers[0] : ''}"
                    name="answers" type="text">
         </label>
     </th:block>
@@ -67,29 +67,37 @@
                        type="text" readonly name="subQuestionsText">
             </label>
             <select name="answers" id="selectVariant">
-                <option th:each="answer, answerStat : ${answers}"
+                <option th:each="answer, answerStat : ${answers.answers}"
                         th:value="${answer}"
-                        th:selected="${answers.numberOfPreviousAnswers > answerStat.count} and
-                                    ${subQuestionTextStat.count eq answerStat.count}"
+                        th:selected="${answers.matchQuestionNumOfAnswers eq null
+                        ? answerStat.count eq 1
+                        : answersStat.index eq answers.matchQuestionNumOfAnswers[subQuestionStat.index]}"
                         th:text="${answerStat.count}">
                 </option>
             </select>
-            <span th:text="${answers.answers[subQuestionTextStat.index]} + '. '"></span>
+            <span th:text="${subQuestionTextStat.count} + '. ' +
+                    ${answers.answers[subQuestionTextStat.index]}"></span>
+            <br>
         </th:block>
     </th:block>
 
-    <br>
     <input th:if="${question.previousNumber ne 0}"
            th:value="${question.previousNumber}"
-           type="hidden" name="previousNumber" id="previous">
-    <br>
+           type="hidden" name="previousNumber">
     <input th:if="${!question.isLast}"
            th:value="${question.nextNumber}"
-           type="hidden" name="nextNumber" id="next">
-    <br>
-    <input th:if="${question.isLast}"
-           type="submit" id="submit">
-</form>
+           type="hidden" name="nextNumber">
 
+    <div id="error">
+    </div>
+
+    <input th:if="${question.previousNumber ne 0}"
+           type="submit" id="previous" value="Previous Question">
+    <input th:if="${!question.isLast}"
+           type="submit" id="next" value="Next Question">
+    <input th:if="${question.isLast}"
+           type="submit" id="submit" value="Finish test">
+</form>
+<script src="/static/scripts/testWalkthrough.js" type="text/javascript"></script>
 </body>
 </html>

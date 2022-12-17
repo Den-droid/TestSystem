@@ -4,8 +4,8 @@ import java.util.List;
 
 public class TestAnswerDto {
     private List<String> answers;
+    private List<Integer> matchQuestionNumOfAnswers;
     private List<String> subQuestionsText;
-    private int numberOfPreviousAnswers;
 
     public List<String> getAnswers() {
         return answers;
@@ -23,11 +23,11 @@ public class TestAnswerDto {
         this.subQuestionsText = subQuestionsText;
     }
 
-    public int getNumberOfPreviousAnswers() {
-        return numberOfPreviousAnswers;
+    public List<Integer> getMatchQuestionNumOfAnswers() {
+        return matchQuestionNumOfAnswers;
     }
 
-    public void setNumberOfPreviousAnswers(int numberOfPreviousAnswers) {
-        this.numberOfPreviousAnswers = numberOfPreviousAnswers;
+    public void setMatchQuestionNumOfAnswers(List<Integer> matchQuestionNumOfAnswers) {
+        this.matchQuestionNumOfAnswers = matchQuestionNumOfAnswers;
     }
 }

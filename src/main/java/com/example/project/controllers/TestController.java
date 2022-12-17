@@ -130,18 +130,20 @@ public class TestController {
                                      @RequestParam(name = "question", required = false) Integer number,
                                      Model model) {
         if (number == null) {
-            String url = "/test/" + testId + "/walkthrough?question=" + 1;
-            return "redirect:" + url;
+            number = 1;
         }
 
         try {
             User user = userService.getCurrentLoggedIn();
             boolean hasStarted = testService.hasStarted(user, testId);
             boolean hasFinished = testService.hasFinished(user, testId);
+            boolean isTestOutdated = testService.isTestOutdated(testId);
             LocalTime timeLeft = testService.getTimeLeft(user, testId);
             if (!hasStarted) {
                 String url = "/test/" + testId + "/intro";
                 return "redirect:" + url;
+            } else if (isTestOutdated) {
+                model.addAttribute("hasTimeToComplete", false);
             } else if (hasFinished) {
                 String url = "/test/" + testId + "/user/" + user.getUsername() + "/results";
                 return "redirect:" + url;

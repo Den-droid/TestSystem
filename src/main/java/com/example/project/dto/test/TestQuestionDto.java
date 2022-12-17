@@ -5,7 +5,6 @@ import java.util.List;
 public class TestQuestionDto {
     private long questionId;
     private String questionText;
-    private List<String> subQuestionsText;
     private String questionType;
     private String questionMedia;
     private String questionAnswerDescription;
@@ -29,14 +28,6 @@ public class TestQuestionDto {
 
     public void setQuestionText(String questionText) {
         this.questionText = questionText;
-    }
-
-    public List<String> getSubQuestionsText() {
-        return subQuestionsText;
-    }
-
-    public void setSubQuestionsText(List<String> subQuestionsText) {
-        this.subQuestionsText = subQuestionsText;
     }
 
     public String getQuestionType() {
