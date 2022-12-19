@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Test walkthrough</title>
-    <link href="/static/styles/error.css" rel="stylesheet">
 </head>
 <body>
 <form name="testWalkthrough" method="post">
@@ -32,10 +31,9 @@
     <p th:text="${question.questionAnswerDescription}"></p>
     <th:block th:if="${question.answerType eq 'Single'}">
         <th:block th:each="answer : ${question.answersVariants}">
-            <input th:readonly="${hasTimeToComplete ne null} and
-                                 ${hasTimeToComplete eq false}"
-                   th:checked="${answers ne null} and
-                                  ${#lists.contains(answers, answer)}"
+            <input th:readonly="${hasTimeToComplete ne null and hasTimeToComplete eq false}"
+                   th:checked="${!#lists.isEmpty(answers.answers)}
+                            and ${#lists.contains(answers.answers, answer)}"
                    th:value="${answer}"
                    type="radio" name="answers">
             <span th:text="${answer}"></span>
@@ -43,10 +41,9 @@
     </th:block>
     <th:block th:if="${question.answerType eq 'Multiple'}">
         <th:block th:each="answer : ${question.answersVariants}">
-            <input th:readonly="${hasTimeToComplete ne null} and
-                                 ${hasTimeToComplete eq false}"
-                   th:checked="${!#lists.isEmpty(answers.answers)} and
-                                  ${#lists.contains(answers, answer)}"
+            <input th:readonly="${hasTimeToComplete ne null and hasTimeToComplete eq false}"
+                   th:checked="${!#lists.isEmpty(answers.answers)}
+                            and ${#lists.contains(answers.answers, answer)}"
                    th:value="${answer}"
                    type="checkbox" name="answers">
             <span th:text="${answer}"></span>
@@ -54,8 +51,7 @@
     </th:block>
     <th:block th:if="${question.answerType eq 'Custom'}">
         <label> Enter answer:
-            <input th:readonly="${hasTimeToComplete ne null} and
-                                 ${hasTimeToComplete eq false}"
+            <input th:readonly="${hasTimeToComplete ne null and hasTimeToComplete eq false}"
                    th:value="${!#lists.isEmpty(answers.answers) ? answers.answers[0] : ''}"
                    name="answers" type="text">
         </label>
@@ -67,11 +63,17 @@
                        type="text" readonly name="subQuestionsText">
             </label>
             <select name="answers" id="selectVariant">
+                <option th:if="${answers.matchQuestionNumOfAnswers eq null and
+                                (hasTimeToComplete ne null && !hasTimeToComplete)}"
+                        selected>
+                </option>
                 <option th:each="answer, answerStat : ${answers.answers}"
                         th:value="${answer}"
                         th:selected="${answers.matchQuestionNumOfAnswers eq null
-                        ? answerStat.count eq 1
-                        : answersStat.index eq answers.matchQuestionNumOfAnswers[subQuestionStat.index]}"
+                        ? (hasTimeToComplete ne null and !hasTimeToComplete
+                            ? false : answerStat.count eq 1 )
+                        : answerStat.index eq
+                            answers.matchQuestionNumOfAnswers[subQuestionTextStat.index]}"
                         th:text="${answerStat.count}">
                 </option>
             </select>
@@ -88,9 +90,7 @@
            th:value="${question.nextNumber}"
            type="hidden" name="nextNumber">
 
-    <div id="error">
-    </div>
-
+    <br>
     <input th:if="${question.previousNumber ne 0}"
            type="submit" id="previous" value="Previous Question">
     <input th:if="${!question.isLast}"

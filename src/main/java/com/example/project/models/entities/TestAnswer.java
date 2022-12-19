@@ -9,6 +9,7 @@ public class TestAnswer {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String answer;
+    private boolean isCorrect;
 
     @ManyToOne
     @JoinColumn(name = "test_id")
@@ -63,5 +64,13 @@ public class TestAnswer {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isCorrect() {
+        return isCorrect;
+    }
+
+    public void setCorrect(boolean correct) {
+        isCorrect = correct;
     }
 }

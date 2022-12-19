@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Test Intro</title>
+    <link href="/static/styles/error.css" rel="stylesheet">
 </head>
 <body>
 <div>
@@ -10,9 +11,15 @@
     </h2>
     <p th:text="'Author username: ' + ${test.authorUsername}"></p>
     <p th:text="'Topics: ' + ${#strings.listJoin(test.topics, ', ')}"></p>
+    <p th:text="'Start date: ' + ${#temporals.format(test.dateStarted, 'dd-MM-yyyy HH:mm')}"></p>
+    <p th:text="'Finish date: ' + ${#temporals.format(test.dateFinish, 'dd-MM-yyyy HH:mm')}"></p>
     <p th:text="'Time limit: ' + ${#temporals.format(test.timeLimit, 'HH:mm')}"></p>
     <p th:text="'Amount of questions: ' + ${test.questionsCount}"></p>
     <p th:text="'Difficulty: ' + ${test.difficulty}"></p>
+    <div th:if="${error ne null}"
+         th:text="${error}"
+         id="error">
+    </div>
     <form method="post">
         <input type="submit" value="Start">
     </form>

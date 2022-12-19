@@ -1,7 +1,20 @@
 function timeOver() {
-    let answers = document.getElementsByName("answer");
-    for (let i = 0; i < answers.length; i++) {
-        answers.item(i).readonly = true;
+    let answerType = document.getElementsByName("answerType")[0].value;
+    let answers = document.getElementsByName("answers");
+
+    if (answerType === 'Match') {
+        for (let i = 0; i < answers.length; i++) {
+            for (let j = 0; j < answers[i].options.length; j++) {
+                if (answers[i].options.item(j).value === answers[i].value) {
+                    continue;
+                }
+                answers[i].options.item(j).disabled = true;
+            }
+        }
+    } else {
+        for (let i = 0; i < answers.length; i++) {
+            answers.item(i).readonly = true;
+        }
     }
 }
 
@@ -29,6 +42,7 @@ function timer() {
     let timer = document.getElementById("timeLeft").innerHTML;
     if (timer === '00:00:00' || timer === '00:00') {
         document.getElementById("timeLeft").innerHTML = "EXPIRED";
+        timeOver();
         return;
     }
 

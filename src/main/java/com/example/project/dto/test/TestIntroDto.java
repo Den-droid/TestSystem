@@ -1,5 +1,6 @@
 package com.example.project.dto.test;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -10,6 +11,8 @@ public class TestIntroDto {
     private Integer questionsCount;
     private List<String> topics;
     private String difficulty;
+    private LocalDateTime dateStarted;
+    private LocalDateTime dateFinish;
 
     public String getName() {
         return name;
@@ -57,5 +60,21 @@ public class TestIntroDto {
 
     public void setDifficulty(String difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public LocalDateTime getDateStarted() {
+        return dateStarted;
+    }
+
+    public void setDateStarted(LocalDateTime dateStarted) {
+        this.dateStarted = dateStarted;
+    }
+
+    public LocalDateTime getDateFinish() {
+        return dateFinish;
+    }
+
+    public void setDateFinish(LocalDateTime dateFinish) {
+        this.dateFinish = dateFinish;
     }
 }

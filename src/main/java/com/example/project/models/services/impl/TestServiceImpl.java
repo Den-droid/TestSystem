@@ -123,6 +123,9 @@ public class TestServiceImpl implements TestService {
             List<String> answers = testWalkthroughDto.getAnswers();
             testAnswers = new ArrayList<>(answers.size());
             for (int i = 0; i < answers.size(); i++) {
+                if (answers.get(i).equals(""))
+                    continue;
+
                 Question matchQuestion = questionRepository.findBySupQuestionAndText(question,
                         subQuestionText.get(i));
                 List<TestAnswer> matchQuestionAnswer = testAnswerRepository.
@@ -259,6 +262,15 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
+    public boolean isTestTooEarly(String testId) {
+        Test test = testRepository.findById(testId).orElseThrow(NoSuchElementException::new);
+        LocalDateTime testStartDate = test.getStartDate();
+
+        LocalDateTime now = LocalDateTime.now();
+        return now.isBefore(testStartDate);
+    }
+
+    @Override
     public boolean hasStarted(User user, String testId) {
         Test test = testRepository.findById(testId).orElseThrow(NoSuchElementException::new);
         CurrentTest currentTest = currentTestRepository.findByUserAndTest(user, test);
@@ -301,6 +313,8 @@ public class TestServiceImpl implements TestService {
         dto.setTopics(getTestTopics(test).stream()
                 .map(Topic::getName)
                 .collect(Collectors.toList()));
+        dto.setDateFinish(test.getFinishDate());
+        dto.setDateStarted(test.getStartDate());
         return dto;
     }
 
@@ -316,9 +330,15 @@ public class TestServiceImpl implements TestService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<String> getTestTypes() {
+        return Arrays.stream(TestType.values())
+                .map(TestType::getText)
+                .collect(Collectors.toList());
+    }
+
     private double getTestMarkAndSetStatistic(Test test, User user) {
         double mark = 0.0;
-        List<TestAnswer> testAnswers = testAnswerRepository.findByTestAndUser(test, user);
         List<TestQuestion> testQuestions = test.getQuestions();
 
         for (TestQuestion testQuestion : testQuestions) {
@@ -326,52 +346,65 @@ public class TestServiceImpl implements TestService {
             boolean isCorrect = true;
             if (question.getAnswerType().equals(AnswerType.MATCH)) {
                 int correctAnswersCount = 0;
-                List<Question> matchQuestions = questionRepository.findAllBySupQuestion(question);
-                for (TestAnswer testAnswer : testAnswers) {
-                    Question testAnswerQuestion = testAnswer.getQuestion();
-                    String correctAnswer = matchQuestions.stream()
-                            .filter(x -> x.equals(testAnswerQuestion))
-                            .map(Question::getAnswers)
-                            .map(x -> x.get(0))
-                            .map(Answer::getText)
-                            .findFirst()
-                            .orElseThrow(NoSuchElementException::new);
-                    if (correctAnswer.equals(testAnswer.getAnswer()))
+                List<Question> subQuestions = questionRepository.findAllBySupQuestion(question);
+                List<TestAnswer> submitTestAnswers = new ArrayList<>(subQuestions.size());
+                for (Question subQuestion : subQuestions) {
+                    List<TestAnswer> testAnswers = testAnswerRepository.findByTestAndUserAndQuestion(
+                            test, user, subQuestion);
+                    if (testAnswers == null || testAnswers.size() == 0)
+                        continue;
+                    TestAnswer testAnswer = testAnswers.get(0);
+
+                    String correctAnswer = subQuestion
+                            .getAnswers().get(0).getText();
+                    if (correctAnswer.equals(testAnswer.getAnswer())) {
+                        testAnswer.setCorrect(true);
                         correctAnswersCount++;
-                    else
+                    } else {
+                        testAnswer.setCorrect(false);
                         isCorrect = false;
+                    }
+                    submitTestAnswers.add(testAnswer);
                 }
-                if (correctAnswersCount == matchQuestions.size())
+                if (correctAnswersCount == subQuestions.size())
                     mark += testQuestion.getValue();
                 else {
                     mark += testQuestion.getValue() *
-                            ((correctAnswersCount + 0.0) / matchQuestions.size());
+                            ((correctAnswersCount + 0.0) / subQuestions.size());
                 }
+                testAnswerRepository.saveAll(submitTestAnswers);
             } else {
+                List<TestAnswer> testAnswers = testAnswerRepository.findByTestAndUserAndQuestion(
+                        test, user, question);
                 List<String> correctAnswers = question.getAnswers().stream()
                         .filter(Answer::isCorrect)
                         .map(Answer::getText)
                         .collect(Collectors.toList());
                 List<String> questionAnswers = testAnswers.stream()
-                        .filter(x -> x.getQuestion().equals(question))
                         .map(TestAnswer::getAnswer)
                         .collect(Collectors.toList());
                 if (question.getAnswerType().equals(AnswerType.SINGLE)) {
                     String correctAnswer = correctAnswers.get(0);
                     String questionAnswer = questionAnswers.get(0);
                     isCorrect = correctAnswer.equals(questionAnswer);
+                    testAnswers.get(0).setCorrect(isCorrect);
                 } else if (question.getAnswerType().equals(AnswerType.CUSTOM)) {
                     String questionAnswer = questionAnswers.get(0);
                     isCorrect = correctAnswers.contains(questionAnswer);
+                    testAnswers.get(0).setCorrect(isCorrect);
                 } else if (question.getAnswerType().equals(AnswerType.MULTIPLE)) {
                     int correctAnswersCount = 0;
-                    for (String questionAnswer : questionAnswers) {
-                        if (correctAnswers.contains(questionAnswer)) {
+
+                    for (int i = 0; i < testAnswers.size(); i++) {
+                        if (correctAnswers.contains(questionAnswers.get(i))) {
+                            testAnswers.get(i).setCorrect(true);
                             correctAnswersCount++;
                         } else {
                             isCorrect = false;
+                            testAnswers.get(i).setCorrect(false);
                         }
                     }
+
                     if (correctAnswersCount == correctAnswers.size())
                         mark += testQuestion.getValue();
                     else {
@@ -379,13 +412,16 @@ public class TestServiceImpl implements TestService {
                                 ((correctAnswersCount + 0.0) / correctAnswers.size());
                     }
                 }
+
                 if (isCorrect && !question.getAnswerType().equals(AnswerType.MULTIPLE))
                     mark += testQuestion.getValue();
+
+                testAnswerRepository.saveAll(testAnswers);
             }
             setStatistic(question, isCorrect);
         }
 
-        if (mark > 100)
+        if (mark > 99.99)
             mark = 100;
         return mark;
     }

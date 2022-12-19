@@ -23,5 +23,6 @@ public interface UserService {
 
     List<User> getByUsernameContainsAndUsernamesNotInAndRole(String usernamePart,
                                                              List<String> usernamesNotIn,
+                                                             String includeMe,
                                                              Role role);
 }

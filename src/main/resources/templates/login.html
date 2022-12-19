@@ -8,11 +8,11 @@
 <body>
 <form name="login" method="post" action="/login" onsubmit="return validateLogin()">
     <label for="username"> Enter username:
-        <input id="username" type="text" name="username" value="denis" placeholder="Enter email"/>
+        <input id="username" type="text" name="username" placeholder="Enter email"/>
     </label>
     <br>
     <label for="password"> Enter password:
-        <input id="password" type="password" name="password" value="password"/>
+        <input id="password" type="password" name="password"/>
     </label>
     <br>
     <div id="error" th:text="${error} ?: ''">

@@ -3,10 +3,10 @@ package com.example.project.models.services.impl;
 import com.example.project.dto.auth.RegisterDto;
 import com.example.project.dto.user.EditUserDto;
 import com.example.project.dto.user.UserDto;
+import com.example.project.models.entities.User;
 import com.example.project.models.enums.Role;
 import com.example.project.models.mappers.EditUserMapper;
 import com.example.project.models.mappers.RegisterMapper;
-import com.example.project.models.entities.User;
 import com.example.project.models.mappers.UserMapper;
 import com.example.project.models.repositories.QuestionRepository;
 import com.example.project.models.repositories.TestRepository;
@@ -14,7 +14,6 @@ import com.example.project.models.repositories.TopicRepository;
 import com.example.project.models.repositories.UserRepository;
 import com.example.project.models.services.UserService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
@@ -117,16 +117,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getByUsernameContainsAndUsernamesNotInAndRole(String usernamePart,
                                                                     List<String> usernamesNotIn,
+                                                                    String includeMe,
                                                                     Role role) {
         List<User> users;
-        if (usernamesNotIn == null || usernamesNotIn.size() == 0)
+        if ((usernamesNotIn == null || usernamesNotIn.size() == 0) && includeMe == null)
             users = userRepository.findAllByUsernameContainsIgnoreCase(usernamePart);
-        else
+        else {
+            if (usernamesNotIn == null || usernamesNotIn.size() == 0)
+                usernamesNotIn = new ArrayList<>();
+            usernamesNotIn.add(getCurrentLoggedIn().getUsername());
             users = userRepository.findAllByUsernameContainsIgnoreCaseAndUsernameNotIn
                     (usernamePart, usernamesNotIn);
+        }
         return users.stream()
                 .filter(x -> x.getRole().equals(Role.USER))
                 .collect(Collectors.toList());
+
     }
 
     private void changeAuthentication(String newUsername, String newPassword) {

@@ -57,7 +57,8 @@ public class TestController {
 
             if (addTestDto.getAction().equals("searchUsers")) {
                 List<User> users = userService.getByUsernameContainsAndUsernamesNotInAndRole(
-                        addTestDto.getUsernamePart(), addTestDto.getUsernames(), Role.USER);
+                        addTestDto.getUsernamePart(), addTestDto.getUsernames(),
+                        addTestDto.getIncludeMe(), Role.USER);
                 model.addAttribute("newUsers", users);
             }
 
@@ -91,6 +92,7 @@ public class TestController {
 
     @GetMapping("/test/{testId}/intro")
     public String getIntroPage(@PathVariable String testId,
+                               @RequestParam(name = "error", required = false) String error,
                                Model model) {
         try {
             User user = userService.getCurrentLoggedIn();
@@ -102,6 +104,9 @@ public class TestController {
             if (testService.canWalkthrough(user, testId)) {
                 Test test = testService.getById(testId);
                 model.addAttribute("test", testService.getIntro(test));
+                if (error != null && error.equals("tooEarly")) {
+                    model.addAttribute("error", "Too early to start test!!!");
+                }
             } else {
                 String url = "/user/tests/1?error=notAssigned";
                 return "redirect:" + url;
@@ -135,20 +140,24 @@ public class TestController {
 
         try {
             User user = userService.getCurrentLoggedIn();
-            boolean hasStarted = testService.hasStarted(user, testId);
+
             boolean hasFinished = testService.hasFinished(user, testId);
             boolean isTestOutdated = testService.isTestOutdated(testId);
-            LocalTime timeLeft = testService.getTimeLeft(user, testId);
-            if (!hasStarted) {
+            boolean isTooEarly = testService.isTestTooEarly(testId);
+            boolean hasStarted = testService.hasStarted(user, testId);
+            if (isTooEarly) {
+                String url = "/test/" + testId + "/intro?error=tooEarly";
+                return "redirect:" + url;
+            } else if (!hasStarted) {
                 String url = "/test/" + testId + "/intro";
                 return "redirect:" + url;
             } else if (isTestOutdated) {
-                model.addAttribute("hasTimeToComplete", false);
+                testService.finish(user, testId);
+                String url = "/test/" + testId + "/user/" + user.getUsername() + "/results";
+                return "redirect:" + url;
             } else if (hasFinished) {
                 String url = "/test/" + testId + "/user/" + user.getUsername() + "/results";
                 return "redirect:" + url;
-            } else if (timeLeft.toSecondOfDay() == 0) {
-                model.addAttribute("hasTimeToComplete", false);
             }
 
             TestQuestionDto question = testService.getTestQuestionByNumber(testId, number);
@@ -156,7 +165,12 @@ public class TestController {
                     testId, number);
             model.addAttribute("question", question);
             model.addAttribute("answers", answer);
+
+            LocalTime timeLeft = testService.getTimeLeft(user, testId);
             model.addAttribute("timeLeft", timeLeft);
+            if (timeLeft.toSecondOfDay() == 0) {
+                model.addAttribute("hasTimeToComplete", false);
+            }
         } catch (NoSuchElementException | IllegalArgumentException ex) {
             return "redirect:/error";
         }
@@ -208,10 +222,13 @@ public class TestController {
         try {
             PageDto<Test> tests = testService.getByUser(type,
                     userService.getCurrentLoggedIn().getUsername(), page, 10);
+            List<String> testTypes = testService.getTestTypes();
             model.addAttribute("tests", tests.getElements());
             model.addAttribute("currentPage", tests.getCurrentPage());
             model.addAttribute("totalPages", tests.getTotalPages());
-            if (error.equals("notAssigned"))
+            model.addAttribute("testTypes", testTypes);
+            model.addAttribute("chosenTestType", type);
+            if (error != null && error.equals("notAssigned"))
                 model.addAttribute("error", "You are not assigned to this test!!!");
         } catch (IllegalArgumentException ex) {
             return "redirect:/error";

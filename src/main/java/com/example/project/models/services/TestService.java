@@ -29,6 +29,8 @@ public interface TestService {
 
     boolean isTestOutdated(String testId);
 
+    boolean isTestTooEarly(String testId);
+
     boolean hasStarted(User user, String testId);
 
     boolean hasFinished(User user, String testId);
@@ -42,4 +44,6 @@ public interface TestService {
     Set<Topic> getTestTopics(Test test);
 
     List<String> getTestDifficulties();
+
+    List<String> getTestTypes();
 }
