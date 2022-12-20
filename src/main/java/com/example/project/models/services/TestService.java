@@ -29,6 +29,8 @@ public interface TestService {
 
     boolean isTestOutdated(String testId);
 
+    boolean isTimeUnlimited(String testId);
+
     boolean isTestTooEarly(String testId);
 
     boolean hasStarted(User user, String testId);

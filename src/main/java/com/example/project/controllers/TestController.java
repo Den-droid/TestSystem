@@ -9,6 +9,7 @@ import com.example.project.models.entities.Test;
 import com.example.project.models.entities.Topic;
 import com.example.project.models.entities.User;
 import com.example.project.models.enums.Role;
+import com.example.project.models.services.QuestionService;
 import com.example.project.models.services.TestService;
 import com.example.project.models.services.TopicService;
 import com.example.project.models.services.UserService;
@@ -27,13 +28,16 @@ public class TestController {
     private final UserService userService;
     private final TestService testService;
     private final TopicService topicService;
+    private final QuestionService questionService;
 
     public TestController(UserService userService,
                           TestService testService,
-                          TopicService topicService) {
+                          TopicService topicService,
+                          QuestionService questionService) {
         this.testService = testService;
         this.userService = userService;
         this.topicService = topicService;
+        this.questionService = questionService;
     }
 
     @GetMapping("/tests/generate")
@@ -165,10 +169,15 @@ public class TestController {
                     testId, number);
             model.addAttribute("question", question);
             model.addAttribute("answers", answer);
+            model.addAttribute("hasTimeToComplete", true);
+            model.addAttribute("isUnlimitedTime", false);
 
             LocalTime timeLeft = testService.getTimeLeft(user, testId);
+            boolean isTimeUnlimited = testService.isTimeUnlimited(testId);
             model.addAttribute("timeLeft", timeLeft);
-            if (timeLeft.toSecondOfDay() == 0) {
+            if (isTimeUnlimited) {
+                model.addAttribute("isUnlimitedTime", true);
+            } else if (timeLeft.toSecondOfDay() == 0) {
                 model.addAttribute("hasTimeToComplete", false);
             }
         } catch (NoSuchElementException | IllegalArgumentException ex) {
@@ -196,14 +205,15 @@ public class TestController {
         }
 
         testService.finish(user, testId);
+        questionService.setStatistic(testId, user);
+        questionService.changeCoefficient(testId);
 
         String url = "/test/" + testId + "/user/" + user.getUsername() + "/results";
         return "redirect:" + url;
     }
 
-    @GetMapping("/test/{testId}/user/{username}/results")
+    @GetMapping("/test/{testId}/results")
     public String getResultsPage(@PathVariable String testId,
-                                 @PathVariable String username,
                                  Model model) {
         return null;
     }

@@ -28,7 +28,6 @@ public class TestServiceImpl implements TestService {
     private final TopicRepository topicRepository;
     private final TestAnswerRepository testAnswerRepository;
     private final QuestionRepository questionRepository;
-    private final QuestionStatisticRepository questionStatisticRepository;
 
     public TestServiceImpl(TestRepository testRepository,
                            CurrentTestRepository currentTestRepository,
@@ -36,8 +35,7 @@ public class TestServiceImpl implements TestService {
                            UserRepository userRepository,
                            TopicRepository topicRepository,
                            TestAnswerRepository testAnswerRepository,
-                           QuestionRepository questionRepository,
-                           QuestionStatisticRepository questionStatisticRepository) {
+                           QuestionRepository questionRepository) {
         this.finishedTestRepository = finishedTestRepository;
         this.testRepository = testRepository;
         this.currentTestRepository = currentTestRepository;
@@ -45,7 +43,6 @@ public class TestServiceImpl implements TestService {
         this.topicRepository = topicRepository;
         this.testAnswerRepository = testAnswerRepository;
         this.questionRepository = questionRepository;
-        this.questionStatisticRepository = questionStatisticRepository;
     }
 
     @Override
@@ -174,18 +171,12 @@ public class TestServiceImpl implements TestService {
         Test test = testRepository.findById(testId)
                 .orElseThrow(NoSuchElementException::new);
 
-        double mark = getTestMarkAndSetStatistic(test, user);
+        double mark = getTestMark(test, user);
         FinishedTest finishedTest = new FinishedTest();
         finishedTest.setTest(test);
         finishedTest.setUser(user);
         finishedTest.setMark(mark);
 
-        changeCoefficient(test.getQuestions());
-        List<Question> questions = test.getQuestions().stream()
-                .map(TestQuestion::getQuestion)
-                .collect(Collectors.toList());
-
-        questionRepository.saveAll(questions);
         finishedTestRepository.save(finishedTest);
     }
 
@@ -259,6 +250,13 @@ public class TestServiceImpl implements TestService {
 
         LocalDateTime now = LocalDateTime.now();
         return now.isAfter(testFinishDate);
+    }
+
+    @Override
+    public boolean isTimeUnlimited(String testId) {
+        Test test = testRepository.findById(testId).orElseThrow(NoSuchElementException::new);
+        LocalTime testTimeLimit = test.getTimeLimit();
+        return testTimeLimit.toSecondOfDay() == 0;
     }
 
     @Override
@@ -337,7 +335,7 @@ public class TestServiceImpl implements TestService {
                 .collect(Collectors.toList());
     }
 
-    private double getTestMarkAndSetStatistic(Test test, User user) {
+    private double getTestMark(Test test, User user) {
         double mark = 0.0;
         List<TestQuestion> testQuestions = test.getQuestions();
 
@@ -418,34 +416,11 @@ public class TestServiceImpl implements TestService {
 
                 testAnswerRepository.saveAll(testAnswers);
             }
-            setStatistic(question, isCorrect);
         }
 
         if (mark > 99.99)
             mark = 100;
         return mark;
-    }
-
-    private void changeCoefficient(List<TestQuestion> testQuestions) {
-        List<Question> questions = testQuestions.stream()
-                .map(TestQuestion::getQuestion)
-                .collect(Collectors.toList());
-    }
-
-    private void setStatistic(Question question, boolean correct) {
-        QuestionStatistic questionStatistic = questionStatisticRepository.findByQuestion(question);
-        if (questionStatistic == null) {
-            questionStatistic = new QuestionStatistic();
-            questionStatistic.setQuestion(question);
-            questionStatistic.setCorrectAnswers(correct ? 1 : 0);
-            questionStatistic.setWrongAnswers(correct ? 1 : 0);
-        } else {
-            int correctAnswers = questionStatistic.getCorrectAnswers();
-            int wrongAnswers = questionStatistic.getWrongAnswers();
-            questionStatistic.setCorrectAnswers(correctAnswers + (correct ? 1 : 0));
-            questionStatistic.setWrongAnswers(wrongAnswers + (correct ? 1 : 0));
-        }
-        questionStatisticRepository.save(questionStatistic);
     }
 
     private TestAnswer getTestAnswer(Test test, User user, Question question, String answer) {

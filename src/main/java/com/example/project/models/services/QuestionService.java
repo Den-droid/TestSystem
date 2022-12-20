@@ -5,6 +5,7 @@ import com.example.project.dto.question.AddQuestionDto;
 import com.example.project.dto.question.EditQuestionDto;
 import com.example.project.models.entities.Answer;
 import com.example.project.models.entities.Question;
+import com.example.project.models.entities.QuestionStatistic;
 import com.example.project.models.entities.User;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,12 @@ public interface QuestionService {
     Question getById(long id);
 
     boolean canBeChanged(Question question);
+
+    QuestionStatistic getStatistic(Long questionId);
+
+    void setStatistic(String testId, User user);
+
+    void changeCoefficient(String testId);
 
     PageDto<Question> getPageByTopic(int topicId, int page, int limit);
 

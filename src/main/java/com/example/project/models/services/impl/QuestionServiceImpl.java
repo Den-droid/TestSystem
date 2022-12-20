@@ -31,19 +31,28 @@ public class QuestionServiceImpl implements QuestionService {
     private final TestQuestionRepository testQuestionRepository;
     private final UserRepository userRepository;
     private final FileService fileService;
+    private final QuestionStatisticRepository questionStatisticRepository;
+    private final TestRepository testRepository;
+    private final TestAnswerRepository testAnswerRepository;
 
     public QuestionServiceImpl(QuestionRepository questionRepository,
                                FileService fileService,
                                TopicRepository topicRepository,
                                AnswerRepository answerRepository,
                                TestQuestionRepository testQuestionRepository,
-                               UserRepository userRepository) {
+                               UserRepository userRepository,
+                               QuestionStatisticRepository questionStatisticRepository,
+                               TestRepository testRepository,
+                               TestAnswerRepository testAnswerRepository) {
         this.questionRepository = questionRepository;
         this.fileService = fileService;
         this.topicRepository = topicRepository;
         this.answerRepository = answerRepository;
         this.testQuestionRepository = testQuestionRepository;
         this.userRepository = userRepository;
+        this.questionStatisticRepository = questionStatisticRepository;
+        this.testRepository = testRepository;
+        this.testAnswerRepository = testAnswerRepository;
     }
 
     @Override
@@ -208,6 +217,54 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public QuestionStatistic getStatistic(Long questionId) {
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(NoSuchElementException::new);
+        return questionStatisticRepository.findByQuestion(question);
+    }
+
+    @Override
+    public void setStatistic(String testId, User user) {
+        Test test = testRepository.findById(testId).orElseThrow(NoSuchElementException::new);
+        List<TestAnswer> testAnswers = testAnswerRepository.findByTestAndUser(test, user);
+        List<TestQuestion> testQuestions = testQuestionRepository.findAllByTest(test);
+        List<QuestionStatistic> statistics = new ArrayList<>(testQuestions.size());
+        for (TestQuestion testQuestion : testQuestions) {
+            Question question = testQuestion.getQuestion();
+            boolean isCorrect;
+            if (question.getAnswerType().equals(AnswerType.MATCH)) {
+                List<TestAnswer> subQuestionsAnswers = testAnswers.stream()
+                        .filter(x -> x.getQuestion().getSupQuestion() != null)
+                        .filter(x -> x.getQuestion().getSupQuestion().equals(question))
+                        .collect(Collectors.toList());
+                isCorrect = subQuestionsAnswers.stream()
+                        .allMatch(TestAnswer::isCorrect);
+            } else if (question.getAnswerType().equals(AnswerType.MULTIPLE)) {
+                isCorrect = testAnswers.stream()
+                        .filter(x -> x.getQuestion().equals(question))
+                        .allMatch(TestAnswer::isCorrect);
+            } else {
+                isCorrect = testAnswers.stream()
+                        .filter(x -> x.getQuestion().equals(question))
+                        .anyMatch(TestAnswer::isCorrect);
+            }
+            QuestionStatistic questionStatistic = setStatistic(question, isCorrect);
+            statistics.add(questionStatistic);
+        }
+        questionStatisticRepository.saveAll(statistics);
+    }
+
+    @Override
+    public void changeCoefficient(String testId) {
+        Test test = testRepository.findById(testId).orElseThrow(NoSuchElementException::new);
+        List<Question> questions = test.getQuestions().stream()
+                .map(TestQuestion::getQuestion)
+                .collect(Collectors.toList());
+        changeCoefficient(questions);
+        questionRepository.saveAll(questions);
+    }
+
+    @Override
     public PageDto<Question> getPageByTopic(int topicId, int page, int limit) {
         Topic topic = topicRepository.findById(topicId)
                 .orElseThrow(NoSuchElementException::new);
@@ -265,5 +322,25 @@ public class QuestionServiceImpl implements QuestionService {
         return Arrays.stream(AnswerType.values())
                 .map(AnswerType::getText)
                 .collect(Collectors.toList());
+    }
+
+    private void changeCoefficient(List<Question> questions) {
+
+    }
+
+    private QuestionStatistic setStatistic(Question question, boolean correct) {
+        QuestionStatistic questionStatistic = questionStatisticRepository.findByQuestion(question);
+        if (questionStatistic == null) {
+            questionStatistic = new QuestionStatistic();
+            questionStatistic.setQuestion(question);
+            questionStatistic.setCorrectAnswers(correct ? 1 : 0);
+            questionStatistic.setWrongAnswers(correct ? 0 : 1);
+        } else {
+            int correctAnswers = questionStatistic.getCorrectAnswers();
+            int wrongAnswers = questionStatistic.getWrongAnswers();
+            questionStatistic.setCorrectAnswers(correctAnswers + (correct ? 1 : 0));
+            questionStatistic.setWrongAnswers(wrongAnswers + (correct ? 0 : 1));
+        }
+        return questionStatistic;
     }
 }

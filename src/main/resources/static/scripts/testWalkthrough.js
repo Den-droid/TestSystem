@@ -88,4 +88,5 @@ let submitButton = document.getElementById("submit");
 if (submitButton !== null)
     submitButton.addEventListener("click", addHiddenAction);
 
-timer();
+if (document.getElementById("timeLeft") != null)
+    timer();
