@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Info About Test</title>
+</head>
+<body>
+<div>
+    <h2 th:text="${resultsInfo.name}">
+    </h2>
+    <p th:text="'Topics: ' + ${#strings.listJoin(resultsInfo.topics, ', ')}"></p>
+    <p th:text="'Start date: ' + ${#temporals.format(resultsInfo.dateStarted, 'dd-MM-yyyy HH:mm')}"></p>
+    <p th:text="'Finish date: ' + ${#temporals.format(resultsInfo.dateFinish, 'dd-MM-yyyy HH:mm')}"></p>
+    <p th:text="'Time limit: ' + ${#temporals.format(resultsInfo.timeLimit, 'HH:mm') eq '00:00'
+                                        ? 'no limit'
+                                        : #temporals.format(resultsInfo.timeLimit, 'HH:mm')}"></p>
+    <p th:text="'Amount of questions: ' + ${resultsInfo.questionsCount}"></p>
+    <p th:text="'Difficulty: ' + ${resultsInfo.difficulty}"></p>
+    <p th:text="'User completed: ' + ${resultsInfo.userCompletedCount} + '/' + ${resultsInfo.userAssignedCount}"></p>
+</div>
+<div>
+    <h5 th:each="username : ${resultsInfo.userCompletedUsernames}">
+        <a th:text="${username}"
+           th:href="@{/test/{testId}/results(user=${username},testId=${testId})}"
+           style="text-decoration: none"></a>
+    </h5>
+</div>
+</body>
+</html>

@@ -213,9 +213,36 @@ public class TestController {
     }
 
     @GetMapping("/test/{testId}/results")
-    public String getResultsPage(@PathVariable String testId,
-                                 Model model) {
-        return null;
+    public String getAllResultsPage(@PathVariable String testId,
+                                    @RequestParam(name = "user", required = false) String username,
+                                    Model model) {
+        try {
+            if (username == null) {
+                boolean isUserCreated = testService.isUserCreated(testId,
+                        userService.getCurrentLoggedIn());
+                if (isUserCreated) {
+                    model.addAttribute("resultsInfo", testService.getResultInfo(testId));
+                    model.addAttribute("testId", testId);
+                    return "test/resultInfo";
+                } else {
+                    String url = "/user/tests/1?error=notUserCreated";
+                    return "redirect:" + url;
+                }
+            } else {
+                boolean hasFinished = testService.hasFinished(
+                        userService.getByUsername(username), testId);
+                if (!hasFinished) {
+                    model.addAttribute("testResult", testService.getUserTestResult(
+                            testId, userService.getCurrentLoggedIn()));
+                    return "test/result";
+                } else {
+                    String url = "/test/" + testId + "/walkthrough";
+                    return "redirect:" + url;
+                }
+            }
+        } catch (NoSuchElementException ex) {
+            return "redirect:/error";
+        }
     }
 
     @GetMapping("/user/tests")

@@ -283,6 +283,13 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
+    public boolean isUserCreated(String testId, User user) {
+        Test test = testRepository.findById(testId)
+                .orElseThrow(NoSuchElementException::new);
+        return test.getUserCreated().getUsername().equals(user.getUsername());
+    }
+
+    @Override
     public TestQuestionDto getTestQuestionByNumber(String testId, int number) {
         Test test = testRepository.findById(testId)
                 .orElseThrow(NoSuchElementException::new);
@@ -301,8 +308,8 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    public TestIntroDto getIntro(Test test) {
-        TestIntroDto dto = new TestIntroDto();
+    public TestDto getIntro(Test test) {
+        TestDto dto = new TestDto();
         dto.setName(test.getName());
         dto.setDifficulty(test.getDifficulty().getText());
         dto.setAuthorUsername(test.getUserCreated().getUsername());
@@ -313,6 +320,60 @@ public class TestServiceImpl implements TestService {
                 .collect(Collectors.toList()));
         dto.setDateFinish(test.getFinishDate());
         dto.setDateStarted(test.getStartDate());
+        return dto;
+    }
+
+    @Override
+    public TestResultInfoDto getResultInfo(String testId) {
+        Test test = testRepository.findById(testId)
+                .orElseThrow(NoSuchElementException::new);
+        TestResultInfoDto dto = new TestResultInfoDto();
+        dto.setName(test.getName());
+        dto.setTimeLimit(test.getTimeLimit());
+        dto.setQuestionsCount(test.getQuestionsCount());
+        dto.setTopics(test.getTopics().stream()
+                .map(Topic::getName)
+                .collect(Collectors.toList()));
+        dto.setDifficulty(test.getDifficulty().getText());
+        dto.setDateStarted(test.getStartDate());
+        dto.setDateFinish(test.getFinishDate());
+
+        Integer usersAssignedCount = test.getUsersAssigned().size();
+        List<FinishedTest> finishedTests = test.getFinishedTests();
+        Integer userCompletedCount = finishedTests.size();
+        List<String> userCompletedUsernames = finishedTests.stream()
+                .map(x -> x.getUser().getUsername())
+                .collect(Collectors.toList());
+
+        dto.setUserAssignedCount(usersAssignedCount);
+        dto.setUserCompletedCount(userCompletedCount);
+        dto.setUserCompletedUsernames(userCompletedUsernames);
+        return dto;
+    }
+
+    @Override
+    public TestResultDto getUserTestResult(String testId, User user) {
+        Test test = testRepository.findById(testId)
+                .orElseThrow(NoSuchElementException::new);
+
+        TestResultDto dto = new TestResultDto();
+        dto.setTestName(test.getName());
+        dto.setUsername(user.getUsername());
+
+        List<TestQuestionDto> questions = new ArrayList<>(test.getQuestionsCount());
+        List<TestAnswerDto> answers = new ArrayList<>(test.getQuestionsCount());
+
+        for (int i = 0; i < test.getQuestionsCount(); i++) {
+            TestQuestionDto question = getTestQuestionByNumber(test, i + 1);
+            TestAnswerDto answer = getTestQuestionAnswerByUserAndNumber(test, user, i + 1);
+
+            questions.add(question);
+            answers.add(answer);
+        }
+
+        dto.setQuestions(questions);
+        dto.setAnswers(answers);
+
         return dto;
     }
 

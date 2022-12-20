@@ -4,15 +4,17 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-public class TestIntroDto {
+public class TestResultInfoDto {
     private String name;
-    private String authorUsername;
     private LocalTime timeLimit;
     private Integer questionsCount;
     private List<String> topics;
     private String difficulty;
     private LocalDateTime dateStarted;
     private LocalDateTime dateFinish;
+    private Integer userAssignedCount;
+    private Integer userCompletedCount;
+    private List<String> userCompletedUsernames;
 
     public String getName() {
         return name;
@@ -20,14 +22,6 @@ public class TestIntroDto {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getAuthorUsername() {
-        return authorUsername;
-    }
-
-    public void setAuthorUsername(String authorUsername) {
-        this.authorUsername = authorUsername;
     }
 
     public LocalTime getTimeLimit() {
@@ -76,5 +70,29 @@ public class TestIntroDto {
 
     public void setDateFinish(LocalDateTime dateFinish) {
         this.dateFinish = dateFinish;
+    }
+
+    public Integer getUserAssignedCount() {
+        return userAssignedCount;
+    }
+
+    public void setUserAssignedCount(Integer userAssignedCount) {
+        this.userAssignedCount = userAssignedCount;
+    }
+
+    public Integer getUserCompletedCount() {
+        return userCompletedCount;
+    }
+
+    public void setUserCompletedCount(Integer userCompletedCount) {
+        this.userCompletedCount = userCompletedCount;
+    }
+
+    public List<String> getUserCompletedUsernames() {
+        return userCompletedUsernames;
+    }
+
+    public void setUserCompletedUsernames(List<String> userCompletedUsernames) {
+        this.userCompletedUsernames = userCompletedUsernames;
     }
 }

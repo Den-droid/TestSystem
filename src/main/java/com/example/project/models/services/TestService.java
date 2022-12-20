@@ -37,11 +37,17 @@ public interface TestService {
 
     boolean hasFinished(User user, String testId);
 
+    boolean isUserCreated(String testId, User user);
+
     TestQuestionDto getTestQuestionByNumber(String testId, int number);
 
     TestAnswerDto getTestQuestionAnswerByUserAndNumber(User user, String testId, int number);
 
-    TestIntroDto getIntro(Test test);
+    TestDto getIntro(Test test);
+
+    TestResultInfoDto getResultInfo(String testId);
+
+    TestResultDto getUserTestResult(String testId, User user);
 
     Set<Topic> getTestTopics(Test test);
 
