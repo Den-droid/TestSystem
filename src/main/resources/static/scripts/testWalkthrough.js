@@ -11,6 +11,13 @@ function timeOver() {
                 answers[i].options.item(j).disabled = true;
             }
         }
+    } else if (answerType === 'Single' || answerType === 'Multiple') {
+        for (let i = 0; i < answers.length; i++) {
+            if (answers[i].checked) {
+                continue;
+            }
+            answers[i].disabled = true;
+        }
     } else {
         for (let i = 0; i < answers.length; i++) {
             answers.item(i).readonly = true;

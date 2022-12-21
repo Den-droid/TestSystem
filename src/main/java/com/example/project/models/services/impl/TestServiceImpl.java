@@ -171,6 +171,9 @@ public class TestServiceImpl implements TestService {
         Test test = testRepository.findById(testId)
                 .orElseThrow(NoSuchElementException::new);
 
+        if (finishedTestRepository.findByUserAndTest(user, test) != null)
+            return;
+
         double mark = getTestMark(test, user);
         FinishedTest finishedTest = new FinishedTest();
         finishedTest.setTest(test);
@@ -355,10 +358,12 @@ public class TestServiceImpl implements TestService {
     public TestResultDto getUserTestResult(String testId, User user) {
         Test test = testRepository.findById(testId)
                 .orElseThrow(NoSuchElementException::new);
+        FinishedTest finishedTest = finishedTestRepository.findByUserAndTest(user, test);
 
         TestResultDto dto = new TestResultDto();
         dto.setTestName(test.getName());
         dto.setUsername(user.getUsername());
+        dto.setMark(finishedTest.getMark());
 
         List<TestQuestionDto> questions = new ArrayList<>(test.getQuestionsCount());
         List<TestAnswerDto> answers = new ArrayList<>(test.getQuestionsCount());
@@ -421,7 +426,6 @@ public class TestServiceImpl implements TestService {
                         correctAnswersCount++;
                     } else {
                         testAnswer.setCorrect(false);
-                        isCorrect = false;
                     }
                     submitTestAnswers.add(testAnswer);
                 }
@@ -435,6 +439,8 @@ public class TestServiceImpl implements TestService {
             } else {
                 List<TestAnswer> testAnswers = testAnswerRepository.findByTestAndUserAndQuestion(
                         test, user, question);
+                if (testAnswers == null || testAnswers.size() == 0)
+                    continue;
                 List<String> correctAnswers = question.getAnswers().stream()
                         .filter(Answer::isCorrect)
                         .map(Answer::getText)

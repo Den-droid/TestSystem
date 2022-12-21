@@ -5,6 +5,81 @@
     <title>Test Result</title>
 </head>
 <body>
-
+<h2>Result of Completed Test</h2>
+<div>
+    <p th:text="'User: ' + ${testResult.username}"></p>
+    <p th:text="'Test: ' + ${testResult.testName}"></p>
+    <p th:text="'Mark: ' + ${#numbers.formatDecimal(testResult.mark,1,2)} + '/100' "></p>
+</div>
+<div th:each="question, questionStat : ${testResult.questions}">
+    <h4 th:text="'Question ' + ${questionStat.count}"></h4>
+    <p th:text="${question.questionText} + ': '"></p>
+    <img th:if="${question.questionType eq 'Text with photo'}"
+         th:src="${#strings.concat('/uploads/', question.questionMedia)}"
+         th:alt="${question.questionMedia}"
+         style="width: 500px"/>
+    <audio th:if="${question.questionType eq 'Text with audio'}"
+           controls>
+        <source th:src="${#strings.concat('/uploads/', question.questionMedia)}"
+        />
+    </audio>
+    <video th:if="${question.questionType eq 'Text with video'}"
+           controls>
+        <source th:src="${#strings.concat('/uploads/', question.questionMedia)}"
+        />
+    </video>
+    <p th:text="${question.questionAnswerDescription}"></p>
+    <th:block th:if="${question.answerType eq 'Single'}">
+        <th:block th:each="answerVariant : ${question.answersVariants}">
+            <input th:checked="${!#lists.isEmpty(testResult.answers[questionStat.index].answers)}
+                            and ${#lists.contains(testResult.answers[questionStat.index].answers, answerVariant)}"
+                   th:value="${answerVariant}"
+                   type="radio" name="answers" disabled>
+            <span th:text="${answerVariant}"></span>
+        </th:block>
+    </th:block>
+    <th:block th:if="${question.answerType eq 'Multiple'}">
+        <th:block th:each="answerVariant : ${question.answersVariants}">
+            <input th:checked="${!#lists.isEmpty(testResult.answers[questionStat.index].answers)}
+                            and ${#lists.contains(testResult.answers[questionStat.index].answers, answerVariant)}"
+                   th:value="${answerVariant}"
+                   type="checkbox" name="answers" disabled>
+            <span th:text="${answerVariant}"></span>
+        </th:block>
+    </th:block>
+    <th:block th:if="${question.answerType eq 'Custom'}">
+        <label> Enter answer:
+            <input th:value="${!#lists.isEmpty(testResult.answers[questionStat.index].answers) ?
+                                !#lists.isEmpty(testResult.answers[questionStat.index].answers[0]) : ''}"
+                   name="answers" type="text" readonly>
+        </label>
+    </th:block>
+    <th:block th:if="${question.answerType eq 'Match'}">
+        <th:block th:each="subQuestionText, subQuestionTextStat :
+                                            ${testResult.answers[questionStat.index].subQuestionsText}">
+            <label> <span th:text="${subQuestionTextStat.count} + '. '"></span>
+                <input th:value="${subQuestionText}"
+                       type="text" readonly name="subQuestionsText">
+            </label>
+            <select name="answers" id="selectVariant">
+                <option th:if="${testResult.answers[questionStat.index].matchQuestionNumOfAnswers eq null}"
+                        selected>
+                </option>
+                <option th:each="answer, answerStat : ${testResult.answers[questionStat.index].answers}"
+                        th:value="${answer}"
+                        th:selected="${testResult.answers[questionStat.index].matchQuestionNumOfAnswers eq null
+                        ? false
+                        : answerStat.index eq
+                        testResult.answers[questionStat.index].matchQuestionNumOfAnswers[subQuestionTextStat.index]}"
+                        th:text="${answerStat.count}"
+                        disabled>
+                </option>
+            </select>
+            <span th:text="${subQuestionTextStat.count} + '. ' +
+                    ${testResult.answers[questionStat.index].answers[subQuestionTextStat.index]}"></span>
+            <br>
+        </th:block>
+    </th:block>
+</div>
 </body>
 </html>

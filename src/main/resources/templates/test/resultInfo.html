@@ -18,12 +18,13 @@
     <p th:text="'Difficulty: ' + ${resultsInfo.difficulty}"></p>
     <p th:text="'User completed: ' + ${resultsInfo.userCompletedCount} + '/' + ${resultsInfo.userAssignedCount}"></p>
 </div>
+<h3>Finished Tests: </h3>
 <div>
-    <h5 th:each="username : ${resultsInfo.userCompletedUsernames}">
+    <h4 th:each="username : ${resultsInfo.userCompletedUsernames}">
         <a th:text="${username}"
            th:href="@{/test/{testId}/results(user=${username},testId=${testId})}"
            style="text-decoration: none"></a>
-    </h5>
+    </h4>
 </div>
 </body>
 </html>

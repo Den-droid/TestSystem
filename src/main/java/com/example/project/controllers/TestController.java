@@ -157,10 +157,10 @@ public class TestController {
                 return "redirect:" + url;
             } else if (isTestOutdated) {
                 testService.finish(user, testId);
-                String url = "/test/" + testId + "/user/" + user.getUsername() + "/results";
+                String url = "/test/" + testId + "/results?user=" + user.getUsername();
                 return "redirect:" + url;
             } else if (hasFinished) {
-                String url = "/test/" + testId + "/user/" + user.getUsername() + "/results";
+                String url = "/test/" + testId + "/results?user=" + user.getUsername();
                 return "redirect:" + url;
             }
 
@@ -231,7 +231,7 @@ public class TestController {
             } else {
                 boolean hasFinished = testService.hasFinished(
                         userService.getByUsername(username), testId);
-                if (!hasFinished) {
+                if (hasFinished) {
                     model.addAttribute("testResult", testService.getUserTestResult(
                             testId, userService.getCurrentLoggedIn()));
                     return "test/result";

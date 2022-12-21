@@ -32,8 +32,7 @@
     <p th:text="${question.questionAnswerDescription}"></p>
     <th:block th:if="${question.answerType eq 'Single'}">
         <th:block th:each="answer : ${question.answersVariants}">
-            <input th:readonly="${!hasTimeToComplete}"
-                   th:checked="${!#lists.isEmpty(answers.answers)}
+            <input th:checked="${!#lists.isEmpty(answers.answers)}
                             and ${#lists.contains(answers.answers, answer)}"
                    th:value="${answer}"
                    type="radio" name="answers">
@@ -42,8 +41,7 @@
     </th:block>
     <th:block th:if="${question.answerType eq 'Multiple'}">
         <th:block th:each="answer : ${question.answersVariants}">
-            <input th:readonly="${!hasTimeToComplete}"
-                   th:checked="${!#lists.isEmpty(answers.answers)}
+            <input th:checked="${!#lists.isEmpty(answers.answers)}
                             and ${#lists.contains(answers.answers, answer)}"
                    th:value="${answer}"
                    type="checkbox" name="answers">
@@ -52,8 +50,7 @@
     </th:block>
     <th:block th:if="${question.answerType eq 'Custom'}">
         <label> Enter answer:
-            <input th:readonly="${!hasTimeToComplete}"
-                   th:value="${!#lists.isEmpty(answers.answers) ? answers.answers[0] : ''}"
+            <input th:value="${!#lists.isEmpty(answers.answers) ? answers.answers[0] : ''}"
                    name="answers" type="text">
         </label>
     </th:block>
