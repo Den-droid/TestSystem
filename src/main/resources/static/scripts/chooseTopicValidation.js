@@ -1,4 +1,4 @@
-function validateDeleteTopic() {
+function validateChooseTopic() {
     let errorDiv = document.getElementById("error")
 
     let radio = document.getElementsByClassName("topicRadio");

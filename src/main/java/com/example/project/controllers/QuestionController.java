@@ -50,7 +50,7 @@ public class QuestionController {
         try {
             questionService.add(id, userService.getCurrentLoggedIn(),
                     addQuestionDto, file);
-        } catch (IllegalArgumentException ex) {
+        } catch (NoSuchElementException ex) {
             return "redirect:/error";
         }
 
@@ -134,12 +134,19 @@ public class QuestionController {
     @GetMapping("/admin/topic/{id}/questions/{page}")
     public String getByPageAndTopicForAdmin(@PathVariable int id,
                                             @PathVariable int page,
+                                            @RequestParam(name = "text", required = false) String text,
+                                            @RequestParam(name = "error", required = false) String error,
                                             Model model) {
         if (page < 1)
             return "redirect:/error";
 
         try {
-            PageDto<Question> questions = questionService.getPageByTopic(id, page, 10);
+            PageDto<Question> questions;
+            if (text != null) {
+                questions = questionService.getPageByTopicAndName(text, id, 1, 10);
+            } else {
+                questions = questionService.getPageByTopic(id, page, 10);
+            }
             model.addAttribute("questions", questions.getElements());
             model.addAttribute("currentPage", questions.getCurrentPage());
             model.addAttribute("totalPages", questions.getTotalPages());
@@ -147,26 +154,9 @@ public class QuestionController {
             return "redirect:/error";
         }
 
-        return "admin/questions";
-    }
-
-    @GetMapping("/admin/topic/{id}/questions/search/{page}")
-    public String getByPageAndUsernameAndTopicForAdmin(@PathVariable int page,
-                                                       @PathVariable int id,
-                                                       @RequestParam(name = "text",
-                                                               required = false) String text,
-                                                       Model model) {
-        if (page < 1)
-            return "redirect:/error";
-
-        try {
-            PageDto<Question> questions = questionService.getPageByTopicAndName(text, id, page, 10);
-            model.addAttribute("questions", questions.getElements());
-            model.addAttribute("currentPage", questions.getCurrentPage());
-            model.addAttribute("totalPages", questions.getTotalPages());
-        } catch (NoSuchElementException ex) {
-            return "redirect:/error";
-        }
+        if (error != null && error.equals("delete"))
+            model.addAttribute("error", "You can't delete this question because " +
+                    "it's used somewhere else");
 
         return "admin/questions";
     }
@@ -174,35 +164,22 @@ public class QuestionController {
     @GetMapping("/topic/{id}/questions/{page}")
     public String getByPageAndTopic(@PathVariable int page,
                                     @PathVariable int id,
+                                    @RequestParam(name = "text", required = false) String text,
                                     Model model) {
         if (page < 1)
             return "redirect:/error";
 
         try {
-            PageDto<Question> questions = questionService.getPageByTopic(id, page, 10);
+            PageDto<Question> questions;
+            if (text != null) {
+                questions = questionService.getPageByTopicAndName(text, id, 1, 10);
+            } else {
+                questions = questionService.getPageByTopic(id, page, 10);
+            }
             model.addAttribute("questions", questions.getElements());
             model.addAttribute("currentPage", questions.getCurrentPage());
             model.addAttribute("totalPages", questions.getTotalPages());
-        } catch (NoSuchElementException ex) {
-            return "redirect:/error";
-        }
-
-        return "main/questions";
-    }
-
-    @GetMapping("/topic/{id}/questions/search/{page}")
-    public String getByTextAndTopic(@RequestParam(name = "text", required = false) String text,
-                                    @PathVariable int page,
-                                    @PathVariable int id,
-                                    Model model) {
-        if (page < 1)
-            return "redirect:/error";
-
-        try {
-            PageDto<Question> questions = questionService.getPageByTopicAndName(text, id, page, 10);
-            model.addAttribute("questions", questions.getElements());
-            model.addAttribute("currentPage", questions.getCurrentPage());
-            model.addAttribute("totalPages", questions.getTotalPages());
+            model.addAttribute("statistics", questionService.getStatistic(questions.getElements()));
         } catch (NoSuchElementException ex) {
             return "redirect:/error";
         }
@@ -212,38 +189,32 @@ public class QuestionController {
 
     @GetMapping("/user/questions/{page}")
     public String getByPageAndUsername(@PathVariable int page,
+                                       @RequestParam(name = "text", required = false) String text,
+                                       @RequestParam(name = "error", required = false) String error,
                                        Model model) {
         if (page < 1)
             return "redirect:/error";
 
-        try {
-            PageDto<Question> questions = questionService.getPageByUsername(
-                    userService.getCurrentLoggedIn().getUsername(), page, 10);
-            model.addAttribute("questions", questions.getElements());
-            model.addAttribute("currentPage", questions.getCurrentPage());
-            model.addAttribute("totalPages", questions.getTotalPages());
-        } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+        PageDto<Question> questions;
+        if (text != null) {
+            questions = questionService.getPageByUserAndName(
+                    userService.getCurrentLoggedIn(), text, 1, 10);
+        } else {
+            questions = questionService.getPageByUser(
+                    userService.getCurrentLoggedIn(), page, 10);
         }
+        model.addAttribute("questions", questions.getElements());
+        model.addAttribute("currentPage", questions.getCurrentPage());
+        model.addAttribute("totalPages", questions.getTotalPages());
+        model.addAttribute("statistics", questionService.getStatistic(questions.getElements()));
 
-        return "user/questions";
-    }
-
-    @GetMapping("/user/questions/search/{page}")
-    public String getByPageAndUsernameAndText(@PathVariable int page,
-                                              @RequestParam(name = "text", required = false) String text,
-                                              Model model) {
-        if (page < 1)
-            return "redirect:/error";
-
-        try {
-            PageDto<Question> questions = questionService.getPageByUsernameAndName(
-                    userService.getCurrentLoggedIn().getUsername(), text, page, 10);
-            model.addAttribute("questions", questions.getElements());
-            model.addAttribute("currentPage", questions.getCurrentPage());
-            model.addAttribute("totalPages", questions.getTotalPages());
-        } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+        if (error != null) {
+            if (error.equals("edit"))
+                model.addAttribute("error", "You can't edit this question because " +
+                        "it's used somewhere else");
+            if (error.equals("delete"))
+                model.addAttribute("error", "You can't delete this question because " +
+                        "it's used somewhere else");
         }
 
         return "user/questions";
@@ -253,9 +224,9 @@ public class QuestionController {
         User user = userService.getCurrentLoggedIn();
         switch (user.getRole()) {
             case USER:
-                return "/user/questions";
+                return "/user/questions/1";
             case ADMIN:
-                return "/admin/topic/" + topicId + "/questions";
+                return "/admin/topic/" + topicId + "/questions/1";
         }
         return null;
     }

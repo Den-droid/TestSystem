@@ -25,7 +25,7 @@ public interface QuestionService {
 
     boolean canBeChanged(Question question);
 
-    QuestionStatistic getStatistic(Long questionId);
+    List<QuestionStatistic> getStatistic(List<Question> questions);
 
     void setStatistic(String testId, User user);
 
@@ -35,9 +35,9 @@ public interface QuestionService {
 
     PageDto<Question> getPageByTopicAndName(String text, int topicId, int page, int limit);
 
-    PageDto<Question> getPageByUsername(String username, int page, int limit);
+    PageDto<Question> getPageByUser(User user, int page, int limit);
 
-    PageDto<Question> getPageByUsernameAndName(String username, String text, int page, int limit);
+    PageDto<Question> getPageByUserAndName(User user, String text, int page, int limit);
 
     List<Answer> getSubQuestionAnswers(Question question);
 

@@ -237,8 +237,8 @@ function validateQuestionText() {
     let errorDiv = document.getElementById("error");
 
     let questionText = document.getElementById("questionText");
-    if (questionText.value.trim().length === 0) {
-        errorDiv.textContent = "Enter question text!!!";
+    if (questionText.value.trim().length < 6) {
+        errorDiv.textContent = "Question text must contain at least 6 symbols!!!";
         return false;
     }
     return true;

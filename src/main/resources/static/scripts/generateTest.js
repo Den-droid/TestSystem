@@ -5,14 +5,14 @@ function addTestSubmit() {
     if (action.value !== "submit") {
         if (action.value === "searchTopics") {
             let topicPart = document.getElementsByName("topicPart")[0];
-            if (topicPart.value.length === 0) {
-                errorDiv.textContent = "Enter search phrase for searching topics!!!";
+            if (topicPart.value.length < 3) {
+                errorDiv.textContent = "Enter at least 3 characters to start search!!!";
                 return false;
             } else return true;
         } else if (action.value === "searchUsers") {
             let userPart = document.getElementsByName("usernamePart")[0];
-            if (userPart.value.length === 0) {
-                errorDiv.textContent = "Enter search phrase for searching users!!!";
+            if (userPart.value.length < 3) {
+                errorDiv.textContent = "Enter at least 3 characters to start search!!!";
                 return false;
             } else return true;
         }

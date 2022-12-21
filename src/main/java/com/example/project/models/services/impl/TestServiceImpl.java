@@ -184,12 +184,13 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    public PageDto<Test> getByUser(String type, String username, int page, int limit) {
-        TestType testType = TestType.ALL;
+    public PageDto<Test> getByUser(String type, User user, int page, int limit) {
+        TestType testType = TestType.ASSIGNED;
+        String username = user.getUsername();
         if (type != null)
             testType = TestType.getByText(type);
         switch (testType) {
-            case ALL:
+            case ASSIGNED:
                 Page<Test> tests = getAssignedToUserByUsername(username, page, limit);
                 List<Test> testList = tests.getContent();
                 return new PageDto<>(testList, page, tests.getTotalPages());

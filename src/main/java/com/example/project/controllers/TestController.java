@@ -9,6 +9,7 @@ import com.example.project.models.entities.Test;
 import com.example.project.models.entities.Topic;
 import com.example.project.models.entities.User;
 import com.example.project.models.enums.Role;
+import com.example.project.models.enums.TestType;
 import com.example.project.models.services.QuestionService;
 import com.example.project.models.services.TestService;
 import com.example.project.models.services.TopicService;
@@ -258,13 +259,14 @@ public class TestController {
                                               Model model) {
         try {
             PageDto<Test> tests = testService.getByUser(type,
-                    userService.getCurrentLoggedIn().getUsername(), page, 10);
+                    userService.getCurrentLoggedIn(), page, 10);
             List<String> testTypes = testService.getTestTypes();
             model.addAttribute("tests", tests.getElements());
             model.addAttribute("currentPage", tests.getCurrentPage());
             model.addAttribute("totalPages", tests.getTotalPages());
             model.addAttribute("testTypes", testTypes);
-            model.addAttribute("chosenTestType", type);
+            model.addAttribute("chosenTestType", type == null
+                    ? TestType.ASSIGNED.getText() : type);
             if (error != null && error.equals("notAssigned"))
                 model.addAttribute("error", "You are not assigned to this test!!!");
         } catch (IllegalArgumentException ex) {

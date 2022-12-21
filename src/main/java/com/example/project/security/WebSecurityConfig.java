@@ -27,8 +27,8 @@ public class WebSecurityConfig {
     };
 
     private final static String[] PERMITTED_PATTERNS = new String[]{
-            "/", "/register", "/static/**", "/topics", "/topics/{page}", "/topics/search/*",
-            "/uploads/**"
+            "/", "/register", "/static/**", "/uploads/**",
+            "/topics", "/topics/*"
     };
 
     @Bean

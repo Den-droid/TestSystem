@@ -29,7 +29,6 @@ public class QuestionServiceImpl implements QuestionService {
     private final TopicRepository topicRepository;
     private final AnswerRepository answerRepository;
     private final TestQuestionRepository testQuestionRepository;
-    private final UserRepository userRepository;
     private final FileService fileService;
     private final QuestionStatisticRepository questionStatisticRepository;
     private final TestRepository testRepository;
@@ -40,7 +39,6 @@ public class QuestionServiceImpl implements QuestionService {
                                TopicRepository topicRepository,
                                AnswerRepository answerRepository,
                                TestQuestionRepository testQuestionRepository,
-                               UserRepository userRepository,
                                QuestionStatisticRepository questionStatisticRepository,
                                TestRepository testRepository,
                                TestAnswerRepository testAnswerRepository) {
@@ -49,7 +47,6 @@ public class QuestionServiceImpl implements QuestionService {
         this.topicRepository = topicRepository;
         this.answerRepository = answerRepository;
         this.testQuestionRepository = testQuestionRepository;
-        this.userRepository = userRepository;
         this.questionStatisticRepository = questionStatisticRepository;
         this.testRepository = testRepository;
         this.testAnswerRepository = testAnswerRepository;
@@ -58,7 +55,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public void add(int topicId, User user, AddQuestionDto dto, MultipartFile file) throws IOException {
         Topic topic = topicRepository.findById(topicId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(NoSuchElementException::new);
 
         Question question = AddQuestionMapper.map(dto);
         if (file != null && !file.isEmpty()) {
@@ -217,10 +214,8 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public QuestionStatistic getStatistic(Long questionId) {
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(NoSuchElementException::new);
-        return questionStatisticRepository.findByQuestion(question);
+    public List<QuestionStatistic> getStatistic(List<Question> questions) {
+        return questionStatisticRepository.findAllByQuestionIn(questions);
     }
 
     @Override
@@ -284,20 +279,14 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public PageDto<Question> getPageByUsername(String username, int page, int limit) {
-        User user = userRepository.findByUsernameIgnoreCase(username);
-        if (user == null)
-            throw new NoSuchElementException();
+    public PageDto<Question> getPageByUser(User user, int page, int limit) {
         Page<Question> questionPage = questionRepository.findAllByUser(user,
                 PageRequest.of(page - 1, limit));
         return new PageDto<>(questionPage.getContent(), page, questionPage.getTotalPages());
     }
 
     @Override
-    public PageDto<Question> getPageByUsernameAndName(String username, String text, int page, int limit) {
-        User user = userRepository.findByUsernameIgnoreCase(username);
-        if (user == null)
-            throw new NoSuchElementException();
+    public PageDto<Question> getPageByUserAndName(User user, String text, int page, int limit) {
         Page<Question> questionPage = questionRepository.findAllByUserAndTextContainsIgnoreCase(user, text,
                 PageRequest.of(page - 1, limit));
         return new PageDto<>(questionPage.getContent(), page, questionPage.getTotalPages());

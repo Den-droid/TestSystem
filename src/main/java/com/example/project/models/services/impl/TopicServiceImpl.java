@@ -8,7 +8,6 @@ import com.example.project.models.entities.User;
 import com.example.project.models.repositories.QuestionRepository;
 import com.example.project.models.repositories.TestRepository;
 import com.example.project.models.repositories.TopicRepository;
-import com.example.project.models.repositories.UserRepository;
 import com.example.project.models.services.TopicService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,22 +15,20 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 @Service
 @Transactional
 public class TopicServiceImpl implements TopicService {
     private final TopicRepository topicRepository;
-    private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
     private final TestRepository testRepository;
 
     public TopicServiceImpl(TopicRepository repository,
-                            UserRepository userRepository,
                             QuestionRepository questionRepository,
                             TestRepository testRepository) {
-        this.userRepository = userRepository;
         this.topicRepository = repository;
         this.questionRepository = questionRepository;
         this.testRepository = testRepository;
@@ -89,6 +86,11 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
+    public Topic getByName(String name) {
+        return topicRepository.findByName(name);
+    }
+
+    @Override
     public List<Topic> getByNameContains(String part) {
         return topicRepository.findAllByNameContainsIgnoreCase(part);
     }
@@ -100,10 +102,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public PageDto<Topic> getPageByUsername(int page, int limit, String username) {
-        User user = userRepository.findByUsernameIgnoreCase(username);
-        if (user == null)
-            throw new NoSuchElementException();
+    public PageDto<Topic> getPageByUser(int page, int limit, User user) {
         Page<Topic> topics = topicRepository.findAllByUser(user,
                 PageRequest.of(page - 1, limit));
         return new PageDto<>(topics.getContent(), page, topics.getTotalPages());
@@ -117,10 +116,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public PageDto<Topic> getPageByNameAndUsername(int page, int limit, String username, String name) {
-        User user = userRepository.findByUsernameIgnoreCase(username);
-        if (user == null)
-            throw new NoSuchElementException();
+    public PageDto<Topic> getPageByNameAndUser(int page, int limit, User user, String name) {
         Page<Topic> topics = topicRepository.findAllByNameContainsIgnoreCaseAndUser(name, user,
                 PageRequest.of(page - 1, limit));
         return new PageDto<>(topics.getContent(), page, topics.getTotalPages());

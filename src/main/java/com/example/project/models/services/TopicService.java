@@ -16,15 +16,17 @@ public interface TopicService {
 
     Topic getById(int id);
 
+    Topic getByName(String name);
+
     List<Topic> getByNameContains(String part);
 
     PageDto<Topic> getPage(int page, int limit);
 
-    PageDto<Topic> getPageByUsername(int page, int limit, String username);
+    PageDto<Topic> getPageByUser(int page, int limit, User user);
 
     PageDto<Topic> getPageByName(int page, int limit, String name);
 
-    PageDto<Topic> getPageByNameAndUsername(int page, int limit, String username, String name);
+    PageDto<Topic> getPageByNameAndUser(int page, int limit, User user, String name);
 
     boolean existsById(int id);
 

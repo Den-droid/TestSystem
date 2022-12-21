@@ -3,10 +3,10 @@ package com.example.project.models.enums;
 import java.util.Arrays;
 
 public enum TestType {
-    ALL("All"),
     CREATED("Created"),
     CURRENT("Current"),
-    FINISHED("Finished");
+    FINISHED("Finished"),
+    ASSIGNED("Assigned");
 
     private final String text;
 

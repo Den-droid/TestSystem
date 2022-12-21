@@ -25,6 +25,25 @@ public class TopicController {
         this.userService = userService;
     }
 
+    @GetMapping("/topics/choose")
+    public String getChoosePage(@RequestParam(name = "name", required = false) String name,
+                                Model model) {
+        if (name != null && !name.equals("")) {
+            List<Topic> topics = topicService.getByNameContains(name);
+            model.addAttribute("topics", topics);
+        }
+
+        return "user/chooseTopic";
+    }
+
+    @PostMapping("/topics/choose")
+    public String choose(@RequestParam(name = "topicName", required = false) String name) {
+        Topic topic = topicService.getByName(name);
+        String url = "/topic/" + topic.getId() + "/questions/add";
+
+        return "redirect:" + url;
+    }
+
     @GetMapping("/topics/add")
     public String getAddPage() {
         return "topics/add";
@@ -72,10 +91,10 @@ public class TopicController {
 
     @GetMapping("/topics/delete/{id}")
     public String getDeletePage(@PathVariable int id,
-                                @RequestParam(name = "topicPart", required = false) String part,
+                                @RequestParam(name = "name", required = false) String name,
                                 Model model) {
-        if (part != null && !part.equals("")) {
-            List<Topic> topics = topicService.getByNameContains(part);
+        if (name != null && !name.equals("")) {
+            List<Topic> topics = topicService.getByNameContains(name);
             model.addAttribute("topics", topics);
         }
 
@@ -120,25 +139,17 @@ public class TopicController {
 
     @GetMapping("/admin/topics/{page}")
     public String getByPageForAdmin(@PathVariable int page,
+                                    @RequestParam(name = "name", required = false) String name,
                                     Model model) {
         if (page < 1)
             return "redirect:/error";
 
-        PageDto<Topic> topics = topicService.getPage(page, 10);
-        model.addAttribute("topics", topics.getElements());
-        model.addAttribute("currentPage", topics.getCurrentPage());
-        model.addAttribute("totalPages", topics.getTotalPages());
-        return "admin/topics";
-    }
-
-    @GetMapping("/admin/topics/search/{page}")
-    public String getByPageAndNameForAdmin(@RequestParam(name = "name", required = false) String name,
-                                           @PathVariable int page,
-                                           Model model) {
-        if (page < 1)
-            return "redirect:/error";
-
-        PageDto<Topic> topics = topicService.getPageByName(page, 10, name);
+        PageDto<Topic> topics;
+        if (name != null) {
+            topics = topicService.getPageByName(1, 10, name);
+        } else {
+            topics = topicService.getPage(page, 10);
+        }
         model.addAttribute("topics", topics.getElements());
         model.addAttribute("currentPage", topics.getCurrentPage());
         model.addAttribute("totalPages", topics.getTotalPages());
@@ -147,25 +158,17 @@ public class TopicController {
 
     @GetMapping("/topics/{page}")
     public String getByPage(@PathVariable int page,
+                            @RequestParam(name = "name", required = false) String name,
                             Model model) {
         if (page < 1)
             return "redirect:/error";
 
-        PageDto<Topic> topics = topicService.getPage(page, 10);
-        model.addAttribute("topics", topics.getElements());
-        model.addAttribute("currentPage", topics.getCurrentPage());
-        model.addAttribute("totalPages", topics.getTotalPages());
-        return "main/topics";
-    }
-
-    @GetMapping("/topics/search/{page}")
-    public String getByPageAndName(@RequestParam(name = "name", required = false) String name,
-                                   @PathVariable int page,
-                                   Model model) {
-        if (page < 1)
-            return "redirect:/error";
-
-        PageDto<Topic> topics = topicService.getPageByName(page, 10, name);
+        PageDto<Topic> topics;
+        if (name != null) {
+            topics = topicService.getPageByName(1, 10, name);
+        } else {
+            topics = topicService.getPage(page, 10);
+        }
         model.addAttribute("topics", topics.getElements());
         model.addAttribute("currentPage", topics.getCurrentPage());
         model.addAttribute("totalPages", topics.getTotalPages());
@@ -174,39 +177,22 @@ public class TopicController {
 
     @GetMapping("/user/topics/{page}")
     public String getByPageAndUsername(@PathVariable int page,
+                                       @RequestParam(name = "name", required = false) String name,
                                        Model model) {
         if (page < 1)
             return "redirect:/error";
 
-        try {
-            PageDto<Topic> topics = topicService.getPageByUsername(page, 10,
-                    userService.getCurrentLoggedIn().getUsername());
-            model.addAttribute("topics", topics.getElements());
-            model.addAttribute("currentPage", topics.getCurrentPage());
-            model.addAttribute("totalPages", topics.getTotalPages());
-        } catch (IllegalArgumentException ex) {
-            return "redirect:/error";
+        PageDto<Topic> topics;
+        if (name != null) {
+            topics = topicService.getPageByNameAndUser(1, 10,
+                    userService.getCurrentLoggedIn(), name);
+        } else {
+            topics = topicService.getPageByUser(page, 10,
+                    userService.getCurrentLoggedIn());
         }
-
-        return "user/topics";
-    }
-
-    @GetMapping("/user/topics/search/{page}")
-    public String getByTopicsAndNameAndUsername(@PathVariable int page,
-                                                @RequestParam(name = "name", required = false) String name,
-                                                Model model) {
-        if (page < 1)
-            return "redirect:/error";
-
-        try {
-            PageDto<Topic> topics = topicService.getPageByNameAndUsername(page, 10,
-                    userService.getCurrentLoggedIn().getUsername(), name);
-            model.addAttribute("topics", topics.getElements());
-            model.addAttribute("currentPage", topics.getCurrentPage());
-            model.addAttribute("totalPages", topics.getTotalPages());
-        } catch (IllegalArgumentException ex) {
-            return "redirect:/error";
-        }
+        model.addAttribute("topics", topics.getElements());
+        model.addAttribute("currentPage", topics.getCurrentPage());
+        model.addAttribute("totalPages", topics.getTotalPages());
 
         return "user/topics";
     }
