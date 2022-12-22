@@ -256,10 +256,12 @@ public class TestController {
     public String getByUsernameAndPageAndType(@PathVariable int page,
                                               @RequestParam(name = "type", required = false) String type,
                                               @RequestParam(name = "error", required = false) String error,
+                                              @RequestParam(name = "name", required = false) String name,
                                               Model model) {
         try {
-            PageDto<Test> tests = testService.getByUser(type,
+            PageDto<Test> tests = testService.getPage(type, name,
                     userService.getCurrentLoggedIn(), page, 10);
+
             List<String> testTypes = testService.getTestTypes();
             model.addAttribute("tests", tests.getElements());
             model.addAttribute("currentPage", tests.getCurrentPage());
@@ -267,8 +269,14 @@ public class TestController {
             model.addAttribute("testTypes", testTypes);
             model.addAttribute("chosenTestType", type == null
                     ? TestType.ASSIGNED.getText() : type);
-            if (error != null && error.equals("notAssigned"))
-                model.addAttribute("error", "You are not assigned to this test!!!");
+            model.addAttribute("username", userService.getCurrentLoggedIn().getUsername());
+            if (error != null) {
+                if (error.equals("notAssigned"))
+                    model.addAttribute("error", "You are not assigned to this test!!!");
+                else if (error.equals("notUserCreated")) {
+                    model.addAttribute("error", "You did not create this test!!!");
+                }
+            }
         } catch (IllegalArgumentException ex) {
             return "redirect:/error";
         }

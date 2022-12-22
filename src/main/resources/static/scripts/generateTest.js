@@ -18,9 +18,9 @@ function addTestSubmit() {
         }
     } else {
         let name = document.getElementById("name");
-        if (name.value.length === 0) {
-            errorDiv.textContent = "Enter name!!!";
-            return false
+        if (name.value.length < 3) {
+            errorDiv.textContent = "Enter at least 3 characters for test name!!!";
+            return false;
         }
 
         let startDateString = document.getElementById("startDate").value;

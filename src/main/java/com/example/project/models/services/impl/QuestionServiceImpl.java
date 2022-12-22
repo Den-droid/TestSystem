@@ -294,23 +294,17 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<String> getQuestionTypes() {
-        return Arrays.stream(QuestionType.values())
-                .map(QuestionType::getText)
-                .collect(Collectors.toList());
+        return QuestionType.getValuesText();
     }
 
     @Override
     public List<String> getQuestionDifficulties() {
-        return Arrays.stream(QuestionDifficulty.values())
-                .map(QuestionDifficulty::getText)
-                .collect(Collectors.toList());
+        return QuestionDifficulty.getValuesText();
     }
 
     @Override
     public List<String> getAnswerTypes() {
-        return Arrays.stream(AnswerType.values())
-                .map(AnswerType::getText)
-                .collect(Collectors.toList());
+        return AnswerType.getValuesText();
     }
 
     private void changeCoefficient(List<Question> questions) {

@@ -9,10 +9,9 @@ import com.example.project.models.enums.TestType;
 import com.example.project.models.mappers.AddTestMapper;
 import com.example.project.models.repositories.*;
 import com.example.project.models.services.TestService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -20,6 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class TestServiceImpl implements TestService {
     private final TestRepository testRepository;
     private final CurrentTestRepository currentTestRepository;
@@ -174,6 +174,12 @@ public class TestServiceImpl implements TestService {
         if (finishedTestRepository.findByUserAndTest(user, test) != null)
             return;
 
+        CurrentTest currentTest = currentTestRepository.findByUserAndTest(user, test);
+        currentTestRepository.delete(currentTest);
+
+        test.getUsersAssigned().remove(user);
+        testRepository.save(test);
+
         double mark = getTestMark(test, user);
         FinishedTest finishedTest = new FinishedTest();
         finishedTest.setTest(test);
@@ -183,36 +189,34 @@ public class TestServiceImpl implements TestService {
         finishedTestRepository.save(finishedTest);
     }
 
-    @Override
-    public PageDto<Test> getByUser(String type, User user, int page, int limit) {
+    public PageDto<Test> getPage(String type, String name, User user, int page, int limit) {
         TestType testType = TestType.ASSIGNED;
         String username = user.getUsername();
+        List<Test> tests;
         if (type != null)
             testType = TestType.getByText(type);
         switch (testType) {
             case ASSIGNED:
-                Page<Test> tests = getAssignedToUserByUsername(username, page, limit);
-                List<Test> testList = tests.getContent();
-                return new PageDto<>(testList, page, tests.getTotalPages());
+                tests = getAssignedToUserByUsername(username);
+                break;
             case FINISHED:
-                Page<CurrentTest> currentTests = getCurrentOfUserByUsername(username, page, limit);
-                List<Test> currentTestsList = currentTests.getContent().stream()
-                        .map(CurrentTest::getTest)
-                        .collect(Collectors.toList());
-                return new PageDto<>(currentTestsList, page, currentTests.getTotalPages());
+                tests = getFinishedByUser(user);
+                break;
             case CURRENT:
-                Page<FinishedTest> finishedTests = getFinishedByUsername(username, page, limit);
-                List<Test> finishedTestsList = finishedTests.getContent().stream()
-                        .map(FinishedTest::getTest)
-                        .collect(Collectors.toList());
-                return new PageDto<>(finishedTestsList, page, finishedTests.getTotalPages());
+                tests = getCurrentOfUserByUser(user);
+                break;
             case CREATED:
-                Page<Test> userCreatedTest = getCreatedByUser(username, page, limit);
-                List<Test> userCreatedTestsList = userCreatedTest.getContent();
-                return new PageDto<>(userCreatedTestsList, page, userCreatedTest.getTotalPages());
+                tests = getCreatedByUser(user);
+                break;
             default:
                 throw new IllegalArgumentException();
         }
+        if (name != null && !name.equals("")) {
+            tests = tests.stream()
+                    .filter(x -> x.getName().toLowerCase().contains(name.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        return getPageByList(tests, page, limit);
     }
 
     @Override
@@ -390,16 +394,12 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public List<String> getTestDifficulties() {
-        return Arrays.stream(TestDifficulty.values())
-                .map(TestDifficulty::getText)
-                .collect(Collectors.toList());
+        return TestDifficulty.getValuesText();
     }
 
     @Override
     public List<String> getTestTypes() {
-        return Arrays.stream(TestType.values())
-                .map(TestType::getText)
-                .collect(Collectors.toList());
+        return TestType.getValuesText();
     }
 
     private double getTestMark(Test test, User user) {
@@ -631,25 +631,35 @@ public class TestServiceImpl implements TestService {
         test.setQuestions(testQuestions);
     }
 
-    private Page<Test> getAssignedToUserByUsername(String username, int page, int limit) {
-        return testRepository.findTestsByUsersAssignedUsername(
-                username, PageRequest.of(page - 1, limit));
+    private List<Test> getAssignedToUserByUsername(String username) {
+        return testRepository.findTestsByUsersAssignedUsername(username);
     }
 
-    private Page<FinishedTest> getFinishedByUsername(String username, int page, int limit) {
-        return finishedTestRepository.findFinishedTestsByUser(
-                userRepository.findByUsernameIgnoreCase(username), PageRequest.of(page - 1, limit)
-        );
+    private List<Test> getFinishedByUser(User user) {
+        List<FinishedTest> finishedTests = finishedTestRepository.findFinishedTestsByUser(user);
+        return finishedTests.stream()
+                .map(FinishedTest::getTest)
+                .collect(Collectors.toList());
     }
 
-    private Page<CurrentTest> getCurrentOfUserByUsername(String username, int page, int limit) {
-        return currentTestRepository.findCurrentTestsByUser(
-                userRepository.findByUsernameIgnoreCase(username), PageRequest.of(page - 1, limit)
-        );
+    private List<Test> getCurrentOfUserByUser(User user) {
+        List<CurrentTest> currentTests = currentTestRepository.findCurrentTestsByUser(user);
+        return currentTests.stream()
+                .map(CurrentTest::getTest)
+                .collect(Collectors.toList());
     }
 
-    private Page<Test> getCreatedByUser(String username, int page, int limit) {
-        return testRepository.findAllByUserCreated(
-                userRepository.findByUsernameIgnoreCase(username), PageRequest.of(page - 1, limit));
+    private List<Test> getCreatedByUser(User user) {
+        return testRepository.findAllByUserCreated(user);
+    }
+
+    private PageDto<Test> getPageByList(List<Test> tests, int page, int limit) {
+        tests = tests.stream()
+                .skip((long) (page - 1) * limit)
+                .limit(limit)
+                .collect(Collectors.toList());
+        int totalPages = tests.size() / limit;
+        totalPages += tests.size() % limit > 0 ? 1 : 0;
+        return new PageDto<>(tests, page, totalPages);
     }
 }

@@ -1,6 +1,8 @@
 package com.example.project.models.enums;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public enum TestDifficulty {
     LOW("Low", 0.2),
@@ -22,6 +24,12 @@ public enum TestDifficulty {
         return Arrays.stream(TestDifficulty.values())
                 .filter(x -> x.getText().equals(text))
                 .findFirst().orElseThrow(IllegalArgumentException::new);
+    }
+
+    public static List<String> getValuesText() {
+        return Arrays.stream(TestDifficulty.values())
+                .map(TestDifficulty::getText)
+                .collect(Collectors.toList());
     }
 
     public String getText() {

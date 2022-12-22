@@ -2,17 +2,14 @@ package com.example.project.models.repositories;
 
 import com.example.project.models.entities.Test;
 import com.example.project.models.entities.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface TestRepository extends PagingAndSortingRepository<Test, String> {
+public interface TestRepository extends JpaRepository<Test, String> {
     List<Test> findTestsByTopicsId(Integer topics_id);
 
-    Page<Test> findTestsByUsersAssignedUsername(String usersAssigned_username,
-                                                Pageable pageable);
+    List<Test> findTestsByUsersAssignedUsername(String usersAssigned_username);
 
-    Page<Test> findAllByUserCreated(User user, Pageable pageable);
+    List<Test> findAllByUserCreated(User user);
 }

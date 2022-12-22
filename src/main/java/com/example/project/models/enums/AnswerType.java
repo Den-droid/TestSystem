@@ -1,6 +1,8 @@
 package com.example.project.models.enums;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public enum AnswerType {
     SINGLE("Single"),
@@ -18,6 +20,12 @@ public enum AnswerType {
         return Arrays.stream(AnswerType.values())
                 .filter(x -> x.getText().equals(text))
                 .findFirst().orElseThrow(IllegalArgumentException::new);
+    }
+
+    public static List<String> getValuesText() {
+        return Arrays.stream(AnswerType.values())
+                .map(AnswerType::getText)
+                .collect(Collectors.toList());
     }
 
     public String getText() {

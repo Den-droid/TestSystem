@@ -19,7 +19,7 @@ public interface TestService {
 
     void finish(User user, String testId);
 
-    PageDto<Test> getByUser(String type, User user, int page, int limit);
+    PageDto<Test> getPage(String type, String name, User user, int page, int limit);
 
     Test getById(String id);
 

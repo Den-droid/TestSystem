@@ -19,7 +19,7 @@
 <div id="error"></div>
 <div id="topics">
     <p th:if="${#lists.isEmpty(topics)}">
-        There is no topics with such parameters!!!
+        There are no topics with such parameters!!!
     </p>
     <div th:each="topic : ${topics}">
         <h4 th:text="${topic.name}"></h4>
