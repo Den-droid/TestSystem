@@ -49,9 +49,7 @@
                 <input type="text" class="form-control" id="email" name="email">
             </div>
         </div>
-        <div class="alert alert-danger" role="alert" id="error"
-             th:style="'display: ' + ${error eq null ? 'none' : 'block'}"
-             th:text="${error ?: ''}">
+        <div th:replace="fragments/general.html :: error(error=${error})">
         </div>
         <button type="reset" class="btn btn-primary mb-3">Reset</button>
         <button type="submit" style="float: right" class="btn btn-primary mb-3" id="submit">Register</button>

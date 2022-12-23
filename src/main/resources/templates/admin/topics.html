@@ -1,35 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Admin Topics</title>
-    <link href="/static/styles/error.css" rel="stylesheet">
-    <link href="/static/styles/common.css" rel="stylesheet">
+    <th:block th:include="fragments/general.html :: headerfiles">
+    </th:block>
 </head>
 <body>
-<div>
-    <h3>Search for Topics</h3>
-    <form method="get" onsubmit="return validateTopicSearch()">
-        <label> Enter name:
-            <input type="text" name="name">
-        </label>
-        <input type="submit" value="Search">
-    </form>
-</div>
-<div id="error"></div>
-<div id="topics">
-    <p th:if="${#lists.isEmpty(topics)}">
-        There are no topics with such parameters!!!
-    </p>
-    <div th:each="topic : ${topics}">
-        <h4 th:text="${topic.name}"></h4>
-        <a th:href="@{/topics/delete/{id}(id=${topic.id})}">Delete</a>
-        <a th:href="@{/admin/topic/{id}/questions(id=${topic.id})}">Questions</a>
+<header th:insert="fragments/general.html :: adminHeader">
+</header>
+<main>
+    <div>
+        <h3>Search for Topics</h3>
+        <form method="get" th:action="@{/admin/topics/search}" onsubmit="return validateSearch()">
+            <div class="mb-3 row">
+                <label for="query" class="col-sm-4 col-form-label">Enter name: </label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="query" name="query">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mb-3" id="submit">Search</button>
+        </form>
     </div>
-</div>
-<div id="pagination">
-
-</div>
+    <div th:replace="fragments/general.html :: error(error=${error})">
+    </div>
+    <button class="btn btn-secondary mb-3">
+        <a style="color: white" th:href="@{/topics/add}">
+            Add Topic
+        </a>
+    </button>
+    <div id="topics">
+        <h2 class="title">Topics</h2>
+        <p th:if="${#lists.isEmpty(topics)}">
+            There are no topics with such parameters!!!
+        </p>
+        <div class="topic" th:each="topic : ${topics}">
+            <h4 class="topicName" th:text="${topic.name}"></h4>
+            <a th:href="@{/topics/delete/{id}(id=${topic.id})}">Delete Topic</a>
+            <a th:href="@{/admin/topic/{id}/questions(id=${topic.id})}">Topic Questions</a>
+        </div>
+    </div>
+    <div th:replace="fragments/general.html :: pagination(isSearch=${isSearch}, query=${name}, currentPage = 5,
+                                                            totalPages = 8)">
+    </div>
+</main>
+<footer th:replace="fragments/general.html :: footer">
+</footer>
 <script src="/static/scripts/searchValidation.js" type="text/javascript"></script>
+<th:block th:include="fragments/general.html :: scriptfiles">
+</th:block>
 </body>
 </html>

@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Error</title>
-    <link th:href="@{/styles/error.css}" type="text/css">
+    <th:block th:include="fragments/general.html :: headerfiles">
+    </th:block>
 </head>
 <body>
-<div id="error" style="font-size: large">
-    Error has occurred. Do not change anything in url!!!
-</div>
+<header th:insert="fragments/general.html :: guestHeader">
+</header>
+<main>
+    <div class="alert alert-danger" role="alert">
+        Error has occurred. Do not change anything in url!!!
+    </div>
+</main>
+<footer th:replace="fragments/general.html :: footer">
+</footer>
+<th:block th:include="fragments/general.html :: scriptfiles">
+</th:block>
 </body>
 </html>

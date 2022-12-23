@@ -1,5 +1,6 @@
 function validateLogin() {
     let errorDiv = document.getElementById("error");
+    errorDiv.style.display = "block";
 
     let username = document.getElementById("username");
     let password = document.getElementById("password");
@@ -11,5 +12,7 @@ function validateLogin() {
         return false
     }
 
-    return true
+    errorDiv.style.display = "none";
+
+    return true;
 }

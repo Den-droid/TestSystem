@@ -14,12 +14,11 @@ a {
 #header, #footer {
     width: 100%;
     background-color: darkkhaki;
-    min-height: 10%;
-    height: auto;
-    padding: 25px;
+    height: 12%;
+    padding: 15px;
 }
 
-#header{
+#header {
     text-align: right;
 }
 
@@ -34,9 +33,25 @@ a {
 main {
     margin-left: auto;
     margin-right: auto;
-    width: 600px;
+    width: 50%;
     padding: 15px;
     background-color: antiquewhite;
-    min-height: 79.5%;
+    min-height: 80.5%;
     height: auto;
+}
+
+.topic {
+    border: 5px solid sandybrown;
+    margin: 5px 5px;
+    padding: 5px;
+}
+
+.topicName, .topic > a {
+    margin-left: 10px;
+}
+
+#footerText, #pagination {
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
 }
