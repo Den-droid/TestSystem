@@ -1,5 +1,6 @@
 function validateRegister() {
     let errorDiv = document.getElementById("error");
+    errorDiv.style.display = "block";
 
     let username = document.getElementById("username");
     let password = document.getElementById("password");
@@ -31,6 +32,8 @@ function validateRegister() {
         errorDiv.textContent = "Enter email!!!";
         return false;
     }
+
+    errorDiv.style.display = "none";
 
     return true;
 }

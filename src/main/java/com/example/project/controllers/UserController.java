@@ -17,14 +17,14 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/user/profile")
+    @GetMapping("/profile")
     public String getProfilePage(Model model) {
         User user = userService.getCurrentLoggedIn();
         model.addAttribute("user", userService.getProfile(user));
         return "user/profile";
     }
 
-    @PostMapping("/user/profile")
+    @PostMapping("/profile")
     public String changeUser(@ModelAttribute(name = "editProfile") EditUserDto dto,
                              Model model) {
         User user = userService.getCurrentLoggedIn();

@@ -1,3 +1,42 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    font-size: medium;
+    background-color: #b8ffa3;
+}
+
 a {
     text-decoration: none;
+}
+
+#header, #footer {
+    width: 100%;
+    background-color: darkkhaki;
+    min-height: 10%;
+    height: auto;
+    padding: 25px;
+}
+
+#header{
+    text-align: right;
+}
+
+#footer {
+    text-align: center;
+}
+
+#header > a, #footer > a {
+    margin-right: 10px;
+}
+
+main {
+    margin-left: auto;
+    margin-right: auto;
+    width: 600px;
+    padding: 15px;
+    background-color: antiquewhite;
+    min-height: 79.5%;
+    height: auto;
 }
