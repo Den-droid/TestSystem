@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pagination Fragments</title>
+</head>
+<body>
+<div th:fragment="pagination(isTests, testType, isSearch, query, currentPage, totalPages)" id="pagination">
+    <form method="get">
+        <nav aria-label="...">
+            <ul class="pagination justify-content-center">
+
+                <th:block th:if="${totalPages < 9}">
+                    <li th:each="page : ${#numbers.sequence(1, totalPages)}"
+                        th:class="'page-item' + ${page == currentPage ? ' active' : ''}"
+                        th:aria-current="${page == currentPage ? 'page' : ''}">
+
+                        <th:block th:include="fragments/pagination ::
+                                        paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${page})">
+                        </th:block>
+                    </li>
+                </th:block>
+
+                <th:block th:if="${currentPage >= 5 and currentPage <= totalPages - 5 and totalPages > 9}">
+
+                </th:block>
+
+                <th:block th:if="${currentPage < 5 and totalPages > 9}">
+                    <li th:each="page : ${#numbers.sequence(1, 7)}"
+                        th:class="'page-item' + ${page == currentPage ? ' active' : ''}"
+                        th:aria-current="${page == currentPage ? 'page' : ''}">
+
+                        <th:block th:include="fragments/pagination ::
+                                        paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${page})">
+                        </th:block>
+                    </li>
+                    <li class="page-item">
+                        <th:block th:include="fragments/pagination ::
+                                        paginationLinkDots(isTests, testType, isSearch, query, 8)">
+                        </th:block>
+                    </li>
+                    <li class="page-item">
+                        <th:block th:include="fragments/pagination ::
+                                        paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${totalPages})">
+                        </th:block>
+                    </li>
+                </th:block>
+
+                <th:block th:if="${totalPages - 5 < currentPage and totalPages > 9}">
+                    <li class="page-item">
+                        <th:block th:include="fragments/pagination ::
+                                        paginationLink(isTests, testType, isSearch, query, 1)">
+                        </th:block>
+                    </li>
+                    <li class="page-item">
+                        <th:block th:include="fragments/pagination ::
+                                        paginationLinkDots(${isTests}, ${testType}, ${isSearch}, ${query}, ${totalPages - 7})">
+                        </th:block>
+                    </li>
+                    <li th:each="page : ${#numbers.sequence(1, 7)}"
+                        th:class="'page-item' + ${page == currentPage ? ' active' : ''}"
+                        th:aria-current="${page == currentPage ? 'page' : ''}">
+
+                        <th:block th:include="fragments/pagination ::
+                                        paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${totalPages})">
+                        </th:block>
+                    </li>
+                </th:block>
+
+            </ul>
+        </nav>
+    </form>
+</div>
+<th:block th:fragment="paginationLink(isTests, testType, isSearch, query, page)">
+    <th:block th:if="${isSearch eq null and isTests eq null}">
+        <a class="page-link" th:text="${page}"
+           th:href="@{{page}(page=${page})}"></a>
+    </th:block>
+
+    <th:block th:if="${isSearch ne null and isTests eq null}">
+        <a class="page-link" th:text="${page}"
+           th:href="@{search(page=${page}, query=${query})}"></a>
+    </th:block>
+
+    <th:block th:if="${isSearch eq null and isTests ne null}">
+        <a class="page-link" th:text="${page}"
+           th:href="@{{page}(page=${page}, type=${testType})}"></a>
+    </th:block>
+
+    <th:block th:if="${isSearch ne null and isTests ne null}">
+        <a class="page-link" th:text="${page}"
+           th:href="@{search(page=${page}, query=${query}, type=${testType})}"></a>
+    </th:block>
+</th:block>
+
+<th:block th:fragment="paginationLinkDots(isTests, testType, isSearch, query, page)">
+    <th:block th:if="${isSearch eq null and isTests eq null}">
+        <a class="page-link" th:text="..."
+           th:href="@{{page}(page=${page})}"></a>
+    </th:block>
+
+    <th:block th:if="${isSearch ne null and isTests eq null}">
+        <a class="page-link" th:text="..."
+           th:href="@{search(page=${page}, query=${query})}"></a>
+    </th:block>
+
+    <th:block th:if="${isSearch eq null and isTests ne null}">
+        <a class="page-link" th:text="..."
+           th:href="@{{page}(page=${page}, type=${testType})}"></a>
+    </th:block>
+
+    <th:block th:if="${isSearch ne null and isTests ne null}">
+        <a class="page-link" th:text="..."
+           th:href="@{search(page=${page}, query=${query}, type=${testType})}"></a>
+    </th:block>
+</th:block>
+</body>
+</html>
