@@ -40,13 +40,13 @@ main {
     height: auto;
 }
 
-.topic {
+.topic, .question, .test {
     border: 5px solid sandybrown;
     margin: 5px 5px;
     padding: 5px;
 }
 
-.topicName, .topic > a {
+.topicName, .questionText, .testName .question > a, .question > p, .topic > a {
     margin-left: 10px;
 }
 

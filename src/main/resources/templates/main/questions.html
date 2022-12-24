@@ -1,37 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Questions</title>
-    <link href="/static/styles/error.css" rel="stylesheet">
-    <link href="/static/styles/common.css" rel="stylesheet">
+    <th:block th:include="fragments/general.html :: headerfiles">
+    </th:block>
 </head>
 <body>
-<div>
-    <h3>Search for Questions</h3>
-    <form method="get" onsubmit="return validateQuestionSearch()">
-        <label> Enter text:
-            <input type="text" name="text">
-        </label>
-        <input type="submit" value="Search">
-    </form>
-</div>
-<div id="error" th:text="${error ?: ''}"></div>
-<div id="questions">
-    <p th:if="${#lists.isEmpty(questions)}">
-        There are no questions with such parameters!!!
-    </p>
-    <div th:each="question, questionStat : ${questions}">
-        <h4 th:text="${#strings.length(question.text) > 100
+<th:block th:switch="${#authentication.authorities[0].authority}">
+    <header th:case="'USER'"
+            th:insert="fragments/general.html :: userHeader">
+    </header>
+    <header th:case="'ADMIN'"
+            th:insert="fragments/general.html :: adminHeader">
+    </header>
+    <header th:case="*"
+            th:insert="fragments/general.html :: guestHeader">
+    </header>
+</th:block>
+<main>
+    <div>
+        <h3>Search for Questions</h3>
+        <form method="get" th:action="@{search}" onsubmit="return validateSearch()">
+            <div class="mb-3 row">
+                <label for="query" class="col-sm-4 col-form-label">Enter text: </label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="query" name="query">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mb-3" id="submit">Search</button>
+        </form>
+    </div>
+    <div th:replace="fragments/general.html :: error(null)">
+    </div>
+    <div>
+        <h2>Questions for Topic "<span th:text="${topicName}"></span>"</h2>
+        <p th:if="${#lists.isEmpty(questions)}">
+            There are no questions with such parameters!!!
+        </p>
+        <div class="question" th:each="question, questionStat : ${questions}">
+            <h4 class="questionText"
+                th:text="${#strings.length(question.text) > 100
                 ? #strings.substring(question.text, 0, 100)
                 : question.text}"></h4>
-        <p th:text="'Correct Answers: '${statistics[questionStat.index].correctAnswers}"></p>
-        <p th:text="'Wrong Answers: '${statistics[questionStat.index].wrongAnswers}"></p>
+            <p th:text="'Correct Answers: ' + ${statistics[questionStat.index].correctAnswers}"></p>
+            <p th:text="'Wrong Answers: ' + ${statistics[questionStat.index].wrongAnswers}"></p>
+        </div>
     </div>
-</div>
-<div id="pagination">
-
-</div>
+    <div th:replace="fragments/pagination.html :: pagination(null, null, ${isSearch},
+                                                                ${text}, 7, 35)">
+    </div>
+</main>
+<footer th:replace="fragments/general.html :: footer">
+</footer>
 <script src="/static/scripts/searchValidation.js" type="text/javascript"></script>
+<th:block th:include="fragments/general.html :: scriptfiles">
+</th:block>
 </body>
 </html>

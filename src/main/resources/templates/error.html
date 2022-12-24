@@ -6,8 +6,17 @@
     </th:block>
 </head>
 <body>
-<header th:insert="fragments/general.html :: guestHeader">
-</header>
+<th:block th:switch="${#authentication.authorities[0].authority}">
+    <header th:case="'USER'"
+            th:insert="fragments/general.html :: userHeader">
+    </header>
+    <header th:case="'ADMIN'"
+            th:insert="fragments/general.html :: adminHeader">
+    </header>
+    <header th:case="*"
+            th:insert="fragments/general.html :: guestHeader">
+    </header>
+</th:block>
 <main>
     <div class="alert alert-danger" role="alert">
         Error has occurred. Do not change anything in url!!!

@@ -11,7 +11,7 @@
 <main>
     <div>
         <h3>Search for Topics</h3>
-        <form method="get" th:action="@{/admin/topics/search}" onsubmit="return validateSearch()">
+        <form method="get" th:action="@{search}" onsubmit="return validateSearch()">
             <div class="mb-3 row">
                 <label for="query" class="col-sm-4 col-form-label">Enter name: </label>
                 <div class="col-sm-8">
@@ -23,13 +23,8 @@
     </div>
     <div th:replace="fragments/general.html :: error(${error})">
     </div>
-    <button class="btn btn-secondary mb-3">
-        <a style="color: white" th:href="@{/topics/add}">
-            Add Topic
-        </a>
-    </button>
-    <div id="topics">
-        <h2 class="title">Topics</h2>
+    <div>
+        <h2>Topics</h2>
         <p th:if="${#lists.isEmpty(topics)}">
             There are no topics with such parameters!!!
         </p>
@@ -39,7 +34,8 @@
             <a th:href="@{/admin/topic/{id}/questions(id=${topic.id})}">Topic Questions</a>
         </div>
     </div>
-    <div th:replace="fragments/pagination.html :: pagination(null, null, ${isSearch}, ${name}, 35, 35)">
+    <div th:replace="fragments/pagination.html :: pagination(null, null, ${isSearch},
+                                                                ${name}, ${currentPage}, ${totalPages})">
     </div>
 </main>
 <footer th:replace="fragments/general.html :: footer">

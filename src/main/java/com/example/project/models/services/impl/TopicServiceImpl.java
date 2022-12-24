@@ -18,6 +18,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -133,5 +134,12 @@ public class TopicServiceImpl implements TopicService {
             return topicRepository.findAllByNameContainsIgnoreCase(namePart);
         return topicRepository.findAllByNameContainsIgnoreCaseAndNameNotIn(
                 namePart, namesNotIn);
+    }
+
+    @Override
+    public List<String> getTopicNamesByQuestions(List<Question> questions) {
+        return questions.stream()
+                .map(x -> x.getTopic().getName())
+                .collect(Collectors.toList());
     }
 }

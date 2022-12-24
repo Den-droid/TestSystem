@@ -152,7 +152,7 @@ public class TopicController {
 
     @GetMapping("/admin/topics/search")
     public String getByPageForAdmin(@RequestParam(name = "page", required = false) Integer page,
-                                    @RequestParam(name = "query", required = false) String name,
+                                    @RequestParam(name = "query") String name,
                                     Model model) {
         if (page == null)
             page = 1;
@@ -185,7 +185,7 @@ public class TopicController {
 
     @GetMapping("/topics/search")
     public String getByPage(@RequestParam(name = "page", required = false) Integer page,
-                            @RequestParam(name = "query", required = false) String name,
+                            @RequestParam(name = "query") String name,
                             Model model) {
         if (page == null)
             page = 1;
@@ -220,7 +220,7 @@ public class TopicController {
 
     @GetMapping("/user/topics/search")
     public String getByPageAndUsername(@RequestParam(name = "page", required = false) Integer page,
-                                       @RequestParam(name = "query", required = false) String name,
+                                       @RequestParam(name = "query") String name,
                                        Model model) {
         if (page == null)
             page = 1;

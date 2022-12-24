@@ -134,29 +134,49 @@ public class QuestionController {
     @GetMapping("/admin/topic/{id}/questions/{page}")
     public String getByPageAndTopicForAdmin(@PathVariable int id,
                                             @PathVariable int page,
-                                            @RequestParam(name = "text", required = false) String text,
                                             @RequestParam(name = "error", required = false) String error,
                                             Model model) {
         if (page < 1)
             return "redirect:/error";
 
         try {
-            PageDto<Question> questions;
-            if (text != null) {
-                questions = questionService.getPageByTopicAndName(text, id, 1, 10);
-            } else {
-                questions = questionService.getPageByTopic(id, page, 10);
-            }
+            PageDto<Question> questions = questionService.getPageByTopic(id, page, 10);
             model.addAttribute("questions", questions.getElements());
             model.addAttribute("currentPage", questions.getCurrentPage());
             model.addAttribute("totalPages", questions.getTotalPages());
+            model.addAttribute("topicName", topicService.getById(id).getName());
         } catch (NoSuchElementException ex) {
             return "redirect:/error";
         }
 
-        if (error != null && error.equals("delete"))
-            model.addAttribute("error", "You can't delete this question because " +
-                    "it's used somewhere else");
+        if (error != null && (error.equals("delete") || error.equals("edit")))
+            model.addAttribute("error", "You can't do this action because " +
+                    "this question because it's used somewhere else");
+
+        return "admin/questions";
+    }
+
+    @GetMapping("/admin/topic/{id}/questions/search")
+    public String getByPageAndTopicAndNameForAdmin(@PathVariable int id,
+                                                   @RequestParam(name = "query") String text,
+                                                   @RequestParam(name = "page", required = false) Integer page,
+                                                   Model model) {
+        if (page == null)
+            page = 1;
+        else if (page < 1)
+            return "redirect:/error";
+
+        try {
+            PageDto<Question> questions = questionService.getPageByTopicAndName(text, id, page, 10);
+            model.addAttribute("questions", questions.getElements());
+            model.addAttribute("currentPage", questions.getCurrentPage());
+            model.addAttribute("totalPages", questions.getTotalPages());
+            model.addAttribute("isSearch", true);
+            model.addAttribute("text", text);
+            model.addAttribute("topicName", topicService.getById(id).getName());
+        } catch (NoSuchElementException ex) {
+            return "redirect:/error";
+        }
 
         return "admin/questions";
     }
@@ -164,22 +184,44 @@ public class QuestionController {
     @GetMapping("/topic/{id}/questions/{page}")
     public String getByPageAndTopic(@PathVariable int page,
                                     @PathVariable int id,
-                                    @RequestParam(name = "text", required = false) String text,
                                     Model model) {
         if (page < 1)
             return "redirect:/error";
 
         try {
-            PageDto<Question> questions;
-            if (text != null) {
-                questions = questionService.getPageByTopicAndName(text, id, 1, 10);
-            } else {
-                questions = questionService.getPageByTopic(id, page, 10);
-            }
+            PageDto<Question> questions = questionService.getPageByTopic(id, page, 10);
+
             model.addAttribute("questions", questions.getElements());
             model.addAttribute("currentPage", questions.getCurrentPage());
             model.addAttribute("totalPages", questions.getTotalPages());
             model.addAttribute("statistics", questionService.getStatistic(questions.getElements()));
+            model.addAttribute("topicName", topicService.getById(id).getName());
+        } catch (NoSuchElementException ex) {
+            return "redirect:/error";
+        }
+
+        return "main/questions";
+    }
+
+    @GetMapping("/topic/{id}/questions/search")
+    public String getByPageAndTopicAndName(@PathVariable int id,
+                                           @RequestParam(name = "query") String text,
+                                           @RequestParam(name = "page", required = false) Integer page,
+                                           Model model) {
+        if (page == null)
+            page = 1;
+        else if (page < 1)
+            return "redirect:/error";
+
+        try {
+            PageDto<Question> questions = questionService.getPageByTopicAndName(text, id, page, 10);
+            model.addAttribute("questions", questions.getElements());
+            model.addAttribute("currentPage", questions.getCurrentPage());
+            model.addAttribute("totalPages", questions.getTotalPages());
+            model.addAttribute("statistics", questionService.getStatistic(questions.getElements()));
+            model.addAttribute("isSearch", true);
+            model.addAttribute("text", text);
+            model.addAttribute("topicName", topicService.getById(id).getName());
         } catch (NoSuchElementException ex) {
             return "redirect:/error";
         }
@@ -189,33 +231,47 @@ public class QuestionController {
 
     @GetMapping("/user/questions/{page}")
     public String getByPageAndUsername(@PathVariable int page,
-                                       @RequestParam(name = "text", required = false) String text,
                                        @RequestParam(name = "error", required = false) String error,
                                        Model model) {
         if (page < 1)
             return "redirect:/error";
 
-        PageDto<Question> questions;
-        if (text != null) {
-            questions = questionService.getPageByUserAndName(
-                    userService.getCurrentLoggedIn(), text, 1, 10);
-        } else {
-            questions = questionService.getPageByUser(
-                    userService.getCurrentLoggedIn(), page, 10);
-        }
+        PageDto<Question> questions = questionService.getPageByUser(
+                userService.getCurrentLoggedIn(), page, 10);
+
         model.addAttribute("questions", questions.getElements());
         model.addAttribute("currentPage", questions.getCurrentPage());
         model.addAttribute("totalPages", questions.getTotalPages());
         model.addAttribute("statistics", questionService.getStatistic(questions.getElements()));
+        model.addAttribute("topicNames", topicService.
+                getTopicNamesByQuestions(questions.getElements()));
 
-        if (error != null) {
-            if (error.equals("edit"))
-                model.addAttribute("error", "You can't edit this question because " +
-                        "it's used somewhere else");
-            if (error.equals("delete"))
-                model.addAttribute("error", "You can't delete this question because " +
-                        "it's used somewhere else");
-        }
+        if (error != null && (error.equals("delete") || error.equals("edit")))
+            model.addAttribute("error", "You can't do this action because " +
+                    "this question because it's used somewhere else");
+
+        return "user/questions";
+    }
+
+    @GetMapping("/user/questions/search")
+    public String getByPageAndUsernameAndName(@RequestParam(name = "query") String text,
+                                              @RequestParam(name = "page", required = false) Integer page,
+                                              Model model) {
+        if (page == null)
+            page = 1;
+        else if (page < 1)
+            return "redirect:/error";
+
+        PageDto<Question> questions = questionService.getPageByUserAndName(
+                userService.getCurrentLoggedIn(), text, page, 10);
+        model.addAttribute("questions", questions.getElements());
+        model.addAttribute("currentPage", questions.getCurrentPage());
+        model.addAttribute("totalPages", questions.getTotalPages());
+        model.addAttribute("isSearch", true);
+        model.addAttribute("text", text);
+        model.addAttribute("statistics", questionService.getStatistic(questions.getElements()));
+        model.addAttribute("topicNames", topicService
+                .getTopicNamesByQuestions(questions.getElements()));
 
         return "user/questions";
     }

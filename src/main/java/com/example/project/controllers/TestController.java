@@ -256,8 +256,47 @@ public class TestController {
     public String getByUsernameAndPageAndType(@PathVariable int page,
                                               @RequestParam(name = "type", required = false) String type,
                                               @RequestParam(name = "error", required = false) String error,
-                                              @RequestParam(name = "name", required = false) String name,
                                               Model model) {
+        if (page < 1)
+            return "redirect:/error";
+
+        try {
+            PageDto<Test> tests = testService.getPage(type, null,
+                    userService.getCurrentLoggedIn(), page, 10);
+
+            List<String> testTypes = testService.getTestTypes();
+            model.addAttribute("tests", tests.getElements());
+            model.addAttribute("currentPage", tests.getCurrentPage());
+            model.addAttribute("totalPages", tests.getTotalPages());
+            model.addAttribute("testTypes", testTypes);
+            model.addAttribute("chosenTestType", type == null
+                    ? TestType.ASSIGNED.getText() : type);
+            model.addAttribute("username", userService.getCurrentLoggedIn().getUsername());
+            model.addAttribute("isTests", true);
+            if (error != null) {
+                if (error.equals("notAssigned"))
+                    model.addAttribute("error", "You are not assigned to this test!!!");
+                else if (error.equals("notUserCreated")) {
+                    model.addAttribute("error", "You did not create this test!!!");
+                }
+            }
+        } catch (IllegalArgumentException ex) {
+            return "redirect:/error";
+        }
+
+        return "user/tests";
+    }
+
+    @GetMapping("/user/tests/search")
+    public String getByUsernameAndPageAndTypeAndName(@RequestParam(name = "type", required = false) String type,
+                                                     @RequestParam(name = "page", required = false) Integer page,
+                                                     @RequestParam(name = "query") String name,
+                                                     Model model) {
+        if (page == null)
+            page = 1;
+        else if (page < 1)
+            return "redirect:/error";
+
         try {
             PageDto<Test> tests = testService.getPage(type, name,
                     userService.getCurrentLoggedIn(), page, 10);
@@ -270,13 +309,9 @@ public class TestController {
             model.addAttribute("chosenTestType", type == null
                     ? TestType.ASSIGNED.getText() : type);
             model.addAttribute("username", userService.getCurrentLoggedIn().getUsername());
-            if (error != null) {
-                if (error.equals("notAssigned"))
-                    model.addAttribute("error", "You are not assigned to this test!!!");
-                else if (error.equals("notUserCreated")) {
-                    model.addAttribute("error", "You did not create this test!!!");
-                }
-            }
+            model.addAttribute("isTests", true);
+            model.addAttribute("isSearch", true);
+            model.addAttribute("name", name);
         } catch (IllegalArgumentException ex) {
             return "redirect:/error";
         }

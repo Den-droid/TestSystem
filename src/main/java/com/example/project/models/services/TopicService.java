@@ -1,6 +1,7 @@
 package com.example.project.models.services;
 
 import com.example.project.dto.page.PageDto;
+import com.example.project.models.entities.Question;
 import com.example.project.models.entities.Topic;
 import com.example.project.models.entities.User;
 import org.springframework.data.domain.Page;
@@ -31,4 +32,6 @@ public interface TopicService {
     boolean existsById(int id);
 
     List<Topic> getByNameContainsAndNamesNot(String namePart, List<String> namesNotIn);
+
+    List<String> getTopicNamesByQuestions(List<Question> questions);
 }

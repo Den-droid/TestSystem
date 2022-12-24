@@ -1,62 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Your Tests</title>
-    <link href="/static/styles/error.css" rel="stylesheet">
-    <link href="/static/styles/common.css" rel="stylesheet">
+    <th:block th:include="fragments/general.html :: headerfiles">
+    </th:block>
 </head>
 <body>
-<div>
-    <form method="get" onsubmit="return validateTestSearch()">
-        <label> Enter name:
-            <input type="text" name="name">
-        </label>
-        <input type="submit" value="Search">
-        <br>
-        <label> Select type:
-            <select name="type">
-                <option th:each="type : ${testTypes}"
-                        th:selected="${chosenTestType eq type}"
-                        th:value="${type}"
-                        th:text="${type}">
-                </option>
-            </select>
-        </label>
-        <br>
-        <input type="submit" value="Apply">
-    </form>
-</div>
-<div id="error" th:text="${error ?: ''}"></div>
-<button>
-    <a th:href="@{/tests/generate}">Generate Test</a>
-</button>
-<div id="tests">
-    <p th:if="${#lists.isEmpty(tests)}">
-        There are no tests with such parameters!!!
-    </p>
-    <div th:each="test : ${tests}">
-        <h4 th:text="${#strings.length(test.name) > 100
-                ? #strings.substring(test.name, 0, 100)
-                : test.name}"></h4>
-        <th:block th:switch="${chosenTestType}">
-            <a th:case="'Assigned'"
-               th:href="@{/test/{testId}/intro(testId=${test.id})}"> Start
-            </a>
-            <a th:case="'Created'"
-               th:href="@{/test/{testId}/results(testId=${test.id})}"> Results
-            </a>
-            <a th:case="'Finished'"
-               th:href="@{/test/{testId}/results(testId=${test.id}, user=${username})}"> Result
-            </a>
-            <a th:case="'Current'"
-               th:href="@{/test/{testId}/walkthrough(testId=${test.id})}"> Continue
-            </a>
-        </th:block>
+<header th:insert="fragments/general.html :: userHeader">
+</header>
+<main>
+    <div>
+        <h3>Search for Tests</h3>
+        <form method="get" th:action="@{search}" onsubmit="return validateTestSearch()">
+            <div class="mb-3 row">
+                <label for="query" class="col-sm-4 col-form-label">Enter name: </label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="query" name="query">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="type" class="col-sm-4 col-form-label">Select type: </label>
+                <div class="col-sm-8">
+                    <select id="type" name="type" class="form-select form-select-sm"
+                            aria-label=".form-select-sm example">
+                        <option th:each="type : ${testTypes}"
+                                th:selected="${chosenTestType eq type}"
+                                th:value="${type}"
+                                th:text="${type}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mb-3" id="submit">Search</button>
+        </form>
     </div>
-</div>
-<div id="pagination">
-</div>
+    <div th:replace="fragments/general.html :: error(${error})">
+    </div>
+    <button class="btn btn-secondary mb-3">
+        <a style="color: white" th:href="@{/tests/generate}">
+            Generate Test
+        </a>
+    </button>
+    <div>
+        <h2>Your Tests</h2>
+        <p th:if="${#lists.isEmpty(tests)}">
+            There are no tests with such parameters!!!
+        </p>
+        <div class="test" th:each="test : ${tests}">
+            <h4 class="testName"
+                th:text="${#strings.length(test.name) > 100
+            ? #strings.substring(test.name, 0, 100)
+            : test.name}"></h4>
+            <th:block th:switch="${chosenTestType}">
+                <a th:case="'Assigned'"
+                   th:href="@{/test/{testId}/intro(testId=${test.id})}"> Start
+                </a>
+                <a th:case="'Created'"
+                   th:href="@{/test/{testId}/results(testId=${test.id})}"> Results
+                </a>
+                <a th:case="'Finished'"
+                   th:href="@{/test/{testId}/results(testId=${test.id}, user=${username})}"> Result
+                </a>
+                <a th:case="'Current'"
+                   th:href="@{/test/{testId}/walkthrough(testId=${test.id})}"> Continue
+                </a>
+            </th:block>
+        </div>
+    </div>
+    <div th:replace="fragments/pagination.html :: pagination(${isTests}, ${chosenTestType}, ${isSearch},
+                                                                ${name}, ${currentPage}, ${totalPages})">
+    </div>
+</main>
+
+<footer th:replace="fragments/general.html :: footer">
+</footer>
 <script src="/static/scripts/searchValidation.js" type="text/javascript"></script>
+<th:block th:include="fragments/general.html :: scriptfiles">
+</th:block>
 </body>
 </html>
