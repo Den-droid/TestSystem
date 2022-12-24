@@ -1,34 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Choose Topic To Add Question</title>
-    <link href="/static/styles/error.css" rel="stylesheet">
+    <th:block th:include="fragments/general.html :: headerfiles">
+    </th:block>
 </head>
 <body>
-<form method="get" onsubmit="return validateTopicSearch()">
-    <label>
-        <input type="text" name="name">
-    </label>
-    <input type="submit" value="Search topic">
-</form>
-<div id="error">
-</div>
-<form method="post" name="chooseTopic" onsubmit="return validateChooseTopic()">
-    <div th:if="${topics} ne null and ${!#lists.isEmpty(topics)}"
-         th:each="topic : ${topics}">
-        <label>
-            <input th:value="${topic.name}"
-                   type="radio" name="topicName" class="topicRadio">
-        </label>
-        <span th:text="${topic.name}"></span>
+<header th:insert="fragments/general.html :: userHeader">
+</header>
+<main>
+    <div>
+        <h3>Search for Topics</h3>
+        <form method="get" onsubmit="return validateSearch()">
+            <div class="mb-3 row">
+                <label for="query" class="col-sm-4 col-form-label">Enter name: </label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="query" name="query">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mb-3">Search</button>
+        </form>
     </div>
+    <form method="post" name="chooseTopic" onsubmit="return validateChooseTopic()">
+        <div class="form-check"
+             th:if="${topics} ne null and ${!#lists.isEmpty(topics)}"
+             th:each="topic, topicStat : ${topics}">
+            <input class="form-check-input topicRadio"
+                   type="radio" name="topicName"
+                   th:id="'flexRadioDefault' + ${topicStat.count}"
+                   th:value="${topic.name}">
+            <label class="form-check-label"
+                   th:for="'flexRadioDefault' + ${topicStat.count}"
+                   th:text="${topic.name}">
+            </label>
+        </div>
 
-    <button>
-        Choose topic
-    </button>
-</form>
+        <div th:replace="fragments/general.html :: error(null)">
+        </div>
+
+        <button type="submit" style="float: right" class="btn btn-primary mb-3">
+            Choose Topic
+        </button>
+    </form>
+</main>
+<footer th:replace="fragments/general.html :: footer">
+</footer>
 <script src="/scripts/chooseTopicValidation.js" type="text/javascript"></script>
 <script src="/scripts/searchValidation.js" type="text/javascript"></script>
+<th:block th:include="fragments/general.html :: scriptfiles">
+</th:block>
 </body>
 </html>

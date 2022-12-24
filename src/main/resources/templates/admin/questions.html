@@ -36,9 +36,11 @@
             <a th:href="@{/questions/delete/{questionId}(questionId=${question.id})}">Delete</a>
         </div>
     </div>
-    <div th:replace="fragments/pagination.html :: pagination(null, null, ${isSearch},
+    <th:block th:if="${!#lists.isEmpty(questions)}">
+        <div th:replace="fragments/pagination.html :: pagination(null, null, ${isSearch},
                                                                 ${text}, ${currentPage}, ${totalPages})">
-    </div>
+        </div>
+    </th:block>
 </main>
 <footer th:replace="fragments/general.html :: footer">
 </footer>

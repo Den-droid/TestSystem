@@ -26,7 +26,7 @@ public class TopicController {
     }
 
     @GetMapping("/topics/choose")
-    public String getChoosePage(@RequestParam(name = "name", required = false) String name,
+    public String getChoosePage(@RequestParam(name = "query", required = false) String name,
                                 Model model) {
         if (name != null && !name.equals("")) {
             List<Topic> topics = topicService.getByNameContains(name);
@@ -91,7 +91,7 @@ public class TopicController {
 
     @GetMapping("/topics/delete/{id}")
     public String getDeletePage(@PathVariable int id,
-                                @RequestParam(name = "name", required = false) String name,
+                                @RequestParam(name = "query", required = false) String name,
                                 Model model) {
         if (name != null && !name.equals("")) {
             List<Topic> topics = topicService.getByNameContains(name);

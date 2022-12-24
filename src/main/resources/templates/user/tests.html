@@ -67,9 +67,11 @@
             </th:block>
         </div>
     </div>
-    <div th:replace="fragments/pagination.html :: pagination(${isTests}, ${chosenTestType}, ${isSearch},
+    <th:block th:if="${!#lists.isEmpty(tests)}">
+        <div th:replace="fragments/pagination.html :: pagination(${isTests}, ${chosenTestType}, ${isSearch},
                                                                 ${name}, ${currentPage}, ${totalPages})">
-    </div>
+        </div>
+    </th:block>
 </main>
 
 <footer th:replace="fragments/general.html :: footer">

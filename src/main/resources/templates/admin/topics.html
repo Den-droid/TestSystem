@@ -34,9 +34,11 @@
             <a th:href="@{/admin/topic/{id}/questions(id=${topic.id})}">Topic Questions</a>
         </div>
     </div>
-    <div th:replace="fragments/pagination.html :: pagination(null, null, ${isSearch},
+    <th:block th:if="${!#lists.isEmpty(topics)}">
+        <div th:replace="fragments/pagination.html :: pagination(null, null, ${isSearch},
                                                                 ${name}, ${currentPage}, ${totalPages})">
-    </div>
+        </div>
+    </th:block>
 </main>
 <footer th:replace="fragments/general.html :: footer">
 </footer>
