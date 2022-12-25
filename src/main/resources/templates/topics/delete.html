@@ -3,36 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <title>Delete topic</title>
-    <link href="/static/styles/error.css" rel="stylesheet">
+    <th:block th:include="fragments/general.html :: headerfiles">
+    </th:block>
 </head>
 <body>
-<p>
-    To delete topic "<span th:text="${topic.name}"></span>" you need to choose another topic
-    to which this topic's questions will be transferred.
-</p>
-<form method="get" onsubmit="return validateTopicSearch()">
-    <label>
-        <input type="text" name="name">
-    </label>
-    <input type="submit" value="Search topic">
-</form>
-<div id="error">
-</div>
-<form method="post" name="deleteTopic" onsubmit="return validateChooseTopic()">
-    <div th:if="${topics} ne null and ${!#lists.isEmpty(topics)}"
-         th:each="topic : ${topics}">
-        <label>
-            <input th:value="${topic.name}"
-                   type="radio" name="topicName" class="topicRadio">
-        </label>
-        <span th:text="${topic.name}"></span>
+<header th:insert="fragments/general.html :: userHeader">
+</header>
+<main>
+    <h2 style="text-align: center">Delete Topic</h2>
+    <p>
+        To delete topic "<span th:text="${topic.name}"></span>" you need to choose another topic
+        to which this topic's questions will be transferred.
+    </p>
+    <div>
+        <h3>Search for Topics</h3>
+        <form method="get" onsubmit="return validateSearch()">
+            <div class="mb-3 row">
+                <label for="query" class="col-sm-4 col-form-label">Enter name: </label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="query" name="query">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mb-3" id="submit">Search</button>
+        </form>
     </div>
+    <form method="post" name="deleteTopic" onsubmit="return validateChooseTopic()">
+        <div class="form-check"
+             th:if="${topics} ne null and ${!#lists.isEmpty(topics)}"
+             th:each="topic, topicStat : ${topics}">
+            <input class="form-check-input topicRadio"
+                   type="radio" name="topicName"
+                   th:id="'flexRadioDefault' + ${topicStat.count}"
+                   th:value="${topic.name}">
+            <label class="form-check-label"
+                   th:for="'flexRadioDefault' + ${topicStat.count}"
+                   th:text="${topic.name}">
+            </label>
+        </div>
 
-    <button>
-        Remove topic
-    </button>
-</form>
+        <div th:replace="fragments/general.html :: error(null)">
+        </div>
+
+        <button class="btn btn-secondary mb-3">
+            <a style="color: white" th:href="@{/user/topics}">
+                Back
+            </a>
+        </button>
+        <button type="submit" style="float: right" class="btn btn-primary mb-3">Delete topic</button>
+    </form>
+</main>
+<footer th:replace="fragments/general.html :: footer">
+</footer>
 <script src="/scripts/chooseTopicValidation.js" type="text/javascript"></script>
 <script src="/scripts/searchValidation.js" type="text/javascript"></script>
+<th:block th:include="fragments/general.html :: scriptfiles">
+</th:block>
 </body>
 </html>

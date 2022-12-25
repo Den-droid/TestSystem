@@ -1,22 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Edit topic</title>
-    <link href="/static/styles/error.css" rel="stylesheet">
+    <th:block th:include="fragments/general.html :: headerfiles">
+    </th:block>
 </head>
 <body>
-<h1>Edit topic</h1>
-<br>
-<form name="addTopic" method="post" th:action="@{/topics/edit/{id}(id=${topic.id})}"
-      onsubmit="return topicValidation()">
-    <label for="name"> Name:
-        <input id="name" name="name" th:value="${topic.name}" type="text"/>
-    </label>
-    <div id="error" th:text="${error} ?: ''">
-    </div>
-    <input type="submit" value="Edit Topic">
-</form>
+<header th:insert="fragments/general.html :: userHeader">
+</header>
+<main>
+    <h2 style="text-align: center">Edit Topic</h2>
+    <form name="addTopic" method="post" onsubmit="return topicValidation()">
+        <div class="mb-3 row">
+            <label for="name" class="col-sm-4 col-form-label">Enter new name: </label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="name" name="name" th:value="${topic.name}">
+            </div>
+        </div>
+        <div th:replace="fragments/general.html :: error(${error})">
+        </div>
+        <button class="btn btn-secondary mb-3">
+            <a style="color: white" th:href="@{/user/topics}">
+                Back
+            </a>
+        </button>
+        <button type="submit" style="float: right" class="btn btn-primary mb-3">Edit topic</button>
+    </form>
+</main>
+<footer th:replace="fragments/general.html :: footer">
+</footer>
 <script src="/static/scripts/topicValidation.js" type="text/javascript"></script>
+<th:block th:include="fragments/general.html :: scriptfiles">
+</th:block>
 </body>
 </html>

@@ -38,6 +38,11 @@
         <div th:replace="fragments/general.html :: error(null)">
         </div>
 
+        <button class="btn btn-secondary mb-3">
+            <a style="color: white" th:href="@{/user/topics}">
+                Back
+            </a>
+        </button>
         <button type="submit" style="float: right" class="btn btn-primary mb-3">
             Choose Topic
         </button>

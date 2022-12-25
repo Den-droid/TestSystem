@@ -49,13 +49,12 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public void edit(int topicId, String topicName) {
-        Topic topic = topicRepository.findById(topicId)
-                .orElseThrow(NoSuchElementException::new);
-        if (Objects.equals(topic.getName(), topicName)) {
-            throw new IllegalArgumentException("Enter another name!!!");
-        } else if (topicRepository.existsTopicByName(topicName)) {
+        if (topicRepository.existsTopicByName(topicName)) {
             throw new IllegalArgumentException("There is already topic with such name!!!");
         }
+
+        Topic topic = topicRepository.findById(topicId)
+                .orElseThrow(NoSuchElementException::new);
         topic.setName(topicName);
         topicRepository.save(topic);
     }
@@ -73,7 +72,6 @@ public class TopicServiceImpl implements TopicService {
         tests.forEach(x -> {
             x.getTopics().remove(topicToDelete);
             x.getTopics().add(topicToTransfer);
-            x.setTopics(x.getTopics());
         });
         testRepository.saveAll(tests);
 

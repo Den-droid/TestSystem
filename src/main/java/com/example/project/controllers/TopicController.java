@@ -82,6 +82,7 @@ public class TopicController {
         } catch (NoSuchElementException ex) {
             return "redirect:/error";
         } catch (IllegalArgumentException ex) {
+            model.addAttribute("topic", topicService.getById(id));
             model.addAttribute("error", ex.getMessage());
             return "topics/edit";
         }
