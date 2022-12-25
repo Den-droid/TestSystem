@@ -6,8 +6,17 @@
     </th:block>
 </head>
 <body>
-<header th:insert="fragments/general.html :: guestHeader">
-</header>
+<th:block th:switch="${#authentication.authorities[0].authority}">
+    <header th:case="'USER'"
+            th:insert="fragments/general.html :: userHeader">
+    </header>
+    <header th:case="'ADMIN'"
+            th:insert="fragments/general.html :: adminHeader">
+    </header>
+    <header th:case="*"
+            th:insert="fragments/general.html :: guestHeader">
+    </header>
+</th:block>
 <main>
     <h2 style="text-align: center">Login</h2>
     <form name="login" method="post" onsubmit="return validateLogin()">

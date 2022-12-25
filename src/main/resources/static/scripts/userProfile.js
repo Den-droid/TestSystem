@@ -1,5 +1,6 @@
 function validateUserProfile() {
     let errorDiv = document.getElementById("error");
+    errorDiv.style.display = "block";
 
     let username = document.getElementsByName("username")[0];
     if (username.value.length < 6) {
@@ -40,6 +41,7 @@ function validateUserProfile() {
         }
     }
 
+    errorDiv.style.display = "none";
     return true;
 }
 
