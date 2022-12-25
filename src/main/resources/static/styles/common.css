@@ -46,7 +46,7 @@ main {
     padding: 5px;
 }
 
-.topicName, .questionText, .testName .question > a, .question > p, .topic > a {
+.topicName, .questionText, .testName, .question > a, .question > p, .topic > a {
     margin-left: 10px;
 }
 

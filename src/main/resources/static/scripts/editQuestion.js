@@ -16,6 +16,7 @@ function validateEditForm() {
 
 function validateMediaEditQuestion() {
     let errorDiv = document.getElementById("error");
+    errorDiv.style.display = "block";
 
     let newQuestionType = document.getElementById("selectQuestionType").value;
     let initialQuestionType = document.cookie
@@ -31,6 +32,7 @@ function validateMediaEditQuestion() {
         }
     }
 
+    errorDiv.style.display = "none";
     return true;
 }
 

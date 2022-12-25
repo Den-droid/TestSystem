@@ -1,138 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Edit Question</title>
-    <link href="/static/styles/error.css" rel="stylesheet">
+    <th:block th:include="fragments/general.html :: headerfiles">
+    </th:block>
 </head>
 <body>
-<form name="editQuestion" method="post" enctype="multipart/form-data" onsubmit="return validateEditForm()">
-    <label for="selectQuestionType">
-        Select question type:
-    </label>
-    <select id="selectQuestionType" name="questionType">
-        <option th:each="questionType: ${questionTypes}"
-                th:value="${questionType}"
-                th:text="${questionType}"
-                th:selected="${questionType} eq ${question.type.text}">
-        </option>
-    </select>
-
-    <div id="questionTypeInfo">
-        <label for="questionText">
-            Enter question text:
-        </label>
-        <textarea th:text="${question.text}"
-                  id="questionText" name="questionText">
-        </textarea>
-        <input th:disabled="${question.type.text} eq 'Text'"
-               type="file" name="media" id="media">
-    </div>
-
-    <br>
-    <label for="selectQuestionDifficulty">
-        Select question difficulty:
-    </label>
-    <select id="selectQuestionDifficulty" name="questionDifficulty">
-        <option th:each="questionDifficulty : ${questionDifficulties}"
-                th:value="${questionDifficulty}"
-                th:text="${questionDifficulty}"
-                th:selected="${questionDifficulty} eq ${question.difficulty.text}">
-        </option>
-    </select>
-
-    <br>
-    <label for="answerDescription">Enter answer description (notes): </label>
-    <textarea th:text="${question.answerDescription}"
-              name="answerDescription" id="answerDescription">
-    </textarea>
-
-    <br>
-    <label for="selectAnswerType">Select answer type: </label>
-    <select id="selectAnswerType" name="answerType" read>
-        <option th:each="answerType: ${answerTypes}"
-                th:value="${answerType}"
-                th:text="${answerType}"
-                th:selected="${answerType} eq ${question.answerType.text}">
-        </option>
-    </select>
-
-    <br>
-    <div id="answersDiv">
-        <button type="button" id="addAnswerButton">
-            Add answer
-        </button>
-        <div class="answerDiv" th:each="answer, answerStat : ${answers}">
-            <th:block th:if="${question.answerType.text} eq 'Match'">
-                <input th:value="${subQuestions[answerStat.index].id}"
-                       type="hidden" name="subQuestionIds"/>
-                <input th:value="${answer.id}"
-                       type="hidden" name="answerIds"/>
-                <label th:for="'subQuestion' + ${answerStat.index}">
-                    Enter first part:
-                </label>
-                <input th:id="'subQuestion' + ${answerStat.index}"
-                       th:value="${subQuestions[answerStat.index].text}"
-                       type="text" name="subQuestions" class="subQuestion"/>
-                <br>
-                <label th:for="'answer' + ${answerStat.index}">
-                    Enter second part:
-                </label>
-                <input th:value="${answer.text}"
-                       th:id="'answer' + ${answerStat.index}"
-                       type="text" name="answers" class="answer"/>
-                <button type="button">
-                    Delete answer
-                </button>
-            </th:block>
-
-            <th:block th:if="${question.answerType.text} eq 'Custom'">
-                <input th:value="${answer.id}"
-                       type="hidden" name="answerIds"/>
-                <label for="answer">
-                    Enter custom answer:
-                </label>
-                <input th:if="${question.answerType.text} eq 'Custom'"
-                       th:value="${answer.text}" type="text" name="answers" id="answer"/>
-                <button type="button">
-                    Delete answer
-                </button>
-            </th:block>
-
-
-            <th:block th:if="${question.answerType.text} eq 'Single' or
-                            ${question.answerType.text} eq 'Multiple'">
-                <input th:value="${answer.id}"
-                       type="hidden" name="answerIds"/>
-                <label th:for="'answer' + ${answerStat.index}">
-                    Enter answer:
-                </label>
-                <input th:value="${answer.text}"
-                       th:id="'answer' + ${answerStat.index}"
-                       type="text" name="answers" class="answer"/>
-                <input th:value="${answerStat.index}"
-                       th:checked="${answer.isCorrect}"
-                       th:id="'checkbox' + ${answerStat.index}"
-                       type="checkbox" name="isCorrect" class="isCorrect"/>
-                <label th:for="'checkbox' + ${answerStat.index}">
-                    Set correct
-                </label>
-                <button type="button">
-                    Delete answer
-                </button>
-            </th:block>
-
+<header th:insert="fragments/general.html :: userHeader">
+</header>
+<main>
+    <h2 style="text-align: center">Edit Question</h2>
+    <form name="editQuestion" method="post" enctype="multipart/form-data" onsubmit="return validateEditForm()">
+        <div class="mb-3 row">
+            <label for="selectQuestionType" class="col-sm-4 col-form-label">Select question type: </label>
+            <div class="col-sm-8">
+                <select id="selectQuestionType" name="questionType" class="form-select form-select-sm">
+                    <option th:each="questionType, questionTypeStat : ${questionTypes}"
+                            th:value="${questionType}"
+                            th:text="${questionType}"
+                            th:selected="${questionType} eq ${question.type.text}">
+                    </option>
+                </select>
+            </div>
         </div>
 
-    </div>
+        <div class="mb-3 row">
+            <label for="questionText" class="col-sm-4 col-form-label">Enter question text: </label>
+            <div class="col-sm-8">
+                <textarea class="form-control" id="questionText" name="questionText" rows="3"
+                          th:text="${question.text}">
+                </textarea>
+            </div>
+        </div>
 
-    <br>
-    <div id="error">
-    </div>
+        <div class="mb-3 row">
+            <label for="media" class="col-sm-4 col-form-label">Choose file: </label>
+            <div class="col-sm-8">
+                <input class="form-control" type="file" name="media" id="media"
+                       th:disabled="${question.type.text} eq 'Text'">
+            </div>
+        </div>
 
-    <button type="submit">Edit Question</button>
-</form>
+        <div class="mb-3 row">
+            <label for="selectQuestionDifficulty" class="col-sm-4 col-form-label">Select question difficulty: </label>
+            <div class="col-sm-8">
+                <select id="selectQuestionDifficulty" name="questionDifficulty" class="form-select form-select-sm">
+                    <option th:each="questionDifficulty, questionDifficultyStat : ${questionDifficulties}"
+                            th:value="${questionDifficulty}"
+                            th:text="${questionDifficulty}"
+                            th:selected="${questionDifficulty} eq ${question.difficulty.text}">
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label for="answerDescription" class="col-sm-4 col-form-label">Enter answer description (notes): </label>
+            <div class="col-sm-8">
+                <textarea class="form-control" name="answerDescription" id="answerDescription" rows="3"
+                          th:text="${question.answerDescription}">
+                </textarea>
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label for="selectAnswerType" class="col-sm-4 col-form-label">Select answer type: </label>
+            <div class="col-sm-8">
+                <select id="selectAnswerType" name="answerType" class="form-select form-select-sm">
+                    <option th:each="answerType, answerTypeStat : ${answerTypes}" th:value="${answerType}"
+                            th:text="${answerType}"
+                            th:selected="${answerType} eq ${question.answerType.text}">
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div id="answersDiv">
+            <button type="button" id="addAnswerButton" class="btn btn-secondary mb-3">
+                Add answer
+            </button>
+            <div class="answerDiv" th:each="answer, answerStat : ${answers}">
+                <th:block th:if="${question.answerType.text} eq 'Match'">
+                    <input th:value="${subQuestions[answerStat.index].id}"
+                           type="hidden" name="subQuestionIds"/>
+                    <input th:value="${answer.id}"
+                           type="hidden" name="answerIds"/>
+
+                    <div class="mb-3 row">
+                        <label th:for="'subQuestion' + ${answerStat.index}"
+                               class="col-sm-3 col-form-label">
+                            Enter first part:
+                        </label>
+                        <div class="col-sm-5">
+                            <input class="form-control subQuestion"
+                                   th:id="'subQuestion' + ${answerStat.index}"
+                                   th:value="${subQuestions[answerStat.index].text}"
+                                   type="text" name="subQuestions"/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label th:for="'answer' + ${answerStat.index}"
+                               class="col-sm-3 col-form-label">
+                            Enter second part:
+                        </label>
+                        <div class="col-sm-5">
+                            <input class="form-control answer"
+                                   th:value="${answer.text}"
+                                   th:id="'answer' + ${answerStat.index}"
+                                   type="text" name="answers"/>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary mb-3">
+                        Delete answer
+                    </button>
+                </th:block>
+
+                <th:block th:if="${question.answerType.text} eq 'Custom'">
+                    <input th:value="${answer.id}"
+                           type="hidden" name="answerIds"/>
+                    <div class="mb-3 row">
+                        <label for="answer"
+                               class="col-sm-3 col-form-label">
+                            Enter custom answer:
+                        </label>
+                        <div class="col-sm-3">
+                            <input class="form-control"
+                                   th:if="${question.answerType.text} eq 'Custom'"
+                                   th:value="${answer.text}" type="text" name="answers" id="answer"/>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary mb-3">
+                        Delete answer
+                    </button>
+                </th:block>
+
+                <th:block th:if="${question.answerType.text} eq 'Single' or
+                            ${question.answerType.text} eq 'Multiple'">
+                    <input th:value="${answer.id}"
+                           type="hidden" name="answerIds"/>
+                    <div class="mb-3 row">
+                        <label th:for="'answer' + ${answerStat.index}"
+                               class="col-sm-3 col-form-label">
+                            Enter answer:
+                        </label>
+                        <div class="col-sm-5">
+                            <input th:value="${answer.text}"
+                                   th:id="'answer' + ${answerStat.index}"
+                                   type="text" name="answers" class="form-control answer"/>
+                        </div>
+                        <div style="margin-left: 10px" class="col-sm-3">
+                            <input class="form-check-input isCorrect"
+                                   th:value="${answerStat.index}"
+                                   th:checked="${answer.isCorrect}"
+                                   th:id="'checkbox' + ${answerStat.index}"
+                                   type="checkbox" name="isCorrect"/>
+                            <label class="form-check-label"
+                                   th:for="'checkbox' + ${answerStat.index}">
+                                Set correct
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary mb-3">
+                        Delete answer
+                    </button>
+                </th:block>
+
+            </div>
+        </div>
+
+        <div th:replace="fragments/general.html :: error(null)">
+        </div>
+
+        <button type="button" class="btn btn-secondary mb-3">
+            <a style="color: white" th:href="@{/user/questions}">
+                Back
+            </a>
+        </button>
+        <button type="submit" style="float: right" class="btn btn-primary mb-3">Edit Question</button>
+    </form>
+</main>
+<footer th:replace="fragments/general.html :: footer">
+</footer>
 <script src="/static/scripts/questionPage.js" type="text/javascript"></script>
 <script src="/static/scripts/editQuestion.js" type="text/javascript"></script>
+<th:block th:include="fragments/general.html :: scriptfiles">
+</th:block>
 </body>
 </html>

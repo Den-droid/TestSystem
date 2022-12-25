@@ -38,20 +38,31 @@ function addSingleAnswer() {
     hidden.setAttribute("type", "hidden");
     hidden.setAttribute("name", "answerIds");
 
+    let row = document.createElement("div");
+    row.setAttribute("class", "mb-3 row");
+
+    let inputCol = document.createElement("div");
+    inputCol.setAttribute("class", "col-sm-5");
+
+    let checkboxCol = document.createElement("div");
+    checkboxCol.setAttribute("class", "col-sm-3");
+    checkboxCol.style.marginLeft = "10px";
+
     let input = document.createElement("input");
     input.setAttribute("type", "text");
     input.setAttribute("name", "answers")
-    input.setAttribute("class", "answer")
+    input.setAttribute("class", "form-control answer");
     input.setAttribute("id", "answer" + answerDivs.length)
 
     let inputLabel = document.createElement("label");
     inputLabel.setAttribute("for", "answer" + answerDivs.length)
+    inputLabel.setAttribute("class", "col-sm-3 col-form-label");
     inputLabel.textContent = " Enter answer: ";
 
     let checkbox = document.createElement("input");
     checkbox.setAttribute("type", "checkbox")
     checkbox.setAttribute("name", "isCorrect")
-    checkbox.setAttribute("class", "isCorrect")
+    checkbox.setAttribute("class", "form-check-input isCorrect")
     checkbox.setAttribute("id", "checkbox" + answerDivs.length)
     checkbox.setAttribute("value", "" + answerDivs.length)
 
@@ -61,18 +72,24 @@ function addSingleAnswer() {
 
     let checkboxLabel = document.createElement("label");
     checkboxLabel.setAttribute("for", "checkbox" + answerDivs.length)
+    checkboxLabel.setAttribute("class", "form-check-label");
     checkboxLabel.textContent = " Set correct ";
 
     let deleteAnswerButton = document.createElement("button");
     deleteAnswerButton.setAttribute("type", "button");
+    deleteAnswerButton.setAttribute("class", "btn btn-secondary mb-3");
     deleteAnswerButton.textContent = " Delete answer ";
     deleteAnswerButton.addEventListener("click", deleteAnswer);
 
+    inputCol.appendChild(input);
+    checkboxCol.appendChild(checkbox);
+    checkboxCol.appendChild(checkboxLabel);
+    row.appendChild(inputLabel);
+    row.appendChild(inputCol);
+    row.appendChild(checkboxCol);
+
     answerDiv.appendChild(hidden);
-    answerDiv.appendChild(inputLabel);
-    answerDiv.appendChild(input);
-    answerDiv.appendChild(checkbox);
-    answerDiv.appendChild(checkboxLabel);
+    answerDiv.appendChild(row);
     answerDiv.appendChild(deleteAnswerButton);
 
     if (answerDivs.length !== 0) {
@@ -84,6 +101,7 @@ function addSingleAnswer() {
             let addAnswerButton = document.createElement("button");
             addAnswerButton.setAttribute("type", "button");
             addAnswerButton.setAttribute("id", "addAnswerButton");
+            addAnswerButton.setAttribute("class", "btn btn-secondary mb-3");
             addAnswerButton.textContent = " Add answer ";
             addAnswerButton.addEventListener("click", addSingleAnswer);
             answersDiv.appendChild(addAnswerButton);
@@ -108,40 +126,58 @@ function addMatchAnswer() {
     hiddenSubQuestionIds.setAttribute("type", "hidden");
     hiddenSubQuestionIds.setAttribute("name", "subQuestionIds");
 
+    let firstRow = document.createElement("div");
+    firstRow.setAttribute("class", "mb-3 row");
+
+    let firstPartCol = document.createElement("div");
+    firstPartCol.setAttribute("class", "col-sm-5");
+
+    let secondRow = document.createElement("div");
+    secondRow.setAttribute("class", "mb-3 row");
+
+    let secondPartCol = document.createElement("div");
+    secondPartCol.setAttribute("class", "col-sm-5");
+
     let subQuestion = document.createElement("input");
     subQuestion.setAttribute("type", "text");
     subQuestion.setAttribute("name", "subQuestions");
-    subQuestion.setAttribute("class", "subQuestion");
+    subQuestion.setAttribute("class", "form-control subQuestion");
     subQuestion.setAttribute("id", "subQuestion" + answerDivs.length);
 
     let subQuestionLabel = document.createElement("label");
     subQuestionLabel.setAttribute("for", "subQuestion" + answerDivs.length);
+    subQuestionLabel.setAttribute("class", "col-sm-3 col-form-label");
     subQuestionLabel.textContent = " Enter first part: ";
-
-    let br = document.createElement("br");
 
     let input = document.createElement("input");
     input.setAttribute("type", "text");
     input.setAttribute("name", "answers")
-    input.setAttribute("class", "answer")
+    input.setAttribute("class", "form-control answer")
     input.setAttribute("id", "answer" + answerDivs.length)
 
     let inputLabel = document.createElement("label");
     inputLabel.setAttribute("for", "answer" + answerDivs.length)
+    inputLabel.setAttribute("class", "col-sm-3 col-form-label");
     inputLabel.textContent = " Enter second part: ";
 
     let deleteAnswerButton = document.createElement("button");
     deleteAnswerButton.setAttribute("type", "button");
+    deleteAnswerButton.setAttribute("class", "btn btn-secondary mb-3");
     deleteAnswerButton.textContent = " Delete answer ";
     deleteAnswerButton.addEventListener("click", deleteAnswer);
 
+    firstPartCol.appendChild(subQuestion);
+    firstRow.appendChild(subQuestionLabel);
+    firstRow.appendChild(firstPartCol);
+
+    secondPartCol.appendChild(input);
+    secondRow.appendChild(inputLabel);
+    secondRow.appendChild(secondPartCol);
+
     answerDiv.appendChild(hiddenSubQuestionIds)
     answerDiv.appendChild(hiddenAnswerIds)
-    answerDiv.appendChild(subQuestionLabel);
-    answerDiv.appendChild(subQuestion);
-    answerDiv.appendChild(br);
-    answerDiv.appendChild(inputLabel);
-    answerDiv.appendChild(input);
+    answerDiv.appendChild(firstRow)
+    answerDiv.appendChild(secondRow)
     answerDiv.appendChild(deleteAnswerButton);
 
     if (answerDivs.length !== 0) {
@@ -153,6 +189,7 @@ function addMatchAnswer() {
             let addAnswerButton = document.createElement("button");
             addAnswerButton.setAttribute("type", "button");
             addAnswerButton.setAttribute("id", "addAnswerButton");
+            addAnswerButton.setAttribute("class", "btn btn-secondary mb-3");
             addAnswerButton.textContent = "Add answer";
             addAnswerButton.addEventListener("click", addMatchAnswer);
             answersDiv.appendChild(addAnswerButton);
@@ -173,24 +210,35 @@ function addCustomAnswer() {
     hidden.setAttribute("type", "hidden");
     hidden.setAttribute("name", "answerIds");
 
+    let row = document.createElement("div");
+    row.setAttribute("class", "mb-3 row");
+
+    let inputCol = document.createElement("div");
+    inputCol.setAttribute("class", "col-sm-5");
+
     let input = document.createElement("input");
     input.setAttribute("type", "text");
     input.setAttribute("name", "answers");
-    input.setAttribute("class", "answer")
+    input.setAttribute("class", "form-control answer")
     input.setAttribute("id", "answer" + answerDivs.length);
 
     let label = document.createElement("label");
     label.setAttribute("for", "answer" + answerDivs.length);
+    label.setAttribute("class", "col-sm-3 col-form-label");
     label.textContent = "Enter custom answer: ";
 
     let deleteAnswerButton = document.createElement("button");
     deleteAnswerButton.setAttribute("type", "button");
+    deleteAnswerButton.setAttribute("class", "btn btn-secondary mb-3");
     deleteAnswerButton.textContent = " Delete answer ";
     deleteAnswerButton.addEventListener("click", deleteAnswer);
 
+    inputCol.appendChild(input);
+    row.appendChild(label);
+    row.appendChild(inputCol);
+
     answerDiv.appendChild(hidden);
-    answerDiv.appendChild(label);
-    answerDiv.appendChild(input);
+    answerDiv.appendChild(row);
     answerDiv.appendChild(deleteAnswerButton);
 
     if (answerDivs.length !== 0) {
@@ -202,6 +250,7 @@ function addCustomAnswer() {
             let addAnswerButton = document.createElement("button");
             addAnswerButton.setAttribute("type", "button");
             addAnswerButton.setAttribute("id", "addAnswerButton");
+            addAnswerButton.setAttribute("class", "btn btn-secondary mb-3");
             addAnswerButton.textContent = " Add answer ";
             addAnswerButton.addEventListener("click", addCustomAnswer);
             answersDiv.appendChild(addAnswerButton);
@@ -235,17 +284,21 @@ function validateAddForm() {
 
 function validateQuestionText() {
     let errorDiv = document.getElementById("error");
+    errorDiv.style.display = "block";
 
     let questionText = document.getElementById("questionText");
     if (questionText.value.trim().length < 6) {
         errorDiv.textContent = "Question text must contain at least 6 symbols!!!";
         return false;
     }
+
+    errorDiv.style.display = "none";
     return true;
 }
 
 function validateMedia() {
     let errorDiv = document.getElementById("error");
+    errorDiv.style.display = "block";
 
     let media = document.getElementById("media");
     if (media.disabled === false) {
@@ -254,22 +307,28 @@ function validateMedia() {
             return false;
         }
     }
+
+    errorDiv.style.display = "none";
     return true;
 }
 
 function validateAnswerDescription() {
     let errorDiv = document.getElementById("error");
+    errorDiv.style.display = "block";
 
     let answerDescription = document.getElementById("answerDescription");
     if (answerDescription.value.trim().length === 0) {
         errorDiv.textContent = "Enter answer description!!!";
         return false;
     }
+
+    errorDiv.style.display = "none";
     return true;
 }
 
 function validateAnswers() {
     let errorDiv = document.getElementById("error");
+    errorDiv.style.display = "block";
 
     let answerType = document.getElementById("selectAnswerType");
     if (answerType.value === 'Custom') {
@@ -330,6 +389,7 @@ function validateAnswers() {
         }
     }
 
+    errorDiv.style.display = "none";
     return true;
 }
 

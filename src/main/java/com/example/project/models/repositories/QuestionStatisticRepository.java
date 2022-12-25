@@ -8,7 +8,4 @@ import java.util.List;
 
 public interface QuestionStatisticRepository extends CrudRepository<QuestionStatistic, Long> {
     QuestionStatistic findByQuestion(Question question);
-
-    List<QuestionStatistic> findAllByQuestionIn(List<Question> questions);
-
 }

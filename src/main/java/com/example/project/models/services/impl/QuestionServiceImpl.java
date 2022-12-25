@@ -215,7 +215,12 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<QuestionStatistic> getStatistic(List<Question> questions) {
-        return questionStatisticRepository.findAllByQuestionIn(questions);
+        List<QuestionStatistic> questionStatistics = new ArrayList<>(questions.size());
+        for (Question question : questions) {
+            QuestionStatistic questionStatistic = questionStatisticRepository.findByQuestion(question);
+            questionStatistics.add(questionStatistic);
+        }
+        return questionStatistics;
     }
 
     @Override

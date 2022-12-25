@@ -41,8 +41,10 @@
             <a th:href="@{/questions/edit/{questionId}(questionId=${question.id})}">Edit</a>
             <a th:href="@{/questions/delete/{questionId}(questionId=${question.id})}">Delete</a>
             <p th:text="'Topic: ' + ${topicNames[questionStat.index]}"></p>
-            <p th:text="'Correct Answers: ' + ${statistics[questionStat.index].correctAnswers}"></p>
-            <p th:text="'Wrong Answers: ' + ${statistics[questionStat.index].wrongAnswers}"></p>
+            <p th:text="'Correct Answers: ' + ${statistics[questionStat.index] ne null ?
+                                    statistics[questionStat.index].correctAnswers : ''}"></p>
+            <p th:text="'Wrong Answers: ' + ${statistics[questionStat.index] ne null ?
+                                    statistics[questionStat.index].wrongAnswers : ''}"></p>
         </div>
     </div>
     <th:block th:if="${!#lists.isEmpty(questions)}">
