@@ -1,128 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Generate Test</title>
-    <link href="/static/styles/error.css" rel="stylesheet">
+    <th:block th:include="fragments/general.html :: headerfiles">
+    </th:block>
 </head>
 <body>
-<h2>
-    Generate test
-</h2>
-<form name="generateTest" method="post" onsubmit="return addTestSubmit()">
-    <label for="name"> Enter name:
-        <input th:value="${previous?.name}"
-               id="name" name="name" type="text" style="width: 200px">
-    </label>
-    <br>
-    <label for="selectTestDifficulty"> Select difficulty
-        <select id="selectTestDifficulty" name="difficulty">
-            <option th:each="testDifficulty, testDifficultyStat : ${difficulties}"
-                    th:value="${testDifficulty}"
-                    th:text="${testDifficulty}"
-                    th:selected="${previous ne null and previous.difficulty ne null
+<header th:insert="fragments/general.html :: userHeader">
+</header>
+<main>
+    <h2 style="text-align: center">
+        Generate test
+    </h2>
+    <form name="generateTest" method="post" onsubmit="return addTestSubmit()">
+        <div class="mb-3 row">
+            <label for="name" class="col-sm-4 col-form-label">Enter name: </label>
+            <div class="col-sm-8">
+                <input th:value="${previous?.name}"
+                       type="text" class="form-control" id="name" name="name">
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label for="selectTestDifficulty" class="col-sm-4 col-form-label"> Select difficulty </label>
+            <div class="col-sm-8">
+                <select id="selectTestDifficulty" name="difficulty" class="form-select form-select-sm">
+                    <option th:each="testDifficulty, testDifficultyStat : ${difficulties}"
+                            th:value="${testDifficulty}"
+                            th:text="${testDifficulty}"
+                            th:selected="${previous ne null and previous.difficulty ne null
                     ? testDifficulty eq previous.difficulty
                     : testDifficultyStat.count == 1}">
-            </option>
-        </select>
-    </label>
-    <br>
-    <label for="startDate"> Select start date:
-        <input th:min="${currentDate}"
-               th:value="${previous ne null and previous.startDate ne null
-               ? previous.startDate
-               : currentDate}"
-               type="datetime-local" id="startDate" name="startDate">
-    </label>
-    <br>
-    <label for="finishDate"> Select finish date:
-        <input th:min="${currentDate}"
-               th:value="${previous ne null and previous.finishDate ne null
-               ? previous.finishDate
-               : currentDate}"
-               type="datetime-local" id="finishDate" name="finishDate">
-    </label>
-    <br>
-    <label for="timeLimit"> Select time limit (select 0 for unlimited time)
-        <input th:value="${previous ne null and previous.timeLimit ne null
-                ?  previous.timeLimit : '00:00'}"
-               type="time" id="timeLimit" name="timeLimit">
-    </label>
-    <br>
-    <label for="questionCount"> Enter question count:
-        <input th:value="${previous?.questionsCount}"
-               type="number" min="0" id="questionCount" name="questionsCount"
-               style="width: 60px">
-    </label>
-    <br>
-    <label>
-        <input th:checked="${previous?.includeMe}"
-               type="checkbox" value="includeMe"
-               name="includeMe" id="includeMe">
-        <span> Include me </span>
-    </label>
-    <br>
+                    </option>
+                </select>
+            </div>
+        </div>
 
-    <label>
-        <input type="text" name="topicPart">
-    </label>
-    <input type="submit" id="searchTopics" value="Search for topics">
-    <br>
+        <div class="mb-3 row">
+            <label for="startDate" class="col-sm-4 col-form-label"> Select start date: </label>
+            <div class="col-sm-8">
+                <input class="form-control"
+                       th:min="${currentDate}"
+                       th:value="${previous ne null and previous.startDate ne null
+                        ? previous.startDate
+                        : currentDate}"
+                       type="datetime-local" id="startDate" name="startDate">
+            </div>
+        </div>
 
-    <div th:if="${newTopics ne null} or ${!#lists.isEmpty(newTopics)}">
-        <p>Choose topics: </p>
-        <th:block th:each="newTopic : ${newTopics}">
-            <input th:value="${newTopic.name}"
-                   type="checkbox" name="topics" class="newTopics">
-            <span th:text="${newTopic.name}"></span>
+        <div class="mb-3 row">
+            <label for="finishDate" class="col-sm-4 col-form-label"> Select finish date: </label>
+            <div class="col-sm-8">
+                <input class="form-control"
+                       th:min="${currentDate}"
+                       th:value="${previous ne null and previous.finishDate ne null
+                        ? previous.finishDate
+                        : currentDate}"
+                       type="datetime-local" id="finishDate" name="finishDate">
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label for="timeLimit" class="col-sm-4 col-form-label"> Select time limit (select 0 for unlimited
+                time) </label>
+            <div class="col-sm-8">
+                <input class="form-control"
+                       th:value="${previous ne null and previous.timeLimit ne null
+                            ?  previous.timeLimit : '00:00'}"
+                       type="time" id="timeLimit" name="timeLimit">
+            </div>
+        </div>
+
+        <div class="mb-3 row">
+            <label for="questionCount" class="col-sm-4 col-form-label"> Enter question count: </label>
+            <div class="col-sm-8">
+                <input class="form-control"
+                       th:value="${previous?.questionsCount}"
+                       type="number" min="1" id="questionCount" name="questionsCount">
+            </div>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input"
+                   th:checked="${previous?.includeMe}"
+                   type="checkbox" value="includeMe"
+                   name="includeMe" id="includeMe">
+            <label class="form-check-label" for="includeMe"> Include me </label>
+        </div>
+
+        <div class="mb-3 row">
+            <h3>Search for Topics</h3>
+            <label for="topicPart" class="col-sm-4 col-form-label"> Enter name: </label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="topicPart" name="topicPart">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mb-3" id="searchTopics">Search</button>
+
+        <th:block th:if="${newTopics ne null} or ${!#lists.isEmpty(newTopics)}">
+            <p>Choose topics: </p>
+            <div class="form-check" th:each="newTopic : ${newTopics}">
+                <input class="form-check-input newTopics"
+                       type="checkbox" th:value="${newTopic.name}"
+                       name="topics" id="topics">
+                <label class="form-check-label" for="topics" th:text="${newTopic.name}"></label>
+            </div>
         </th:block>
-    </div>
-    <br>
 
-    <label>
-        <input type="text" name="usernamePart">
-    </label>
-    <input type="submit" id="searchUsers" value="Search for users">
-    <br>
+        <div class="mb-3 row">
+            <h3>Search for Users</h3>
+            <label for="usernamePart" class="col-sm-4 col-form-label"> Enter username: </label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="usernamePart" name="usernamePart">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mb-3" id="searchUsers">Search</button>
 
-    <div th:if="${newUsers ne null} or ${!#lists.isEmpty(newUsers)}">
-        <p>Choose users: </p>
-        <th:block th:each="newUser : ${newUsers}">
-            <input th:value="${newUser.username}"
-                   type="checkbox" name="usernames" class="newUsers">
-            <span th:text="${newUser.username}"></span>
+        <th:block th:if="${newUsers ne null} or ${!#lists.isEmpty(newUsers)}">
+            <p>Choose users: </p>
+            <div class="form-check" th:each="newUser : ${newUsers}">
+                <input class="form-check-input newUsers"
+                       th:value="${newUser.username}"
+                       type="checkbox" name="usernames" id="usernames">
+                <label class="form-check-label" for="usernames" th:text="${newUser.username}"></label>
+            </div>
         </th:block>
-    </div>
-    <br>
 
-    <p>Already added topics: </p>
-    <div th:if="${previous ne null and previous.topics ne null}
+        <p>Already added topics: </p>
+        <div th:if="${previous ne null and previous.topics ne null}
                     and ${!#lists.isEmpty(previous.topics)}">
-        <th:block th:each="existingTopic : ${previous.topics}">
-            <input th:value="${existingTopic}"
-                   name="topics" type="text" readonly class="oldTopics">
-            <br>
-        </th:block>
-    </div>
+            <th:block th:each="existingTopic : ${previous.topics}">
+                <input th:value="${existingTopic}"
+                       class="form-control oldTopics"
+                       name="topics" type="text" readonly>
+            </th:block>
+        </div>
 
-    <p>Already added users: </p>
-    <div th:if="${previous ne null and previous.usernames ne null}
+        <p>Already added users: </p>
+        <div th:if="${previous ne null and previous.usernames ne null}
                     and ${!#lists.isEmpty(previous.usernames)}">
-        <th:block th:each="existingUser : ${previous.usernames}">
-            <input th:value="${existingUser}"
-                   name="usernames" type="text" readonly class="oldUsers">
-            <br>
-        </th:block>
-    </div>
+            <th:block th:each="existingUser : ${previous.usernames}">
+                <input th:value="${existingUser}"
+                       class="form-control oldUsers"
+                       name="usernames" type="text" readonly>
+            </th:block>
+        </div>
 
-    <div id="error">
-        <span th:if="${error}" th:text="${error}"></span>
-    </div>
+        <div th:replace="fragments/general.html :: error(error=${error})">
+        </div>
 
-    <button id="submit">
-        Generate test
-    </button>
-</form>
+        <button class="btn btn-secondary mb-3">
+            <a style="color: white" th:href="@{/user/tests}">
+                Back
+            </a>
+        </button>
+
+        <button type="submit" style="float: right"
+                class="btn btn-primary mb-3" id="submit"> Generate
+        </button>
+    </form>
+</main>
+<footer th:replace="fragments/general.html :: footer">
+</footer>
 <script src="/static/scripts/generateTest.js" type="text/javascript"></script>
+<th:block th:include="fragments/general.html :: scriptfiles">
+</th:block>
 </body>
 </html>

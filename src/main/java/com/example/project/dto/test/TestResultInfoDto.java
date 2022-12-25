@@ -12,8 +12,6 @@ public class TestResultInfoDto {
     private String difficulty;
     private LocalDateTime dateStarted;
     private LocalDateTime dateFinish;
-    private Integer userAssignedCount;
-    private Integer userCompletedCount;
     private List<String> userCompletedUsernames;
 
     public String getName() {
@@ -70,22 +68,6 @@ public class TestResultInfoDto {
 
     public void setDateFinish(LocalDateTime dateFinish) {
         this.dateFinish = dateFinish;
-    }
-
-    public Integer getUserAssignedCount() {
-        return userAssignedCount;
-    }
-
-    public void setUserAssignedCount(Integer userAssignedCount) {
-        this.userAssignedCount = userAssignedCount;
-    }
-
-    public Integer getUserCompletedCount() {
-        return userCompletedCount;
-    }
-
-    public void setUserCompletedCount(Integer userCompletedCount) {
-        this.userCompletedCount = userCompletedCount;
     }
 
     public List<String> getUserCompletedUsernames() {

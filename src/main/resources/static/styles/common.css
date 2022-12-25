@@ -40,7 +40,7 @@ main {
     height: auto;
 }
 
-.topic, .question, .test {
+.topic, .question, .test, .result {
     border: 5px solid sandybrown;
     margin: 5px 5px;
     padding: 5px;

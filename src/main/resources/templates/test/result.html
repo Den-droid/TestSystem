@@ -1,85 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Test Result</title>
+    <th:block th:include="fragments/general.html :: headerfiles">
+    </th:block>
 </head>
 <body>
-<h2>Result of Completed Test</h2>
-<div>
-    <p th:text="'User: ' + ${testResult.username}"></p>
-    <p th:text="'Test: ' + ${testResult.testName}"></p>
-    <p th:text="'Mark: ' + ${#numbers.formatDecimal(testResult.mark,1,2)} + '/100' "></p>
-</div>
-<div th:each="question, questionStat : ${testResult.questions}">
-    <h4 th:text="'Question ' + ${questionStat.count}"></h4>
-    <p th:text="${question.questionText} + ': '"></p>
-    <img th:if="${question.questionType eq 'Text with photo'}"
-         th:src="${#strings.concat('/uploads/', question.questionMedia)}"
-         th:alt="${question.questionMedia}"
-         style="width: 500px"/>
-    <audio th:if="${question.questionType eq 'Text with audio'}"
-           controls>
-        <source th:src="${#strings.concat('/uploads/', question.questionMedia)}"
-        />
-    </audio>
-    <video th:if="${question.questionType eq 'Text with video'}"
-           controls>
-        <source th:src="${#strings.concat('/uploads/', question.questionMedia)}"
-        />
-    </video>
-    <p th:text="${question.questionAnswerDescription}"></p>
-    <th:block th:if="${question.answerType eq 'Single'}">
-        <th:block th:each="answerVariant : ${question.answersVariants}">
-            <input th:checked="${!#lists.isEmpty(testResult.answers[questionStat.index].answers)}
+<header th:insert="fragments/general.html :: userHeader">
+</header>
+<main>
+    <h2 style="text-align: center">Result of Completed Test</h2>
+    <div>
+        <p th:text="'User: ' + ${testResult.username}"></p>
+        <p th:text="'Test: ' + ${testResult.testName}"></p>
+        <p th:text="'Mark: ' + ${#numbers.formatDecimal(testResult.mark,1,2)} + '/100' "></p>
+    </div>
+    <div th:each="question, questionStat : ${testResult.questions}">
+        <h4 th:text="'Question ' + ${questionStat.count}"></h4>
+        <p th:text="${question.questionText} + ': '"></p>
+        <img th:if="${question.questionType eq 'Text with photo'}"
+             th:src="${#strings.concat('/uploads/', question.questionMedia)}"
+             th:alt="${question.questionMedia}"
+             style="width: 65%"/>
+        <audio th:if="${question.questionType eq 'Text with audio'}"
+               controls>
+            <source th:src="${#strings.concat('/uploads/', question.questionMedia)}"
+            />
+        </audio>
+        <video th:if="${question.questionType eq 'Text with video'}"
+               controls>
+            <source th:src="${#strings.concat('/uploads/', question.questionMedia)}"
+            />
+        </video>
+        <p th:text="${question.questionAnswerDescription}"></p>
+        <th:block th:if="${question.answerType eq 'Single'}">
+            <div class="form-check"
+                 th:each="answerVariant, answerVariantStat : ${question.answersVariants}">
+                <input class="form-check-input"
+                       type="radio" name="answers"
+                       th:id="'flexRadio' + ${answerVariantStat.count}"
+                       th:checked="${!#lists.isEmpty(testResult.answers[questionStat.index].answers)}
                             and ${#lists.contains(testResult.answers[questionStat.index].answers, answerVariant)}"
-                   th:value="${answerVariant}"
-                   type="radio" name="answers" disabled>
-            <span th:text="${answerVariant}"></span>
+                       th:value="${answerVariant}" disabled>
+                <label class="form-check-label"
+                       th:for="'flexRadio' + ${answerVariantStat.count}"
+                       th:text="${answerVariant}">
+                </label>
+            </div>
         </th:block>
-    </th:block>
-    <th:block th:if="${question.answerType eq 'Multiple'}">
-        <th:block th:each="answerVariant : ${question.answersVariants}">
-            <input th:checked="${!#lists.isEmpty(testResult.answers[questionStat.index].answers)}
+        <th:block th:if="${question.answerType eq 'Multiple'}">
+            <div class="form-check"
+                 th:each="answerVariant, answerVariantStat : ${question.answersVariants}">
+                <input class="form-check-input"
+                       type="checkbox" name="answers"
+                       th:id="'flexCheck' + ${answerVariantStat.count}"
+                       th:checked="${!#lists.isEmpty(testResult.answers[questionStat.index].answers)}
                             and ${#lists.contains(testResult.answers[questionStat.index].answers, answerVariant)}"
-                   th:value="${answerVariant}"
-                   type="checkbox" name="answers" disabled>
-            <span th:text="${answerVariant}"></span>
+                       th:value="${answerVariant}" disabled>
+                <label class="form-check-label"
+                       th:for="'flexCheck' + ${answerVariantStat.count}"
+                       th:text="${answerVariant}">
+                </label>
+            </div>
         </th:block>
-    </th:block>
-    <th:block th:if="${question.answerType eq 'Custom'}">
-        <label> Enter answer:
-            <input th:value="${!#lists.isEmpty(testResult.answers[questionStat.index].answers) ?
-                                !#lists.isEmpty(testResult.answers[questionStat.index].answers[0]) : ''}"
-                   name="answers" type="text" readonly>
-        </label>
-    </th:block>
-    <th:block th:if="${question.answerType eq 'Match'}">
-        <th:block th:each="subQuestionText, subQuestionTextStat :
+        <th:block th:if="${question.answerType eq 'Custom'}">
+            <div class="mb-3 row">
+                <label for="answer" class="col-sm-4 col-form-label">Enter answer: </label>
+                <div class="col-sm-8">
+                    <input th:value="${!#lists.isEmpty(testResult.answers[questionStat.index].answers) ?
+                                testResult.answers[questionStat.index].answers[0] : ''}"
+                           name="answers" type="text" class="form-control" id="answer" readonly>
+                </div>
+            </div>
+        </th:block>
+        <th:block th:if="${question.answerType eq 'Match'}">
+            <th:block th:each="subQuestionText, subQuestionTextStat :
                                             ${testResult.answers[questionStat.index].subQuestionsText}">
-            <label> <span th:text="${subQuestionTextStat.count} + '. '"></span>
-                <input th:value="${subQuestionText}"
-                       type="text" readonly name="subQuestionsText">
-            </label>
-            <select name="answers" id="selectVariant">
-                <option th:if="${testResult.answers[questionStat.index].matchQuestionNumOfAnswers eq null}"
-                        selected>
-                </option>
-                <option th:each="answer, answerStat : ${testResult.answers[questionStat.index].answers}"
-                        th:value="${answer}"
-                        th:selected="${testResult.answers[questionStat.index].matchQuestionNumOfAnswers eq null
-                        ? false
-                        : answerStat.index eq
-                        testResult.answers[questionStat.index].matchQuestionNumOfAnswers[subQuestionTextStat.index]}"
-                        th:text="${answerStat.count}"
-                        disabled>
-                </option>
-            </select>
-            <span th:text="${subQuestionTextStat.count} + '. ' +
-                    ${testResult.answers[questionStat.index].answers[subQuestionTextStat.index]}"></span>
-            <br>
+                <div class="mb-3 row">
+                    <label th:text="${subQuestionTextStat.count} + '. '"
+                           th:for="'matchSubText' + ${subQuestionTextStat.index}"
+                           class="col-form-label col-sm-3"></label>
+                    <div class="col-sm-3">
+                        <input th:value="${subQuestionText}"
+                               type="text" readonly name="subQuestionsText" class="form-control"
+                               th:id="'matchSubText' + ${subQuestionTextStat.index}">
+                    </div>
+                    <div class="col-sm-3">
+                        <select name="answers" id="selectVariant" class="form-select form-select-sm">
+                            <option th:if="${testResult.answers[questionStat.index].matchQuestionNumOfAnswers eq null}"
+                                    selected>
+                            </option>
+                            <option th:each="answer, answerStat : ${testResult.answers[questionStat.index].answers}"
+                                    th:value="${answer}"
+                                    th:selected="${testResult.answers[questionStat.index].matchQuestionNumOfAnswers eq null
+                                ? false
+                                : answerStat.index eq
+                                testResult.answers[questionStat.index].matchQuestionNumOfAnswers[subQuestionTextStat.index]}"
+                                    th:text="${answerStat.count}"
+                                    disabled>
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <label class="col-form-label" th:text="${subQuestionTextStat.count} + '. ' +
+                                        ${testResult.answers[questionStat.index].answers[subQuestionTextStat.index]}"></label>
+                    </div>
+                </div>
+            </th:block>
         </th:block>
-    </th:block>
-</div>
+    </div>
+    <button type="button" class="btn btn-secondary mb-3">
+        <a style="color: white" th:href="@{/user/tests/1(type='Finished')}">
+            Back
+        </a>
+    </button>
+</main>
+<footer th:replace="fragments/general.html :: footer">
+</footer>
+<th:block th:include="fragments/general.html :: scriptfiles">
+</th:block>
 </body>
 </html>

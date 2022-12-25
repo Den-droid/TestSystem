@@ -1,62 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Add Question</title>
-    <link href="/static/styles/error.css" rel="stylesheet">
+    <th:block th:include="fragments/general.html :: headerfiles">
+    </th:block>
 </head>
 <body>
-<form name="addQuestion" method="post" enctype="multipart/form-data" onsubmit="return validateAddForm()">
-    <label for="selectQuestionType">Select question type: </label>
-    <select id="selectQuestionType" name="questionType">
-        <option th:each="questionType, questionTypeStat : ${questionTypes}"
-                th:value="${questionType}"
-                th:text="${questionType}"
-                th:selected="${questionTypeStat.count == 1}">
-        </option>
-    </select>
+<header th:insert="fragments/general.html :: userHeader">
+</header>
+<main>
+    <h2 style="text-align: center">Add Question</h2>
+    <form name="addQuestion" method="post" enctype="multipart/form-data" onsubmit="return validateAddForm()">
+        <div class="mb-3 row">
+            <label for="selectQuestionType" class="col-sm-4 col-form-label">Select question type: </label>
+            <div class="col-sm-8">
+                <select id="selectQuestionType" name="questionType" class="form-select form-select-sm">
+                    <option th:each="questionType, questionTypeStat : ${questionTypes}"
+                            th:value="${questionType}"
+                            th:text="${questionType}"
+                            th:selected="${questionTypeStat.count == 1}">
+                    </option>
+                </select>
+            </div>
+        </div>
 
-    <div id="questionTypeInfo">
-        <label for="questionText">Enter question text: </label>
-        <textarea id="questionText" name="questionText">
-        </textarea>
-        <input type="file" name="media" id="media" disabled>
-    </div>
+        <div class="mb-3 row">
+            <label for="questionText" class="col-sm-4 col-form-label">Enter question text: </label>
+            <div class="col-sm-8">
+                <textarea class="form-control" id="questionText" name="questionText" rows="3">
+                </textarea>
+            </div>
+        </div>
 
-    <br>
-    <label for="selectQuestionDifficulty">Select question difficulty: </label>
-    <select id="selectQuestionDifficulty" name="questionDifficulty">
-        <option th:each="questionDifficulty, questionDifficultyStat : ${questionDifficulties}"
-                th:value="${questionDifficulty}"
-                th:text="${questionDifficulty}"
-                th:selected="${questionDifficultyStat.count == 1}">
-        </option>
-    </select>
+        <div class="mb-3 row">
+            <label for="media" class="col-sm-4 col-form-label">Choose file: </label>
+            <div class="col-sm-8">
+                <input class="form-control" type="file" name="media" id="media" disabled>
+            </div>
+        </div>
 
-    <br>
-    <label for="answerDescription">Enter answer description (notes): </label>
-    <textarea name="answerDescription" id="answerDescription">
-    </textarea>
+        <div class="mb-3 row">
+            <label for="selectQuestionDifficulty" class="col-sm-4 col-form-label">Select question difficulty: </label>
+            <div class="col-sm-8">
+                <select id="selectQuestionDifficulty" name="questionDifficulty" class="form-select form-select-sm">
+                    <option th:each="questionDifficulty, questionDifficultyStat : ${questionDifficulties}"
+                            th:value="${questionDifficulty}"
+                            th:text="${questionDifficulty}"
+                            th:selected="${questionDifficultyStat.count == 1}">
+                    </option>
+                </select>
+            </div>
+        </div>
 
-    <br>
-    <label for="selectAnswerType">Select answer type: </label>
-    <select id="selectAnswerType" name="answerType">
-        <option th:each="answerType, answerTypeStat : ${answerTypes}" th:value="${answerType}"
-                th:text="${answerType}"
-                th:selected="${answerTypeStat.count == 1}">
-        </option>
-    </select>
+        <div class="mb-3 row">
+            <label for="answerDescription" class="col-sm-4 col-form-label">Enter answer description (notes): </label>
+            <div class="col-sm-8">
+                <textarea class="form-control" name="answerDescription" id="answerDescription" rows="3">
+                </textarea>
+            </div>
+        </div>
 
-    <br>
-    <div id="answersDiv">
-    </div>
+        <div class="mb-3 row">
+            <label for="selectAnswerType" class="col-sm-4 col-form-label">Select answer type: </label>
+            <div class="col-sm-8">
+                <select id="selectAnswerType" name="answerType" class="form-select form-select-sm">
+                    <option th:each="answerType, answerTypeStat : ${answerTypes}" th:value="${answerType}"
+                            th:text="${answerType}"
+                            th:selected="${answerTypeStat.count == 1}">
+                    </option>
+                </select>
+            </div>
+        </div>
 
-    <br>
-    <div id="error">
-    </div>
+        <div id="answersDiv">
+        </div>
 
-    <button type="submit">Add Question</button>
-</form>
+        <div th:replace="fragments/general.html :: error(null)">
+        </div>
+
+        <button class="btn btn-secondary mb-3">
+            <a style="color: white" th:href="@{/user/questions}">
+                Back
+            </a>
+        </button>
+        <button type="submit" style="float: right" class="btn btn-primary mb-3">Add topic</button>
+    </form>
+</main>
+<footer th:replace="fragments/general.html :: footer">
+</footer>
 <script src="/static/scripts/questionPage.js" type="text/javascript"></script>
+<th:block th:include="fragments/general.html :: scriptfiles">
+</th:block>
 </body>
 </html>

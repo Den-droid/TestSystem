@@ -1,99 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Test walkthrough</title>
+    <th:block th:include="fragments/general.html :: headerfiles">
+    </th:block>
 </head>
 <body>
-<form name="testWalkthrough" method="post">
-    <div th:if="${!isUnlimitedTime}"
-         th:text="${timeLeft}"
-         id="timeLeft">
-    </div>
-    <input th:value="${question.questionId}"
-           type="hidden" name="questionId">
-    <input th:value="${question.answerType}"
-           type="hidden" name="answerType">
-    <p th:text="${question.questionText} + ': '"></p>
-    <img th:if="${question.questionType eq 'Text with photo'}"
-         th:src="${#strings.concat('/uploads/', question.questionMedia)}"
-         th:alt="${question.questionMedia}"
-         style="width: 750px"/>
-    <audio th:if="${question.questionType eq 'Text with audio'}"
-           controls>
-        <source th:src="${#strings.concat('/uploads/', question.questionMedia)}"
-        />
-    </audio>
-    <video th:if="${question.questionType eq 'Text with video'}"
-           controls>
-        <source th:src="${#strings.concat('/uploads/', question.questionMedia)}"
-        />
-    </video>
-    <p th:text="${question.questionAnswerDescription}"></p>
-    <th:block th:if="${question.answerType eq 'Single'}">
-        <th:block th:each="answer : ${question.answersVariants}">
-            <input th:checked="${!#lists.isEmpty(answers.answers)}
-                            and ${#lists.contains(answers.answers, answer)}"
-                   th:value="${answer}"
-                   type="radio" name="answers">
-            <span th:text="${answer}"></span>
+<header th:insert="fragments/general.html :: userHeader">
+</header>
+<main>
+    <form name="testWalkthrough" method="post">
+        <div style="float: right">
+            <span th:text="'Time left: '"></span>
+            <div th:if="${!isUnlimitedTime}"
+                 th:text="${timeLeft}"
+                 style="float: right"
+                 id="timeLeft">>
+            </div>
+        </div>
+        <input th:value="${question.questionId}"
+               type="hidden" name="questionId">
+        <input th:value="${question.answerType}"
+               type="hidden" name="answerType">
+        <p th:text="${question.questionText} + ': '"></p>
+        <img th:if="${question.questionType eq 'Text with photo'}"
+             th:src="${#strings.concat('/uploads/', question.questionMedia)}"
+             th:alt="${question.questionMedia}"
+             style="width: 65%;"/>
+        <audio th:if="${question.questionType eq 'Text with audio'}"
+               controls>
+            <source th:src="${#strings.concat('/uploads/', question.questionMedia)}"
+            />
+        </audio>
+        <video th:if="${question.questionType eq 'Text with video'}"
+               controls>
+            <source th:src="${#strings.concat('/uploads/', question.questionMedia)}"
+            />
+        </video>
+        <p th:text="${question.questionAnswerDescription}"></p>
+        <th:block th:if="${question.answerType eq 'Single'}">
+            <div class="form-check"
+                 th:each="answer, answerStat : ${question.answersVariants}">
+                <input class="form-check-input"
+                       type="radio" name="answers"
+                       th:id="'flexRadio' + ${answerStat.count}"
+                       th:checked="${!#lists.isEmpty(answers.answers)}
+                                        and ${#lists.contains(answers.answers, answer)}"
+                       th:value="${answer}">
+                <label class="form-check-label"
+                       th:for="'flexRadio' + ${answerStat.count}"
+                       th:text="${answer}">
+                </label>
+            </div>
         </th:block>
-    </th:block>
-    <th:block th:if="${question.answerType eq 'Multiple'}">
-        <th:block th:each="answer : ${question.answersVariants}">
-            <input th:checked="${!#lists.isEmpty(answers.answers)}
-                            and ${#lists.contains(answers.answers, answer)}"
-                   th:value="${answer}"
-                   type="checkbox" name="answers">
-            <span th:text="${answer}"></span>
+        <th:block th:if="${question.answerType eq 'Multiple'}">
+            <div class="form-check"
+                 th:each="answer, answerStat : ${question.answersVariants}">
+                <input class="form-check-input"
+                       type="checkbox" name="answers"
+                       th:id="'flexCheck' + ${answerStat.count}"
+                       th:checked="${!#lists.isEmpty(answers.answers)}
+                                        and ${#lists.contains(answers.answers, answer)}"
+                       th:value="${answer}">
+                <label class="form-check-label"
+                       th:for="'flexCheck' + ${answerStat.count}"
+                       th:text="${answer}">
+                </label>
+            </div>
         </th:block>
-    </th:block>
-    <th:block th:if="${question.answerType eq 'Custom'}">
-        <label> Enter answer:
-            <input th:value="${!#lists.isEmpty(answers.answers) ? answers.answers[0] : ''}"
-                   name="answers" type="text">
-        </label>
-    </th:block>
-    <th:block th:if="${question.answerType eq 'Match'}">
-        <th:block th:each="subQuestionText, subQuestionTextStat : ${answers.subQuestionsText}">
-            <label> <span th:text="${subQuestionTextStat.count} + '. '"></span>
-                <input th:value="${subQuestionText}"
-                       type="text" readonly name="subQuestionsText">
-            </label>
-            <select name="answers" id="selectVariant">
-                <option th:if="${answers.matchQuestionNumOfAnswers eq null and !hasTimeToComplete}"
-                        selected>
-                </option>
-                <option th:each="answer, answerStat : ${answers.answers}"
-                        th:value="${answer}"
-                        th:selected="${answers.matchQuestionNumOfAnswers eq null
+        <th:block th:if="${question.answerType eq 'Custom'}">
+            <div class="mb-3 row">
+                <label for="answer" class="col-sm-4 col-form-label">Enter answer: </label>
+                <div class="col-sm-8">
+                    <input th:value="${!#lists.isEmpty(answers.answers) ? answers.answers[0] : ''}"
+                           name="answers" type="text" class="form-control" id="answer">
+                </div>
+            </div>
+        </th:block>
+        <th:block th:if="${question.answerType eq 'Match'}">
+            <th:block th:each="subQuestionText, subQuestionTextStat : ${answers.subQuestionsText}">
+                <div class="mb-3 row">
+                    <label th:text="${subQuestionTextStat.count} + '. '"
+                           th:for="'matchSubText' + ${subQuestionTextStat.index}"
+                           class="col-form-label col-sm-3"></label>
+                    <div class="col-sm-3">
+                        <input th:value="${subQuestionText}"
+                               type="text" readonly name="subQuestionsText" class="form-control"
+                               th:id="'matchSubText' + ${subQuestionTextStat.index}">
+                    </div>
+                    <div class="col-sm-3">
+                        <select name="answers" id="selectVariant" class="form-select form-select-sm">
+                            <option th:if="${answers.matchQuestionNumOfAnswers eq null and !hasTimeToComplete}"
+                                    selected>
+                            </option>
+                            <option th:each="answer, answerStat : ${answers.answers}"
+                                    th:value="${answer}"
+                                    th:selected="${answers.matchQuestionNumOfAnswers eq null
                         ? (!hasTimeToComplete ? false : answerStat.count eq 1 )
                         : answerStat.index eq
                             answers.matchQuestionNumOfAnswers[subQuestionTextStat.index]}"
-                        th:text="${answerStat.count}">
-                </option>
-            </select>
-            <span th:text="${subQuestionTextStat.count} + '. ' +
-                    ${answers.answers[subQuestionTextStat.index]}"></span>
-            <br>
+                                    th:text="${answerStat.count}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <label class="col-form-label" th:text="${subQuestionTextStat.count} + '. ' +
+                                            ${answers.answers[subQuestionTextStat.index]}"></label>
+                    </div>
+                </div>
+            </th:block>
         </th:block>
-    </th:block>
 
-    <input th:if="${question.previousNumber ne 0}"
-           th:value="${question.previousNumber}"
-           type="hidden" name="previousNumber">
-    <input th:if="${!question.isLast}"
-           th:value="${question.nextNumber}"
-           type="hidden" name="nextNumber">
+        <input th:if="${question.previousNumber ne 0}"
+               th:value="${question.previousNumber}"
+               type="hidden" name="previousNumber">
+        <input th:if="${!question.isLast}"
+               th:value="${question.nextNumber}"
+               type="hidden" name="nextNumber">
 
-    <br>
-    <input th:if="${question.previousNumber ne 0}"
-           type="submit" id="previous" value="Previous Question">
-    <input th:if="${!question.isLast}"
-           type="submit" id="next" value="Next Question">
-    <input th:if="${question.isLast}"
-           type="submit" id="submit" value="Finish test">
-</form>
+        <button th:if="${question.previousNumber ne 0}"
+                type="submit" class="btn btn-primary mb-3" id="previous"> Previous Question
+        </button>
+        <button th:if="${!question.isLast}"
+                type="submit" class="btn btn-primary mb-3" id="next"
+                style="float: right"> Next Question
+        </button>
+        <button th:if="${question.isLast}"
+                type="submit" class="btn btn-primary mb-3" id="submit"
+                style="float: right"> Finish test
+        </button>
+    </form>
+</main>
+<footer th:replace="fragments/general.html :: footer">
+</footer>
 <script src="/static/scripts/testWalkthrough.js" type="text/javascript"></script>
+<th:block th:include="fragments/general.html :: scriptfiles">
+</th:block>
 </body>
 </html>

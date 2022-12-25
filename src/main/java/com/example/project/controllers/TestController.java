@@ -209,7 +209,7 @@ public class TestController {
         questionService.setStatistic(testId, user);
         questionService.changeCoefficient(testId);
 
-        String url = "/test/" + testId + "/user/" + user.getUsername() + "/results";
+        String url = "/test/" + testId + "/results?user=" + user.getUsername();
         return "redirect:" + url;
     }
 

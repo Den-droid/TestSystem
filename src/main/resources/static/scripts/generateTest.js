@@ -1,5 +1,6 @@
 function addTestSubmit() {
     let errorDiv = document.getElementById("error");
+    errorDiv.style.display = "block";
 
     let action = document.getElementById("action");
     if (action.value !== "submit") {
@@ -8,13 +9,19 @@ function addTestSubmit() {
             if (topicPart.value.length < 3) {
                 errorDiv.textContent = "Enter at least 3 characters to start search!!!";
                 return false;
-            } else return true;
+            } else {
+                errorDiv.style.display = "block";
+                return true;
+            }
         } else if (action.value === "searchUsers") {
             let userPart = document.getElementsByName("usernamePart")[0];
             if (userPart.value.length < 3) {
                 errorDiv.textContent = "Enter at least 3 characters to start search!!!";
                 return false;
-            } else return true;
+            } else {
+                errorDiv.style.display = "block";
+                return true;
+            }
         }
     } else {
         let name = document.getElementById("name");
@@ -32,7 +39,7 @@ function addTestSubmit() {
         }
 
         let questionsCount = document.getElementById("questionCount");
-        if (questionsCount.value.length === 0 || +questionsCount.value === 0) {
+        if (questionsCount.value.length === 0) {
             errorDiv.textContent = "You must have at least 1 question!!!";
             return false;
         }
@@ -61,6 +68,7 @@ function addTestSubmit() {
             return false;
         }
 
+        errorDiv.style.display = "block";
         return true;
     }
 }

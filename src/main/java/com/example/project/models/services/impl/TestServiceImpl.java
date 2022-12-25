@@ -155,10 +155,15 @@ public class TestServiceImpl implements TestService {
     public void start(User user, String testId) {
         Test test = testRepository.findById(testId)
                 .orElseThrow(NoSuchElementException::new);
+
         CurrentTest existed = currentTestRepository.findByUserAndTest(user, test);
         if (existed != null) {
             throw new IllegalArgumentException();
         }
+
+        test.getUsersAssigned().remove(user);
+        testRepository.save(test);
+
         CurrentTest currentTest = new CurrentTest();
         currentTest.setUser(user);
         currentTest.setTest(test);
@@ -176,9 +181,6 @@ public class TestServiceImpl implements TestService {
 
         CurrentTest currentTest = currentTestRepository.findByUserAndTest(user, test);
         currentTestRepository.delete(currentTest);
-
-        test.getUsersAssigned().remove(user);
-        testRepository.save(test);
 
         double mark = getTestMark(test, user);
         FinishedTest finishedTest = new FinishedTest();
@@ -346,15 +348,11 @@ public class TestServiceImpl implements TestService {
         dto.setDateStarted(test.getStartDate());
         dto.setDateFinish(test.getFinishDate());
 
-        Integer usersAssignedCount = test.getUsersAssigned().size();
         List<FinishedTest> finishedTests = test.getFinishedTests();
-        Integer userCompletedCount = finishedTests.size();
         List<String> userCompletedUsernames = finishedTests.stream()
                 .map(x -> x.getUser().getUsername())
                 .collect(Collectors.toList());
 
-        dto.setUserAssignedCount(usersAssignedCount);
-        dto.setUserCompletedCount(userCompletedCount);
         dto.setUserCompletedUsernames(userCompletedUsernames);
         return dto;
     }

@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Test Intro</title>
-    <link href="/static/styles/error.css" rel="stylesheet">
+    <th:block th:include="fragments/general.html :: headerfiles">
+    </th:block>
 </head>
 <body>
-<div>
-    <h2 th:text="${test.name}">
+<header th:insert="fragments/general.html :: userHeader">
+</header>
+<main>
+    <h2 style="text-align: center" th:text="${test.name}">
     </h2>
     <p th:text="'Author username: ' + ${test.authorUsername}"></p>
     <p th:text="'Topics: ' + ${#strings.listJoin(test.topics, ', ')}"></p>
@@ -16,13 +18,24 @@
     <p th:text="'Time limit: ' + ${#temporals.format(test.timeLimit, 'HH:mm')}"></p>
     <p th:text="'Amount of questions: ' + ${test.questionsCount}"></p>
     <p th:text="'Difficulty: ' + ${test.difficulty}"></p>
-    <div th:if="${error ne null}"
-         th:text="${error}"
-         id="error">
+
+    <div th:replace="fragments/general.html :: error(${error})">
     </div>
+
     <form method="post">
-        <input type="submit" value="Start">
+        <button type="button" class="btn btn-secondary mb-3">
+            <a style="color: white" th:href="@{/user/tests}">
+                Back
+            </a>
+        </button>
+        <button type="submit" style="float: right" class="btn btn-primary mb-3">
+            Start
+        </button>
     </form>
-</div>
+</main>
+<footer th:replace="fragments/general.html :: footer">
+</footer>
+<th:block th:include="fragments/general.html :: scriptfiles">
+</th:block>
 </body>
 </html>
