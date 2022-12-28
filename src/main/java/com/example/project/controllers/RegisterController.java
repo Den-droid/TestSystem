@@ -1,27 +1,19 @@
 package com.example.project.controllers;
 
-import com.example.project.dto.auth.RegisterDto;
+import com.example.project.dto.register.RegisterDto;
 import com.example.project.models.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class AuthController {
+public class RegisterController {
     private final UserService userService;
 
-    public AuthController(UserService userService) {
+    public RegisterController(UserService userService) {
         this.userService = userService;
-    }
-
-    @GetMapping("/login")
-    public String getLogin(@RequestParam(name = "error", required = false) String error, Model model) {
-        if (Boolean.parseBoolean(error))
-            model.addAttribute("error", "Try another username or password");
-        return "login";
     }
 
     @GetMapping("/register")

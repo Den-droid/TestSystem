@@ -305,10 +305,36 @@ function validateMedia() {
         if (media.value === '') {
             errorDiv.textContent = "Insert media!!!";
             return false;
+        } else {
+            if (!validateMediaType())
+                return false;
         }
     }
 
     errorDiv.style.display = "none";
+    return true;
+}
+
+function validateMediaType() {
+    let errorDiv = document.getElementById("error");
+    let media = document.getElementById("media");
+    let questionType = document.getElementById("selectQuestionType").value;
+    if (questionType === 'Text with photo') {
+        if (media.type.split("/")[0] !== 'image') {
+            errorDiv.textContent = "Insert photo, not other media!!!";
+            return false;
+        }
+    } else if (questionType === 'Text with audio') {
+        if (media.type.split("/")[0] !== 'audio') {
+            errorDiv.textContent = "Insert audio, not other media!!!";
+            return false;
+        }
+    } else if (questionType === 'Text with video') {
+        if (media.type.split("/")[0] !== 'video') {
+            errorDiv.textContent = "Insert video, not other media!!!";
+            return false;
+        }
+    }
     return true;
 }
 

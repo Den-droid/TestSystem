@@ -47,39 +47,42 @@ public class QuestionController {
                       @RequestParam(name = "media", required = false) MultipartFile file,
                       @ModelAttribute(name = "addQuestion") AddQuestionDto addQuestionDto)
             throws IOException {
+        User user = userService.getCurrentLoggedIn();
+
         try {
-            questionService.add(id, userService.getCurrentLoggedIn(),
-                    addQuestionDto, file);
+            questionService.add(id, user, addQuestionDto, file);
         } catch (NoSuchElementException ex) {
             return "redirect:/error";
         }
 
-        String url = getRedirectUrlToQuestionPage(null);
+        String url = getRedirectUrlToQuestionPage(user, null);
         return "redirect:" + url;
     }
 
     @GetMapping("/questions/edit/{questionId}")
     public String getEditPage(@PathVariable long questionId,
                               Model model) {
-        if (!questionService.existsById(questionId))
-            return "redirect:/error";
+        try {
+            Question question = questionService.getById(questionId);
 
-        Question question = questionService.getById(questionId);
-
-        if (questionService.canBeChanged(question)) {
-            model.addAttribute("question", question);
-            model.addAttribute("questionTypes", questionService.getQuestionTypes());
-            model.addAttribute("questionDifficulties", questionService.getQuestionDifficulties());
-            model.addAttribute("answerTypes", questionService.getAnswerTypes());
-            if (question.getAnswerType() == AnswerType.MATCH) {
-                model.addAttribute("subQuestions", question.getSubQuestions());
-                model.addAttribute("answers", questionService.getSubQuestionAnswers(question));
+            if (questionService.canBeChanged(question)) {
+                model.addAttribute("question", question);
+                model.addAttribute("questionTypes", questionService.getQuestionTypes());
+                model.addAttribute("questionDifficulties", questionService.getQuestionDifficulties());
+                model.addAttribute("answerTypes", questionService.getAnswerTypes());
+                if (question.getAnswerType() == AnswerType.MATCH) {
+                    model.addAttribute("subQuestions", questionService.getSubQuestions(question));
+                    model.addAttribute("answers", questionService.getSubQuestionAnswers(question));
+                } else {
+                    model.addAttribute("answers", questionService.getAnswers(question));
+                }
             } else {
-                model.addAttribute("answers", question.getAnswers());
+                User user = userService.getCurrentLoggedIn();
+                String url = getRedirectUrlToQuestionPage(user, null) + "?error=edit";
+                return "redirect:" + url;
             }
-        } else {
-            String url = getRedirectUrlToQuestionPage(null) + "?error=edit";
-            return "redirect:" + url;
+        } catch (NoSuchElementException ex) {
+            return "redirect:/error";
         }
 
         return "questions/edit";
@@ -92,20 +95,22 @@ public class QuestionController {
             throws IOException {
         questionService.edit(questionId, dto, file);
 
-        String url = getRedirectUrlToQuestionPage(null);
+        User user = userService.getCurrentLoggedIn();
+        String url = getRedirectUrlToQuestionPage(user, null);
         return "redirect:" + url;
     }
 
     @GetMapping("/questions/delete/{questionId}")
     public String delete(@PathVariable long questionId) throws IOException {
-        if (!questionService.existsById(questionId))
-            return "redirect:/error";
-
-        String url = getRedirectUrlToQuestionPage(questionService.
-                getById(questionId).getTopic().getId());
+        String url = "";
 
         try {
             questionService.delete(questionId);
+
+            User user = userService.getCurrentLoggedIn();
+            url = getRedirectUrlToQuestionPage(user, topicService.getIdByQuestionId(questionId));
+        } catch (NoSuchElementException ex) {
+            return "redirect:/error";
         } catch (IllegalArgumentException ex) {
             url += "?error=delete";
         }
@@ -276,8 +281,7 @@ public class QuestionController {
         return "user/questions";
     }
 
-    private String getRedirectUrlToQuestionPage(Integer topicId) {
-        User user = userService.getCurrentLoggedIn();
+    private String getRedirectUrlToQuestionPage(User user, Integer topicId) {
         switch (user.getRole()) {
             case USER:
                 return "/user/questions/1";

@@ -62,8 +62,7 @@ public class TestController {
 
             if (addTestDto.getAction().equals("searchUsers")) {
                 List<User> users = userService.getByUsernameContainsAndUsernamesNotInAndRole(
-                        addTestDto.getUsernamePart(), addTestDto.getUsernames(),
-                        addTestDto.getIncludeMe(), Role.USER);
+                        addTestDto.getUsernamePart(), addTestDto.getUsernames(), Role.USER);
                 model.addAttribute("newUsers", users);
             }
 

@@ -204,8 +204,8 @@ public class TopicController {
     }
 
     @GetMapping("/user/topics/{page}")
-    public String getByPageAndUsername(@PathVariable(name = "page") Integer page,
-                                       Model model) {
+    public String getByPageForUser(@PathVariable(name = "page") Integer page,
+                                   Model model) {
         if (page < 1)
             return "redirect:/error";
 
@@ -220,9 +220,9 @@ public class TopicController {
     }
 
     @GetMapping("/user/topics/search")
-    public String getByPageAndUsername(@RequestParam(name = "page", required = false) Integer page,
-                                       @RequestParam(name = "query") String name,
-                                       Model model) {
+    public String getByPageAndUsernameForUser(@RequestParam(name = "page", required = false) Integer page,
+                                              @RequestParam(name = "query") String name,
+                                              Model model) {
         if (page == null)
             page = 1;
         else if (page < 1)

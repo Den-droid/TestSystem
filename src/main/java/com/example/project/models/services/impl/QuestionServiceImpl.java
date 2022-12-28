@@ -10,8 +10,8 @@ import com.example.project.models.enums.QuestionType;
 import com.example.project.models.mappers.AddQuestionMapper;
 import com.example.project.models.mappers.EditQuestionMapper;
 import com.example.project.models.repositories.*;
-import com.example.project.models.services.FileService;
 import com.example.project.models.services.QuestionService;
+import com.example.project.models.utils.FileUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -29,13 +29,11 @@ public class QuestionServiceImpl implements QuestionService {
     private final TopicRepository topicRepository;
     private final AnswerRepository answerRepository;
     private final TestQuestionRepository testQuestionRepository;
-    private final FileService fileService;
     private final QuestionStatisticRepository questionStatisticRepository;
     private final TestRepository testRepository;
     private final TestAnswerRepository testAnswerRepository;
 
     public QuestionServiceImpl(QuestionRepository questionRepository,
-                               FileService fileService,
                                TopicRepository topicRepository,
                                AnswerRepository answerRepository,
                                TestQuestionRepository testQuestionRepository,
@@ -43,7 +41,6 @@ public class QuestionServiceImpl implements QuestionService {
                                TestRepository testRepository,
                                TestAnswerRepository testAnswerRepository) {
         this.questionRepository = questionRepository;
-        this.fileService = fileService;
         this.topicRepository = topicRepository;
         this.answerRepository = answerRepository;
         this.testQuestionRepository = testQuestionRepository;
@@ -59,7 +56,7 @@ public class QuestionServiceImpl implements QuestionService {
 
         Question question = AddQuestionMapper.map(dto);
         if (file != null && !file.isEmpty()) {
-            String mediaName = fileService.put(file);
+            String mediaName = FileUtils.save(file);
             question.setMediaUrl(mediaName);
         }
 
@@ -156,13 +153,13 @@ public class QuestionServiceImpl implements QuestionService {
 
         if (file != null && !file.isEmpty()) {
             if (question.getMediaUrl() != null)
-                fileService.delete(question.getMediaUrl());
-            String mediaName = fileService.put(file);
+                FileUtils.delete(question.getMediaUrl());
+            String mediaName = FileUtils.save(file);
             question.setMediaUrl(mediaName);
         } else {
             if (editQuestion.getType() == QuestionType.TEXT &&
                     question.getType() != QuestionType.TEXT)
-                fileService.delete(question.getMediaUrl());
+                FileUtils.delete(question.getMediaUrl());
         }
 
         question.setType(editQuestion.getType());
@@ -179,7 +176,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .orElseThrow(NoSuchElementException::new);
         if (canBeChanged(question)) {
             if (question.getMediaUrl() != null)
-                fileService.delete(question.getMediaUrl());
+                FileUtils.delete(question.getMediaUrl());
 
             questionRepository.delete(question);
         } else {
@@ -188,18 +185,13 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public boolean existsById(long id) {
-        return questionRepository.existsById(id);
-    }
-
-    @Override
     public Question getById(long id) {
-        return questionRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return questionRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     public List<Answer> getSubQuestionAnswers(Question question) {
-        if (question.getSubQuestions() != null) {
+        if (question.getAnswerType().equals(AnswerType.MATCH)) {
             return question.getSubQuestions().stream()
                     .map(Question::getAnswers)
                     .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
@@ -234,8 +226,10 @@ public class QuestionServiceImpl implements QuestionService {
             boolean isCorrect;
             if (question.getAnswerType().equals(AnswerType.MATCH)) {
                 List<TestAnswer> subQuestionsAnswers = testAnswers.stream()
-                        .filter(x -> x.getQuestion().getSupQuestion() != null)
-                        .filter(x -> x.getQuestion().getSupQuestion().equals(question))
+                        .filter(x -> {
+                            Question subQuestion = x.getQuestion().getSupQuestion();
+                            return subQuestion != null && subQuestion.equals(question);
+                        })
                         .collect(Collectors.toList());
                 isCorrect = subQuestionsAnswers.stream()
                         .allMatch(TestAnswer::isCorrect);
@@ -310,6 +304,16 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<String> getAnswerTypes() {
         return AnswerType.getValuesText();
+    }
+
+    @Override
+    public List<Answer> getAnswers(Question question) {
+        return question.getAnswers();
+    }
+
+    @Override
+    public List<Question> getSubQuestions(Question question) {
+        return question.getSubQuestions();
     }
 
     private void changeCoefficient(List<Question> questions) {

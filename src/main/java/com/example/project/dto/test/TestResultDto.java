@@ -4,14 +4,11 @@ import java.util.List;
 
 public class TestResultDto {
     private double mark;
-
     private String username;
-
     private String testName;
-
     private List<TestQuestionDto> questions;
-
     private List<TestAnswerDto> answers;
+
     public double getMark() {
         return mark;
     }

@@ -1,4 +1,4 @@
-package com.example.project.dto.auth;
+package com.example.project.dto.register;
 
 public class RegisterDto {
     private String username;

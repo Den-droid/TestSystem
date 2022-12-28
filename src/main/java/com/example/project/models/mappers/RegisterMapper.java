@@ -1,6 +1,6 @@
 package com.example.project.models.mappers;
 
-import com.example.project.dto.auth.RegisterDto;
+import com.example.project.dto.register.RegisterDto;
 import com.example.project.models.entities.User;
 import com.example.project.models.enums.Role;
 

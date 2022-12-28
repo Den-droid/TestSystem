@@ -19,6 +19,8 @@ public interface TopicService {
 
     Topic getByName(String name);
 
+    Integer getIdByQuestionId(Long id);
+
     List<Topic> getByNameContains(String part);
 
     PageDto<Topic> getPage(int page, int limit);

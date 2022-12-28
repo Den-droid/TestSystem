@@ -29,6 +29,9 @@ function validateMediaEditQuestion() {
         if (media.value === '') {
             errorDiv.textContent = "Insert media!!!";
             return false;
+        } else {
+            if (!validateMediaType())
+                return false;
         }
     }
 

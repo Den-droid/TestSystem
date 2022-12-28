@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,6 +86,12 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public Topic getByName(String name) {
         return topicRepository.findByName(name);
+    }
+
+    @Override
+    public Integer getIdByQuestionId(Long id) {
+        Question question = questionRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        return question.getTopic().getId();
     }
 
     @Override

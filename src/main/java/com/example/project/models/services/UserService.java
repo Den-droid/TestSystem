@@ -1,6 +1,6 @@
 package com.example.project.models.services;
 
-import com.example.project.dto.auth.RegisterDto;
+import com.example.project.dto.register.RegisterDto;
 import com.example.project.dto.user.EditUserDto;
 import com.example.project.dto.user.UserDto;
 import com.example.project.models.entities.User;
@@ -23,6 +23,5 @@ public interface UserService {
 
     List<User> getByUsernameContainsAndUsernamesNotInAndRole(String usernamePart,
                                                              List<String> usernamesNotIn,
-                                                             String includeMe,
                                                              Role role);
 }

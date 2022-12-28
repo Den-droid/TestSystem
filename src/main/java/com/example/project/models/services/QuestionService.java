@@ -19,8 +19,6 @@ public interface QuestionService {
 
     void delete(long id) throws IOException;
 
-    boolean existsById(long id);
-
     Question getById(long id);
 
     boolean canBeChanged(Question question);
@@ -46,4 +44,8 @@ public interface QuestionService {
     List<String> getQuestionDifficulties();
 
     List<String> getAnswerTypes();
+
+    List<Answer> getAnswers(Question question);
+
+    List<Question> getSubQuestions(Question question);
 }

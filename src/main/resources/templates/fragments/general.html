@@ -8,13 +8,38 @@
     <link href="/static/styles/common.css" rel="stylesheet">
 </head>
 <body>
+
+<div th:fragment="guestHeader" id="header">
+    <div style="display: flex">
+        <img style="width: 10%" src="/static/images/Tyrannosaurus-512.png" alt="Logo">
+        <h3 style="margin-left: 25px; margin-top: auto; margin-bottom:auto">Test System</h3>
+    </div>
+    <div th:replace="fragments/general.html :: guestLinks"></div>
+</div>
+
+<div th:fragment="userHeader" id="header">
+    <div style="display: flex">
+        <img style="width: 10%" src="/static/images/Tyrannosaurus-512.png" alt="Logo">
+        <h3 style="margin-left: 25px; margin-top: auto; margin-bottom:auto">Test System</h3>
+    </div>
+    <div th:replace="fragments/general.html :: userLinks"></div>
+</div>
+
 <div th:fragment="adminHeader" id="header">
+    <div style="display: flex">
+        <img style="width: 10%" src="/static/images/Tyrannosaurus-512.png" alt="Logo">
+        <h3 style="margin-left: 25px; margin-top: auto; margin-bottom:auto">Test System</h3>
+    </div>
+    <div th:replace="fragments/general.html :: adminLinks"></div>
+</div>
+
+<div th:fragment="adminLinks" id="links">
     <a th:href="@{/}">Home</a>
     <a th:href="@{/admin/topics}">Topics</a>
     <a th:href="@{/profile}">Profile</a>
     <a th:href="@{/logout}">Log out</a>
 </div>
-<div th:fragment="userHeader" id="header">
+<div th:fragment="userLinks" id="links">
     <a th:href="@{/}">Home</a>
     <a th:href="@{/user/topics}">Topics</a>
     <a th:href="@{/user/questions}">Questions</a>
@@ -22,7 +47,7 @@
     <a th:href="@{/profile}">Profile</a>
     <a th:href="@{/logout}">Log out</a>
 </div>
-<div th:fragment="guestHeader" id="header">
+<div th:fragment="guestLinks" id="links">
     <a th:href="@{/}">Home</a>
     <a th:href="@{/topics}">Topics</a>
     <a th:href="@{/register}">Register</a>

@@ -11,22 +11,36 @@ a {
     text-decoration: none;
 }
 
+#logo {
+    float: left;
+    width: 5%;
+    margin-left: 1%;
+    margin-top: 0.1%;
+}
+
 #header, #footer {
     width: 100%;
     background-color: darkkhaki;
     height: 12%;
-    padding: 15px;
+    padding: 10px;
 }
 
-#header {
+#header{
+    display: flex;
+}
+
+#links{
     text-align: right;
+    margin-bottom: auto;
+    margin-top: auto;
+    width: 53%;
 }
 
 #footer {
     text-align: center;
 }
 
-#header > a, #footer > a {
+#links > a {
     margin-right: 10px;
 }
 

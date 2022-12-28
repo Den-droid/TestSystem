@@ -10,7 +10,5 @@ import java.util.List;
 public interface TestQuestionRepository extends CrudRepository<TestQuestion, Long> {
     List<TestQuestion> findByQuestion(Question question);
 
-    TestQuestion findByTestAndQuestion(Test test, Question question);
-
     List<TestQuestion> findAllByTest(Test test);
 }
