@@ -19,6 +19,8 @@
                                         : #temporals.format(resultsInfo.timeLimit, 'HH:mm')}"></p>
     <p th:text="'Amount of questions: ' + ${resultsInfo.questionsCount}"></p>
     <p th:text="'Difficulty: ' + ${resultsInfo.difficulty}"></p>
+    <p th:text="'Users finished: ' + ${resultsInfo.usersFinished + '/' + resultsInfo.usersAssigned}"></p>
+    <p th:text="'Average Mark: ' + ${resultsInfo.averageMark + '/100'}"></p>
 
     <h3>Finished Tests: </h3>
     <div class="result" th:each="username : ${resultsInfo.userCompletedUsernames}">

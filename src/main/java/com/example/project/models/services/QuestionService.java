@@ -2,7 +2,9 @@ package com.example.project.models.services;
 
 import com.example.project.dto.page.PageDto;
 import com.example.project.dto.question.AddQuestionDto;
+import com.example.project.dto.question.AddQuestionPageDto;
 import com.example.project.dto.question.EditQuestionDto;
+import com.example.project.dto.question.EditQuestionPageDto;
 import com.example.project.models.entities.Answer;
 import com.example.project.models.entities.Question;
 import com.example.project.models.entities.QuestionStatistic;
@@ -37,15 +39,7 @@ public interface QuestionService {
 
     PageDto<Question> getPageByUserAndName(User user, String text, int page, int limit);
 
-    List<Answer> getSubQuestionAnswers(Question question);
+    EditQuestionPageDto getEditQuestionPage(Question question);
 
-    List<String> getQuestionTypes();
-
-    List<String> getQuestionDifficulties();
-
-    List<String> getAnswerTypes();
-
-    List<Answer> getAnswers(Question question);
-
-    List<Question> getSubQuestions(Question question);
+    AddQuestionPageDto getAddQuestionPage();
 }

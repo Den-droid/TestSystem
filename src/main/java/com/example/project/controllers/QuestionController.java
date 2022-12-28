@@ -2,10 +2,11 @@ package com.example.project.controllers;
 
 import com.example.project.dto.page.PageDto;
 import com.example.project.dto.question.AddQuestionDto;
+import com.example.project.dto.question.AddQuestionPageDto;
 import com.example.project.dto.question.EditQuestionDto;
+import com.example.project.dto.question.EditQuestionPageDto;
 import com.example.project.models.entities.Question;
 import com.example.project.models.entities.User;
-import com.example.project.models.enums.AnswerType;
 import com.example.project.models.services.QuestionService;
 import com.example.project.models.services.TopicService;
 import com.example.project.models.services.UserService;
@@ -36,9 +37,11 @@ public class QuestionController {
         if (!topicService.existsById(id))
             return "redirect:/error";
         model.addAttribute("topicId", id);
-        model.addAttribute("questionTypes", questionService.getQuestionTypes());
-        model.addAttribute("questionDifficulties", questionService.getQuestionDifficulties());
-        model.addAttribute("answerTypes", questionService.getAnswerTypes());
+
+        AddQuestionPageDto dto = questionService.getAddQuestionPage();
+        model.addAttribute("questionTypes", dto.getQuestionTypes());
+        model.addAttribute("questionDifficulties", dto.getQuestionDifficulties());
+        model.addAttribute("answerTypes", dto.getAnswerTypes());
         return "questions/add";
     }
 
@@ -66,16 +69,13 @@ public class QuestionController {
             Question question = questionService.getById(questionId);
 
             if (questionService.canBeChanged(question)) {
+                EditQuestionPageDto dto = questionService.getEditQuestionPage(question);
                 model.addAttribute("question", question);
-                model.addAttribute("questionTypes", questionService.getQuestionTypes());
-                model.addAttribute("questionDifficulties", questionService.getQuestionDifficulties());
-                model.addAttribute("answerTypes", questionService.getAnswerTypes());
-                if (question.getAnswerType() == AnswerType.MATCH) {
-                    model.addAttribute("subQuestions", questionService.getSubQuestions(question));
-                    model.addAttribute("answers", questionService.getSubQuestionAnswers(question));
-                } else {
-                    model.addAttribute("answers", questionService.getAnswers(question));
-                }
+                model.addAttribute("questionTypes", dto.getQuestionTypes());
+                model.addAttribute("questionDifficulties", dto.getQuestionDifficulties());
+                model.addAttribute("answerTypes", dto.getAnswerTypes());
+                model.addAttribute("subQuestions", dto.getSubQuestions());
+                model.addAttribute("answers", dto.getSubQuestions());
             } else {
                 User user = userService.getCurrentLoggedIn();
                 String url = getRedirectUrlToQuestionPage(user, null) + "?error=edit";

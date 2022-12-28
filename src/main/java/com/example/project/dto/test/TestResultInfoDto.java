@@ -13,6 +13,33 @@ public class TestResultInfoDto {
     private LocalDateTime dateStarted;
     private LocalDateTime dateFinish;
     private List<String> userCompletedUsernames;
+    private int usersAssigned;
+    private int usersFinished;
+    private double averageMark;
+
+    public double getAverageMark() {
+        return averageMark;
+    }
+
+    public void setAverageMark(double averageMark) {
+        this.averageMark = averageMark;
+    }
+
+    public int getUsersAssigned() {
+        return usersAssigned;
+    }
+
+    public void setUsersAssigned(int usersAssigned) {
+        this.usersAssigned = usersAssigned;
+    }
+
+    public int getUsersFinished() {
+        return usersFinished;
+    }
+
+    public void setUsersFinished(int usersFinished) {
+        this.usersFinished = usersFinished;
+    }
 
     public String getName() {
         return name;

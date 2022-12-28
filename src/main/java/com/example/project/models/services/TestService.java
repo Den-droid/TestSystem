@@ -49,8 +49,6 @@ public interface TestService {
 
     TestResultDto getUserTestResult(String testId, User user);
 
-    Set<Topic> getTestTopics(Test test);
-
     List<String> getTestDifficulties();
 
     List<String> getTestTypes();

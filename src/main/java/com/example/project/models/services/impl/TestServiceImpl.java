@@ -191,6 +191,7 @@ public class TestServiceImpl implements TestService {
         finishedTestRepository.save(finishedTest);
     }
 
+    @Override
     public PageDto<Test> getPage(String type, String name, User user, int page, int limit) {
         TestType testType = TestType.ASSIGNED;
         String username = user.getUsername();
@@ -337,6 +338,7 @@ public class TestServiceImpl implements TestService {
     public TestResultInfoDto getResultInfo(String testId) {
         Test test = testRepository.findById(testId)
                 .orElseThrow(NoSuchElementException::new);
+
         TestResultInfoDto dto = new TestResultInfoDto();
         dto.setName(test.getName());
         dto.setTimeLimit(test.getTimeLimit());
@@ -352,7 +354,13 @@ public class TestServiceImpl implements TestService {
         List<String> userCompletedUsernames = finishedTests.stream()
                 .map(x -> x.getUser().getUsername())
                 .collect(Collectors.toList());
+        double averageMark = finishedTests.stream()
+                .mapToDouble(FinishedTest::getMark)
+                .average().orElseThrow(() -> new RuntimeException("Can't get average mark!!!"));
 
+        dto.setAverageMark(averageMark);
+        dto.setUsersAssigned(getUsersAssignedToTest(test));
+        dto.setUsersFinished(finishedTests.size());
         dto.setUserCompletedUsernames(userCompletedUsernames);
         return dto;
     }
@@ -386,11 +394,6 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    public Set<Topic> getTestTopics(Test test) {
-        return test.getTopics();
-    }
-
-    @Override
     public List<String> getTestDifficulties() {
         return TestDifficulty.getValuesText();
     }
@@ -398,6 +401,17 @@ public class TestServiceImpl implements TestService {
     @Override
     public List<String> getTestTypes() {
         return TestType.getValuesText();
+    }
+
+    private Set<Topic> getTestTopics(Test test) {
+        return test.getTopics();
+    }
+
+    private int getUsersAssignedToTest(Test test) {
+        int assignedTests = test.getUsersAssigned().size();
+        int current = test.getCurrentTests().size();
+        int finished = test.getFinishedTests().size();
+        return assignedTests + current + finished;
     }
 
     private double getTestMark(Test test, User user) {
@@ -592,6 +606,7 @@ public class TestServiceImpl implements TestService {
         for (Topic topic : topics) {
             questions.addAll(topic.getQuestions());
         }
+        Collections.shuffle(questions);
 
         List<TestQuestion> testQuestions = new ArrayList<>(test.getQuestionsCount());
 

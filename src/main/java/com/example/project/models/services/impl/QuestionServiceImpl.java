@@ -2,7 +2,9 @@ package com.example.project.models.services.impl;
 
 import com.example.project.dto.page.PageDto;
 import com.example.project.dto.question.AddQuestionDto;
+import com.example.project.dto.question.AddQuestionPageDto;
 import com.example.project.dto.question.EditQuestionDto;
+import com.example.project.dto.question.EditQuestionPageDto;
 import com.example.project.models.entities.*;
 import com.example.project.models.enums.AnswerType;
 import com.example.project.models.enums.QuestionDifficulty;
@@ -190,13 +192,29 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<Answer> getSubQuestionAnswers(Question question) {
+    public EditQuestionPageDto getEditQuestionPage(Question question) {
+        EditQuestionPageDto dto = new EditQuestionPageDto();
+
+        dto.setQuestionDifficulties(getQuestionDifficulties());
+        dto.setQuestionTypes(getQuestionTypes());
+        dto.setAnswerTypes(getAnswerTypes());
         if (question.getAnswerType().equals(AnswerType.MATCH)) {
-            return question.getSubQuestions().stream()
-                    .map(Question::getAnswers)
-                    .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
-        } else
-            return null;
+            dto.setSubQuestions(getSubQuestions(question));
+            dto.setAnswers(getSubQuestionAnswers(question));
+        } else {
+            dto.setAnswers(getAnswers(question));
+        }
+
+        return dto;
+    }
+
+    @Override
+    public AddQuestionPageDto getAddQuestionPage() {
+        AddQuestionPageDto dto = new AddQuestionPageDto();
+        dto.setQuestionDifficulties(getQuestionDifficulties());
+        dto.setQuestionTypes(getQuestionTypes());
+        dto.setAnswerTypes(getAnswerTypes());
+        return dto;
     }
 
     @Override
@@ -291,29 +309,30 @@ public class QuestionServiceImpl implements QuestionService {
         return new PageDto<>(questionPage.getContent(), page, questionPage.getTotalPages());
     }
 
-    @Override
-    public List<String> getQuestionTypes() {
+    private List<String> getQuestionTypes() {
         return QuestionType.getValuesText();
     }
 
-    @Override
-    public List<String> getQuestionDifficulties() {
+    private List<String> getQuestionDifficulties() {
         return QuestionDifficulty.getValuesText();
     }
 
-    @Override
-    public List<String> getAnswerTypes() {
+    private List<String> getAnswerTypes() {
         return AnswerType.getValuesText();
     }
 
-    @Override
-    public List<Answer> getAnswers(Question question) {
+    private List<Answer> getAnswers(Question question) {
         return question.getAnswers();
     }
 
-    @Override
-    public List<Question> getSubQuestions(Question question) {
+    private List<Question> getSubQuestions(Question question) {
         return question.getSubQuestions();
+    }
+
+    private List<Answer> getSubQuestionAnswers(Question question) {
+        return question.getSubQuestions().stream()
+                .map(Question::getAnswers)
+                .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
     }
 
     private void changeCoefficient(List<Question> questions) {
