@@ -3,8 +3,8 @@ function topicValidation() {
     errorDiv.style.display = "block";
 
     let topicName = document.getElementById("name");
-    if (topicName.value.length < 6) {
-        errorDiv.textContent = "Topic name must contain at least 6 characters!!!";
+    if (topicName.value.length < 4) {
+        errorDiv.textContent = "Topic name must contain at least 4 characters!!!";
         return false;
     }
 
