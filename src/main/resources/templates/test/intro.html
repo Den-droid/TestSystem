@@ -28,7 +28,8 @@
                 Back
             </a>
         </button>
-        <button type="submit" style="float: right" class="btn btn-primary mb-3">
+        <button type="submit" style="float: right" class="btn btn-primary mb-3"
+                th:disabled="${error ne null}">
             Start
         </button>
     </form>

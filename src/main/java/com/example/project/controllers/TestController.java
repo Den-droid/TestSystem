@@ -101,16 +101,17 @@ public class TestController {
         try {
             User user = userService.getCurrentLoggedIn();
             boolean hasStarted = testService.hasStarted(user, testId);
-            if (hasStarted) {
+            boolean isTooEarly = testService.isTestTooEarly(testId);
+            if (isTooEarly) {
+                model.addAttribute("error", "Too early to start test!!!");
+            } else if (hasStarted) {
                 String url = "/test/" + testId + "/walkthrough";
                 return "redirect:" + url;
             }
+
             if (testService.canWalkthrough(user, testId)) {
                 Test test = testService.getById(testId);
                 model.addAttribute("test", testService.getIntro(test));
-                if (error != null && error.equals("tooEarly")) {
-                    model.addAttribute("error", "Too early to start test!!!");
-                }
             } else {
                 String url = "/user/tests/1?error=notAssigned";
                 return "redirect:" + url;
@@ -147,12 +148,8 @@ public class TestController {
 
             boolean hasFinished = testService.hasFinished(user, testId);
             boolean isTestOutdated = testService.isTestOutdated(testId);
-            boolean isTooEarly = testService.isTestTooEarly(testId);
             boolean hasStarted = testService.hasStarted(user, testId);
-            if (isTooEarly) {
-                String url = "/test/" + testId + "/intro?error=tooEarly";
-                return "redirect:" + url;
-            } else if (!hasStarted) {
+            if (!hasStarted) {
                 String url = "/test/" + testId + "/intro";
                 return "redirect:" + url;
             } else if (isTestOutdated) {

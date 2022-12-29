@@ -30,6 +30,8 @@ public class Question {
     @Enumerated(EnumType.STRING)
     @Column(length = 8)
     private AnswerType answerType;
+    @Column(name = "last_correct_answer_coef")
+    private double lastCorrectAnswerCoefficient;
 
     @ManyToOne
     @JoinColumn(name = "topic_id", referencedColumnName = "id")
@@ -232,5 +234,13 @@ public class Question {
 
     public void setTestAnswers(List<TestAnswer> testAnswers) {
         this.testAnswers = testAnswers;
+    }
+
+    public double getLastCorrectAnswerCoefficient() {
+        return lastCorrectAnswerCoefficient;
+    }
+
+    public void setLastCorrectAnswerCoefficient(double lastCorrectAnswerCoefficient) {
+        this.lastCorrectAnswerCoefficient = lastCorrectAnswerCoefficient;
     }
 }

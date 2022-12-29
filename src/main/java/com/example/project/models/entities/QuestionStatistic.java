@@ -13,6 +13,8 @@ public class QuestionStatistic {
     private int correctAnswers;
     @Column(name = "wrong_answers")
     private int wrongAnswers;
+    @Column(name = "coef_change_answers_count")
+    private int coefficientChangeAnswersCount;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "question_id", referencedColumnName = "id")
@@ -48,5 +50,13 @@ public class QuestionStatistic {
 
     public void setQuestion(Question question) {
         this.question = question;
+    }
+
+    public int getCoefficientChangeAnswersCount() {
+        return coefficientChangeAnswersCount;
+    }
+
+    public void setCoefficientChangeAnswersCount(int coefficientChangeAnswersCount) {
+        this.coefficientChangeAnswersCount = coefficientChangeAnswersCount;
     }
 }

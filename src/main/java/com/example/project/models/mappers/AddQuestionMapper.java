@@ -17,16 +17,21 @@ public class AddQuestionMapper {
         Question question = new Question();
         question.setText(dto.getQuestionText().trim());
         question.setAnswerDescription(dto.getAnswerDescription().trim());
-        question.setDifficulty(QuestionDifficulty.getByText(dto.getQuestionDifficulty()));
         question.setAnswerType(AnswerType.getByText(dto.getAnswerType()));
         question.setType(QuestionType.getByText(dto.getQuestionType()));
         question.setCoefficient(1);
+
+        QuestionDifficulty questionDifficulty = QuestionDifficulty
+                .getByText(dto.getQuestionDifficulty());
+        question.setDifficulty(questionDifficulty);
+        question.setLastCorrectAnswerCoefficient(questionDifficulty.getCoefficientThreshold());
         if (question.getAnswerType() == AnswerType.MATCH) {
             List<Question> subQuestions = new ArrayList<>();
             for (int i = 0; i < dto.getSubQuestions().length; i++) {
                 Question subQuestion = new Question();
                 subQuestion.setText(dto.getSubQuestions()[i]);
                 subQuestion.setSupQuestion(question);
+                subQuestion.setLastCorrectAnswerCoefficient(0);
 
                 Answer answer = new Answer();
                 answer.setText(dto.getAnswers()[i]);

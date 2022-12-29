@@ -336,7 +336,44 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private void changeCoefficient(List<Question> questions) {
+        List<QuestionStatistic> statistics = new ArrayList<>(questions.size());
+        for (Question question : questions) {
+            QuestionStatistic questionStatistic = questionStatisticRepository.findByQuestion(question);
+            int correctAnswers = questionStatistic.getCorrectAnswers();
+            int wrongAnswers = questionStatistic.getWrongAnswers();
+            int lastChangeAnswerCount = questionStatistic.getCoefficientChangeAnswersCount();
+            if (correctAnswers + wrongAnswers - lastChangeAnswerCount >= 100) {
+                double coefficientThreshold = question.getDifficulty().getCoefficientThreshold();
+                double allAnswersCount = correctAnswers + wrongAnswers;
+                double correctAnswerCoefficient = correctAnswers / allAnswersCount;
+                if (correctAnswerCoefficient < coefficientThreshold) {
+                    double lastCorrectAnswerCoefficient = question.getLastCorrectAnswerCoefficient();
+                    double newCoefficient = question.getCoefficient();
 
+                    if (correctAnswerCoefficient > lastCorrectAnswerCoefficient) {
+                        newCoefficient -= newCoefficient *
+                                question.getDifficulty().getCoefficient() *
+                                (correctAnswerCoefficient - lastCorrectAnswerCoefficient);
+                    } else if (correctAnswerCoefficient < lastCorrectAnswerCoefficient) {
+                        newCoefficient += newCoefficient *
+                                question.getDifficulty().getCoefficient() *
+                                (lastCorrectAnswerCoefficient - correctAnswerCoefficient);
+                    }
+
+                    question.setCoefficient(newCoefficient);
+                    question.setLastCorrectAnswerCoefficient(correctAnswerCoefficient);
+                } else {
+                    question.setCoefficient(1);
+                    question.setLastCorrectAnswerCoefficient(question.getDifficulty().getCoefficient());
+                }
+                questionStatistic.setCoefficientChangeAnswersCount(
+                        ((correctAnswers + wrongAnswers) / 100) * 100);
+
+                statistics.add(questionStatistic);
+            }
+        }
+        questionRepository.saveAll(questions);
+        questionStatisticRepository.saveAll(statistics);
     }
 
     private QuestionStatistic setStatistic(Question question, boolean correct) {
@@ -346,6 +383,7 @@ public class QuestionServiceImpl implements QuestionService {
             questionStatistic.setQuestion(question);
             questionStatistic.setCorrectAnswers(correct ? 1 : 0);
             questionStatistic.setWrongAnswers(correct ? 0 : 1);
+            questionStatistic.setCoefficientChangeAnswersCount(0);
         } else {
             int correctAnswers = questionStatistic.getCorrectAnswers();
             int wrongAnswers = questionStatistic.getWrongAnswers();

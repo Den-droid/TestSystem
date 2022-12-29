@@ -5,16 +5,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum QuestionDifficulty {
-    LOW("Low", 0.33),
-    MEDIUM("Medium", 0.66),
-    HIGH("High", 1.0);
+    LOW("Low", 0.33, 0.75),
+    MEDIUM("Medium", 0.66, 0.5),
+    HIGH("High", 1.0, 0.25);
 
     private final String text;
     private final double coefficient;
+    private final double coefficientThreshold;
 
-    QuestionDifficulty(String text, double coefficient) {
+    QuestionDifficulty(String text, double coefficient, double coefficientThreshold) {
         this.text = text;
         this.coefficient = coefficient;
+        this.coefficientThreshold = coefficientThreshold;
     }
 
     public static QuestionDifficulty getByText(String text) {
@@ -35,5 +37,9 @@ public enum QuestionDifficulty {
 
     public double getCoefficient() {
         return coefficient;
+    }
+
+    public double getCoefficientThreshold() {
+        return coefficientThreshold;
     }
 }

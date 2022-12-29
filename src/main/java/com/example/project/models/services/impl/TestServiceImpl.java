@@ -612,12 +612,15 @@ public class TestServiceImpl implements TestService {
 
         double sumCoefficients = 0.0;
         double minDifference;
+        double additionalCoefficient;
         Question addToTest = questions.get(0);
         for (int i = 0; i < test.getQuestionsCount(); i++) {
             minDifference = 1.0;
+            additionalCoefficient = getAdditionalCoefficientForTestDifficulty(test.getDifficulty());
+
             for (Question question : questions) {
                 double tmpDifference = Math.abs(question.getDifficulty().getCoefficient()
-                        - test.getDifficulty().getCoefficient());
+                        - (test.getDifficulty().getCoefficient() + additionalCoefficient));
                 if (tmpDifference < minDifference) {
                     addToTest = question;
                     minDifference = tmpDifference;
@@ -642,6 +645,17 @@ public class TestServiceImpl implements TestService {
         }
 
         test.setQuestions(testQuestions);
+    }
+
+    private double getAdditionalCoefficientForTestDifficulty(TestDifficulty difficulty) {
+        Random random = new Random();
+        double additionalCoefficient = 0;
+        if (difficulty.equals(TestDifficulty.LOW_MEDIUM)) {
+            additionalCoefficient = (random.nextInt(20) + 1) / 100.0;
+        } else if (difficulty.equals(TestDifficulty.LOW_HIGH)) {
+            additionalCoefficient = (random.nextInt(6) + 1) / 100.0;
+        }
+        return additionalCoefficient;
     }
 
     private List<Test> getAssignedToUserByUsername(String username) {

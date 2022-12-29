@@ -17,9 +17,13 @@ public class EditQuestionMapper {
         Question question = new Question();
         question.setText(dto.getQuestionText().trim());
         question.setAnswerDescription(dto.getAnswerDescription().trim());
-        question.setDifficulty(QuestionDifficulty.getByText(dto.getQuestionDifficulty()));
         question.setAnswerType(AnswerType.getByText(dto.getAnswerType()));
         question.setType(QuestionType.getByText(dto.getQuestionType()));
+
+        QuestionDifficulty questionDifficulty = QuestionDifficulty
+                .getByText(dto.getQuestionDifficulty());
+        question.setDifficulty(questionDifficulty);
+        question.setLastCorrectAnswerCoefficient(questionDifficulty.getCoefficientThreshold());
         if (question.getAnswerType() == AnswerType.MATCH) {
             List<Question> subQuestions = new ArrayList<>();
             for (int i = 0; i < dto.getSubQuestions().length; i++) {
@@ -28,6 +32,7 @@ public class EditQuestionMapper {
                     subQuestion.setId(Long.parseLong(dto.getSubQuestionIds()[i]));
                 subQuestion.setText(dto.getSubQuestions()[i]);
                 subQuestion.setSupQuestion(question);
+                subQuestion.setLastCorrectAnswerCoefficient(0);
 
                 Answer answer = new Answer();
                 if (!dto.getAnswerIds()[i].isEmpty())
