@@ -25,11 +25,11 @@ a {
     padding: 10px;
 }
 
-#header{
+#header {
     display: flex;
 }
 
-#links{
+#links {
     text-align: right;
     margin-bottom: auto;
     margin-top: auto;
@@ -60,7 +60,8 @@ main {
     padding: 5px;
 }
 
-.topicName, .questionText, .testName, .result a, .question > a, .question > p, .topic > a, .test > a {
+.topicName, .questionText, .testName,
+.result a, .question > a, .question > p, .topic > a, .test > a {
     margin-left: 10px;
 }
 

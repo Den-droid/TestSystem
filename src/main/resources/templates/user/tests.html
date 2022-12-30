@@ -68,8 +68,8 @@
         </div>
     </div>
     <th:block th:if="${!#lists.isEmpty(tests)}">
-        <div th:replace="fragments/pagination.html :: pagination(${isTests}, ${chosenTestType}, ${isSearch},
-                                                                ${name}, ${currentPage}, ${totalPages})">
+        <div th:replace="fragments/pagination.html ::
+        pagination(${isTests}, ${chosenTestType}, ${isSearch}, ${name}, ${currentPage}, ${totalPages})">
         </div>
     </th:block>
 </main>

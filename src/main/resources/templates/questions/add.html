@@ -10,9 +10,12 @@
 </header>
 <main>
     <h2 style="text-align: center">Add Question</h2>
-    <form name="addQuestion" method="post" enctype="multipart/form-data" onsubmit="return validateAddForm()">
+    <form name="addQuestion" method="post" enctype="multipart/form-data"
+          onsubmit="return validateAddForm()">
         <div class="mb-3 row">
-            <label for="selectQuestionType" class="col-sm-4 col-form-label">Select question type: </label>
+            <label for="selectQuestionType" class="col-sm-4 col-form-label">
+                Select question type:
+            </label>
             <div class="col-sm-8">
                 <select id="selectQuestionType" name="questionType" class="form-select form-select-sm">
                     <option th:each="questionType, questionTypeStat : ${questionTypes}"
@@ -25,7 +28,9 @@
         </div>
 
         <div class="mb-3 row">
-            <label for="questionText" class="col-sm-4 col-form-label">Enter question text: </label>
+            <label for="questionText" class="col-sm-4 col-form-label">
+                Enter question text:
+            </label>
             <div class="col-sm-8">
                 <textarea class="form-control" id="questionText" name="questionText" rows="3">
                 </textarea>
@@ -33,16 +38,21 @@
         </div>
 
         <div class="mb-3 row">
-            <label for="media" class="col-sm-4 col-form-label">Choose file: </label>
+            <label for="media" class="col-sm-4 col-form-label">
+                Choose file:
+            </label>
             <div class="col-sm-8">
                 <input class="form-control" type="file" name="media" id="media" disabled>
             </div>
         </div>
 
         <div class="mb-3 row">
-            <label for="selectQuestionDifficulty" class="col-sm-4 col-form-label">Select question difficulty: </label>
+            <label for="selectQuestionDifficulty" class="col-sm-4 col-form-label">
+                Select question difficulty:
+            </label>
             <div class="col-sm-8">
-                <select id="selectQuestionDifficulty" name="questionDifficulty" class="form-select form-select-sm">
+                <select id="selectQuestionDifficulty" name="questionDifficulty"
+                        class="form-select form-select-sm">
                     <option th:each="questionDifficulty, questionDifficultyStat : ${questionDifficulties}"
                             th:value="${questionDifficulty}"
                             th:text="${questionDifficulty}"
@@ -53,18 +63,24 @@
         </div>
 
         <div class="mb-3 row">
-            <label for="answerDescription" class="col-sm-4 col-form-label">Enter answer description (notes): </label>
+            <label for="answerDescription" class="col-sm-4 col-form-label">
+                Enter answer description (notes):
+            </label>
             <div class="col-sm-8">
-                <textarea class="form-control" name="answerDescription" id="answerDescription" rows="3">
+                <textarea class="form-control" name="answerDescription"
+                          id="answerDescription" rows="3">
                 </textarea>
             </div>
         </div>
 
         <div class="mb-3 row">
-            <label for="selectAnswerType" class="col-sm-4 col-form-label">Select answer type: </label>
+            <label for="selectAnswerType" class="col-sm-4 col-form-label">
+                Select answer type:
+            </label>
             <div class="col-sm-8">
                 <select id="selectAnswerType" name="answerType" class="form-select form-select-sm">
-                    <option th:each="answerType, answerTypeStat : ${answerTypes}" th:value="${answerType}"
+                    <option th:each="answerType, answerTypeStat : ${answerTypes}"
+                            th:value="${answerType}"
                             th:text="${answerType}"
                             th:selected="${answerTypeStat.count == 1}">
                     </option>

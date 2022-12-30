@@ -54,7 +54,8 @@ function timer() {
     }
 
     let splitTimer = timer.split(":");
-    let millis = +splitTimer[0] * (60 * 60 * 1000) + +splitTimer[1] * (60 * 1000) + +splitTimer[2] * 1000;
+    let millis = +splitTimer[0] * (60 * 60 * 1000) + +splitTimer[1] * (60 * 1000) +
+        +splitTimer[2] * 1000;
     let countDownDate = new Date().getTime() + millis;
 
     let x = setInterval(function () {

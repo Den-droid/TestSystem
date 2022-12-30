@@ -40,7 +40,8 @@
                        type="radio" name="answers"
                        th:id="'flexRadio' + ${answerVariantStat.count}"
                        th:checked="${!#lists.isEmpty(testResult.answers[questionStat.index].answers)}
-                            and ${#lists.contains(testResult.answers[questionStat.index].answers, answerVariant)}"
+                            and ${#lists.contains(testResult.answers[questionStat.index].answers,
+                                        answerVariant)}"
                        th:value="${answerVariant}" disabled>
                 <label class="form-check-label"
                        th:for="'flexRadio' + ${answerVariantStat.count}"
@@ -55,7 +56,8 @@
                        type="checkbox" name="answers"
                        th:id="'flexCheck' + ${answerVariantStat.count}"
                        th:checked="${!#lists.isEmpty(testResult.answers[questionStat.index].answers)}
-                            and ${#lists.contains(testResult.answers[questionStat.index].answers, answerVariant)}"
+                            and ${#lists.contains(testResult.answers[questionStat.index].answers,
+                                        answerVariant)}"
                        th:value="${answerVariant}" disabled>
                 <label class="form-check-label"
                        th:for="'flexCheck' + ${answerVariantStat.count}"
@@ -87,15 +89,19 @@
                     </div>
                     <div class="col-sm-3">
                         <select name="answers" id="selectVariant" class="form-select form-select-sm">
-                            <option th:if="${testResult.answers[questionStat.index].matchQuestionNumOfAnswers eq null}"
+                            <option th:if="${testResult.answers[questionStat.index]
+                                                    .matchQuestionNumOfAnswers eq null}"
                                     selected>
                             </option>
-                            <option th:each="answer, answerStat : ${testResult.answers[questionStat.index].answers}"
+                            <option th:each="answer, answerStat : ${testResult.answers[questionStat.index]
+                                                                                .answers}"
                                     th:value="${answer}"
-                                    th:selected="${testResult.answers[questionStat.index].matchQuestionNumOfAnswers eq null
-                                ? false
-                                : answerStat.index eq
-                                testResult.answers[questionStat.index].matchQuestionNumOfAnswers[subQuestionTextStat.index]}"
+                                    th:selected="${testResult.answers[questionStat.index]
+                                    .matchQuestionNumOfAnswers eq null
+                                        ? false
+                                        : answerStat.index eq
+                                        testResult.answers[questionStat.index]
+                                                .matchQuestionNumOfAnswers[subQuestionTextStat.index]}"
                                     th:text="${answerStat.count}"
                                     disabled>
                             </option>
@@ -103,7 +109,8 @@
                     </div>
                     <div class="col-sm-3">
                         <label class="col-form-label" th:text="${subQuestionTextStat.count} + '. ' +
-                                        ${testResult.answers[questionStat.index].answers[subQuestionTextStat.index]}"></label>
+                                        ${testResult.answers[questionStat.index]
+                                                    .answers[subQuestionTextStat.index]}"></label>
                     </div>
                 </div>
             </th:block>

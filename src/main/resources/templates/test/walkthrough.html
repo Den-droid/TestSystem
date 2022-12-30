@@ -90,7 +90,8 @@
                     </div>
                     <div class="col-sm-3">
                         <select name="answers" id="selectVariant" class="form-select form-select-sm">
-                            <option th:if="${answers.matchQuestionNumOfAnswers eq null and !hasTimeToComplete}"
+                            <option th:if="${answers.matchQuestionNumOfAnswers eq null
+                                                    and !hasTimeToComplete}"
                                     selected>
                             </option>
                             <option th:each="answer, answerStat : ${answers.answers}"

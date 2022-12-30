@@ -10,11 +10,12 @@ function validateRegister() {
     let email = document.getElementById("email");
 
     if (username.value.length < 6 || username.value.indexOf(' ') >= 0) {
-        errorDiv.textContent = "Enter correct username (must be equal or greater than 6 characters " +
-            "and not contain white spaces)!!!";
+        errorDiv.textContent = "Enter correct username (must be equal or greater than 6 characters "
+            + "and not contain white spaces)!!!";
         return false;
     } else if (password.value.length < 8) {
-        errorDiv.textContent = "Enter correct password (must be equal or greater than 8 characters)!!!";
+        errorDiv.textContent = "Enter correct password (must be equal or greater "
+            + "than 8 characters)!!!";
         return false;
     } else if (confirmPassword.value.length === 0) {
         errorDiv.textContent = "Confirm password!!!";

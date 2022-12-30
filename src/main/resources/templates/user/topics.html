@@ -40,8 +40,8 @@
         </div>
     </div>
     <th:block th:if="${!#lists.isEmpty(topics)}">
-        <div th:replace="fragments/pagination.html :: pagination(null, null, ${isSearch},
-                                                                ${name}, ${currentPage}, ${totalPages})">
+        <div th:replace="fragments/pagination.html ::
+                    pagination(null, null, ${isSearch}, ${name}, ${currentPage}, ${totalPages})">
         </div>
     </th:block>
 </main>

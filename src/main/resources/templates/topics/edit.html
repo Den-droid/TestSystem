@@ -14,7 +14,8 @@
         <div class="mb-3 row">
             <label for="name" class="col-sm-4 col-form-label">Enter new name: </label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" id="name" name="name" th:value="${topic.name}">
+                <input type="text" class="form-control" id="name" name="name"
+                       th:value="${topic.name}">
             </div>
         </div>
         <div th:replace="fragments/general.html :: error(${error})">

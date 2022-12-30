@@ -5,7 +5,8 @@
     <title>Pagination Fragments</title>
 </head>
 <body>
-<div th:fragment="pagination(isTests, testType, isSearch, query, currentPage, totalPages)" id="pagination">
+<div th:fragment="pagination(isTests, testType, isSearch, query, currentPage, totalPages)"
+     id="pagination">
     <nav aria-label="...">
         <ul class="pagination justify-content-center">
 
@@ -15,7 +16,7 @@
                     th:aria-current="${page == currentPage ? 'page' : ''}">
 
                     <th:block th:include="fragments/pagination ::
-                                        paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${page})">
+                       paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${page})">
                     </th:block>
                 </li>
             </th:block>
@@ -23,7 +24,7 @@
             <th:block th:if="${currentPage >= 5 and currentPage <= totalPages - 5 and totalPages > 9}">
                 <li class="page-item">
                     <th:block th:include="fragments/pagination ::
-                                        paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, 1)">
+                       paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, 1)">
                     </th:block>
                 </li>
 
@@ -37,7 +38,7 @@
                     th:aria-current="${page == currentPage ? 'page' : ''}">
 
                     <th:block th:include="fragments/pagination ::
-                                        paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${page})">
+                      paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${page})">
                     </th:block>
                 </li>
 
@@ -48,7 +49,7 @@
 
                 <li class="page-item">
                     <th:block th:include="fragments/pagination ::
-                                        paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${totalPages})">
+                      paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${totalPages})">
                     </th:block>
                 </li>
             </th:block>
@@ -59,7 +60,7 @@
                     th:aria-current="${page == currentPage ? 'page' : ''}">
 
                     <th:block th:include="fragments/pagination ::
-                                        paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${page})">
+                      paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${page})">
                     </th:block>
                 </li>
                 <li class="page-item">
@@ -68,7 +69,7 @@
                 </li>
                 <li class="page-item">
                     <th:block th:include="fragments/pagination ::
-                                        paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${totalPages})">
+                       paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${totalPages})">
                     </th:block>
                 </li>
             </th:block>
@@ -76,7 +77,7 @@
             <th:block th:if="${totalPages - 5 < currentPage and totalPages > 9}">
                 <li class="page-item">
                     <th:block th:include="fragments/pagination ::
-                                        paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, 1)">
+                          paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, 1)">
                     </th:block>
                 </li>
                 <li class="page-item">
@@ -88,7 +89,7 @@
                     th:aria-current="${page == currentPage ? 'page' : ''}">
 
                     <th:block th:include="fragments/pagination ::
-                                        paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${page})">
+                           paginationLink(${isTests}, ${testType}, ${isSearch}, ${query}, ${page})">
                     </th:block>
                 </li>
             </th:block>
