@@ -3,12 +3,10 @@ package com.example.project.models.services;
 import com.example.project.dto.page.PageDto;
 import com.example.project.dto.test.*;
 import com.example.project.models.entities.Test;
-import com.example.project.models.entities.Topic;
 import com.example.project.models.entities.User;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 
 public interface TestService {
     void add(User user, AddTestDto dto);

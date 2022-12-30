@@ -13,5 +13,6 @@ import java.util.List;
 public interface FinishedTestRepository extends JpaRepository<FinishedTest, Integer> {
     List<FinishedTest> findFinishedTestsByUser(User user);
 
-    FinishedTest findByUserAndTest(User user, Test test);
+    FinishedTest findByUserAndTest(User user,
+                                   Test test);
 }

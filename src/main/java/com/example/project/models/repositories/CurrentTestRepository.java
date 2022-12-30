@@ -11,5 +11,6 @@ import java.util.List;
 public interface CurrentTestRepository extends JpaRepository<CurrentTest, Integer> {
     List<CurrentTest> findCurrentTestsByUser(User user);
 
-    CurrentTest findByUserAndTest(User user, Test test);
+    CurrentTest findByUserAndTest(User user,
+                                  Test test);
 }

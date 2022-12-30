@@ -34,8 +34,9 @@ public class QuestionController {
 
     @GetMapping("/topic/{id}/questions/add")
     public String getAddPage(@PathVariable int id, Model model) {
-        if (!topicService.existsById(id))
+        if (!topicService.existsById(id)) {
             return "redirect:/error";
+        }
         model.addAttribute("topicId", id);
 
         AddQuestionPageDto dto = questionService.getAddQuestionPage();
@@ -137,12 +138,14 @@ public class QuestionController {
     }
 
     @GetMapping("/admin/topic/{id}/questions/{page}")
-    public String getByPageAndTopicForAdmin(@PathVariable int id,
-                                            @PathVariable int page,
-                                            @RequestParam(name = "error", required = false) String error,
-                                            Model model) {
-        if (page < 1)
+    public String getPageByTopicForAdmin(@PathVariable int id,
+                                         @PathVariable int page,
+                                         @RequestParam(name = "error",
+                                                 required = false) String error,
+                                         Model model) {
+        if (page < 1) {
             return "redirect:/error";
+        }
 
         try {
             PageDto<Question> questions = questionService.getPageByTopic(id, page, 10);
@@ -154,22 +157,25 @@ public class QuestionController {
             return "redirect:/error";
         }
 
-        if (error != null && (error.equals("delete") || error.equals("edit")))
-            model.addAttribute("error", "You can't do this action because " +
-                    "this question because it's used somewhere else");
+        if (error != null && (error.equals("delete") || error.equals("edit"))) {
+            model.addAttribute("error", "You can't do this action because "
+                    + "this question because it's used somewhere else");
+        }
 
         return "admin/questions";
     }
 
     @GetMapping("/admin/topic/{id}/questions/search")
-    public String getByPageAndTopicAndNameForAdmin(@PathVariable int id,
-                                                   @RequestParam(name = "query") String text,
-                                                   @RequestParam(name = "page", required = false) Integer page,
-                                                   Model model) {
-        if (page == null)
+    public String getPageByTopicAndNameForAdmin(@PathVariable int id,
+                                                @RequestParam(name = "query") String text,
+                                                @RequestParam(name = "page",
+                                                        required = false) Integer page,
+                                                Model model) {
+        if (page == null) {
             page = 1;
-        else if (page < 1)
+        } else if (page < 1) {
             return "redirect:/error";
+        }
 
         try {
             PageDto<Question> questions = questionService.getPageByTopicAndName(text, id, page, 10);
@@ -187,11 +193,12 @@ public class QuestionController {
     }
 
     @GetMapping("/topic/{id}/questions/{page}")
-    public String getByPageAndTopic(@PathVariable int page,
-                                    @PathVariable int id,
-                                    Model model) {
-        if (page < 1)
+    public String getPageByTopic(@PathVariable int page,
+                                 @PathVariable int id,
+                                 Model model) {
+        if (page < 1) {
             return "redirect:/error";
+        }
 
         try {
             PageDto<Question> questions = questionService.getPageByTopic(id, page, 10);
@@ -209,14 +216,16 @@ public class QuestionController {
     }
 
     @GetMapping("/topic/{id}/questions/search")
-    public String getByPageAndTopicAndName(@PathVariable int id,
-                                           @RequestParam(name = "query") String text,
-                                           @RequestParam(name = "page", required = false) Integer page,
-                                           Model model) {
-        if (page == null)
+    public String getPageByTopicAndName(@PathVariable int id,
+                                        @RequestParam(name = "query") String text,
+                                        @RequestParam(name = "page",
+                                                required = false) Integer page,
+                                        Model model) {
+        if (page == null) {
             page = 1;
-        else if (page < 1)
+        } else if (page < 1) {
             return "redirect:/error";
+        }
 
         try {
             PageDto<Question> questions = questionService.getPageByTopicAndName(text, id, page, 10);
@@ -235,11 +244,13 @@ public class QuestionController {
     }
 
     @GetMapping("/user/questions/{page}")
-    public String getByPageAndUsername(@PathVariable int page,
-                                       @RequestParam(name = "error", required = false) String error,
-                                       Model model) {
-        if (page < 1)
+    public String getPageByUser(@PathVariable int page,
+                                @RequestParam(name = "error",
+                                        required = false) String error,
+                                Model model) {
+        if (page < 1) {
             return "redirect:/error";
+        }
 
         PageDto<Question> questions = questionService.getPageByUser(
                 userService.getCurrentLoggedIn(), page, 10);
@@ -251,21 +262,24 @@ public class QuestionController {
         model.addAttribute("topicNames", topicService.
                 getTopicNamesByQuestions(questions.getElements()));
 
-        if (error != null && (error.equals("delete") || error.equals("edit")))
+        if (error != null && (error.equals("delete") || error.equals("edit"))) {
             model.addAttribute("error", "You can't do this action because " +
                     "this question because it's used somewhere else");
+        }
 
         return "user/questions";
     }
 
     @GetMapping("/user/questions/search")
-    public String getByPageAndUsernameAndName(@RequestParam(name = "query") String text,
-                                              @RequestParam(name = "page", required = false) Integer page,
-                                              Model model) {
-        if (page == null)
+    public String getPageByUserAndName(@RequestParam(name = "query") String text,
+                                       @RequestParam(name = "page",
+                                               required = false) Integer page,
+                                       Model model) {
+        if (page == null) {
             page = 1;
-        else if (page < 1)
+        } else if (page < 1) {
             return "redirect:/error";
+        }
 
         PageDto<Question> questions = questionService.getPageByUserAndName(
                 userService.getCurrentLoggedIn(), text, page, 10);

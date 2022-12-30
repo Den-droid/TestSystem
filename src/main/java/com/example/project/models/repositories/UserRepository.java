@@ -12,7 +12,8 @@ public interface UserRepository extends CrudRepository<User, String> {
 
     List<User> findAllByUsernameContainsIgnoreCase(String username);
 
-    List<User> findAllByUsernameContainsIgnoreCaseAndUsernameNotIn(String username, Collection<String> usernamesNotIn);
+    List<User> findAllByUsernameContainsIgnoreCaseAndUsernameNotIn(String username,
+                                                                   Collection<String> usernamesNotIn);
 
     List<User> findAllByRole(Role role);
 }

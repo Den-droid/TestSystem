@@ -139,10 +139,11 @@ public class TopicController {
     }
 
     @GetMapping("/admin/topics/{page}")
-    public String getByPageForAdmin(@PathVariable(name = "page") Integer page,
+    public String getForAdmin(@PathVariable(name = "page") Integer page,
                                     Model model) {
-        if (page < 1)
+        if (page < 1) {
             return "redirect:/error";
+        }
 
         PageDto<Topic> topics = topicService.getPage(page, 10);
         model.addAttribute("topics", topics.getElements());
@@ -152,13 +153,14 @@ public class TopicController {
     }
 
     @GetMapping("/admin/topics/search")
-    public String getByPageForAdmin(@RequestParam(name = "page", required = false) Integer page,
+    public String getByNameForAdmin(@RequestParam(name = "page", required = false) Integer page,
                                     @RequestParam(name = "query") String name,
                                     Model model) {
-        if (page == null)
+        if (page == null) {
             page = 1;
-        else if (page < 1)
+        } else if (page < 1) {
             return "redirect:/error";
+        }
 
         PageDto<Topic> topics = topicService.getPageByName(page, 10, name);
 
@@ -171,10 +173,11 @@ public class TopicController {
     }
 
     @GetMapping("/topics/{page}")
-    public String getByPage(@PathVariable(name = "page") Integer page,
+    public String get(@PathVariable(name = "page") Integer page,
                             Model model) {
-        if (page < 1)
+        if (page < 1) {
             return "redirect:/error";
+        }
 
         PageDto<Topic> topics = topicService.getPage(page, 10);
 
@@ -188,10 +191,11 @@ public class TopicController {
     public String getByPage(@RequestParam(name = "page", required = false) Integer page,
                             @RequestParam(name = "query") String name,
                             Model model) {
-        if (page == null)
+        if (page == null) {
             page = 1;
-        else if (page < 1)
+        } else if (page < 1) {
             return "redirect:/error";
+        }
 
         PageDto<Topic> topics = topicService.getPageByName(page, 10, name);
 
@@ -204,10 +208,11 @@ public class TopicController {
     }
 
     @GetMapping("/user/topics/{page}")
-    public String getByPageForUser(@PathVariable(name = "page") Integer page,
+    public String getForUser(@PathVariable(name = "page") Integer page,
                                    Model model) {
-        if (page < 1)
+        if (page < 1) {
             return "redirect:/error";
+        }
 
         PageDto<Topic> topics = topicService.getPageByUser(page, 10,
                 userService.getCurrentLoggedIn());
@@ -220,13 +225,14 @@ public class TopicController {
     }
 
     @GetMapping("/user/topics/search")
-    public String getByPageAndUsernameForUser(@RequestParam(name = "page", required = false) Integer page,
+    public String getByUsernameForUser(@RequestParam(name = "page", required = false) Integer page,
                                               @RequestParam(name = "query") String name,
                                               Model model) {
-        if (page == null)
+        if (page == null) {
             page = 1;
-        else if (page < 1)
+        } else if (page < 1) {
             return "redirect:/error";
+        }
 
         PageDto<Topic> topics = topicService.getPageByNameAndUser(page, 10,
                 userService.getCurrentLoggedIn(), name);

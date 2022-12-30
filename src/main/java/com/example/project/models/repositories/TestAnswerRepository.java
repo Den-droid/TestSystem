@@ -9,14 +9,21 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface TestAnswerRepository extends CrudRepository<TestAnswer, Long> {
-    List<TestAnswer> findByTestAndUserAndQuestion(Test test, User user, Question question);
+    List<TestAnswer> findByTestAndUserAndQuestion(Test test,
+                                                  User user,
+                                                  Question question);
 
-    List<TestAnswer> findByTestAndUserAndQuestionAndAnswerNotIn(Test test, User user,
-                                                                Question question, List<String> answer);
+    List<TestAnswer> findByTestAndUserAndQuestionAndAnswerNotIn(Test test,
+                                                                User user,
+                                                                Question question,
+                                                                List<String> answer);
 
-    List<TestAnswer> findByTestAndUserAndQuestionAndAnswerIn(Test test, User user,
-                                                             Question question, List<String> answer);
+    List<TestAnswer> findByTestAndUserAndQuestionAndAnswerIn(Test test,
+                                                             User user,
+                                                             Question question,
+                                                             List<String> answer);
 
-    List<TestAnswer> findByTestAndUser(Test test, User user);
+    List<TestAnswer> findByTestAndUser(Test test,
+                                       User user);
 
 }

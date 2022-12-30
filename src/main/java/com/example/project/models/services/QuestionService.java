@@ -5,7 +5,6 @@ import com.example.project.dto.question.AddQuestionDto;
 import com.example.project.dto.question.AddQuestionPageDto;
 import com.example.project.dto.question.EditQuestionDto;
 import com.example.project.dto.question.EditQuestionPageDto;
-import com.example.project.models.entities.Answer;
 import com.example.project.models.entities.Question;
 import com.example.project.models.entities.QuestionStatistic;
 import com.example.project.models.entities.User;

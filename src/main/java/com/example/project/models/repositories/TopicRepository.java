@@ -10,17 +10,22 @@ import java.util.Collection;
 import java.util.List;
 
 public interface TopicRepository extends PagingAndSortingRepository<Topic, Integer> {
-    Page<Topic> findAllByNameContainsIgnoreCase(String name, Pageable pageable);
+    Page<Topic> findAllByNameContainsIgnoreCase(String name,
+                                                Pageable pageable);
 
     List<Topic> findAllByNameContainsIgnoreCase(String name);
 
-    Page<Topic> findAllByNameContainsIgnoreCaseAndUser(String name, User user, Pageable pageable);
+    Page<Topic> findAllByNameContainsIgnoreCaseAndUser(String name,
+                                                       User user,
+                                                       Pageable pageable);
 
     boolean existsTopicByName(String name);
 
-    Page<Topic> findAllByUser(User user, Pageable pageable);
+    Page<Topic> findAllByUser(User user,
+                              Pageable pageable);
 
     Topic findByName(String name);
 
-    List<Topic> findAllByNameContainsIgnoreCaseAndNameNotIn(String name, Collection<String> namesNotIn);
+    List<Topic> findAllByNameContainsIgnoreCaseAndNameNotIn(String name,
+                                                            Collection<String> namesNotIn);
 }

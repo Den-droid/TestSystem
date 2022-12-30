@@ -48,7 +48,6 @@ public class Topic {
         this.user = user;
     }
 
-
     public Set<Test> getTests() {
         return tests;
     }

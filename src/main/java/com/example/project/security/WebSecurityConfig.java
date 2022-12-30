@@ -12,21 +12,21 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-    private final static String[] USER_PATTERNS = new String[]{
+    private static final String[] USER_PATTERNS = new String[]{
             "/user/**", "/test/**", "/topics/add", "/topics/edit/{id}",
             "/topic/{id}/questions/add", "/questions/edit/{questionId}",
             "/tests/generate"
     };
 
-    private final static String[] ADMIN_PATTERNS = new String[]{
+    private static final String[] ADMIN_PATTERNS = new String[]{
             "/admin/**"
     };
 
-    private final static String[] SHARED_PATTERNS = new String[]{
+    private static final String[] SHARED_PATTERNS = new String[]{
             "/topics/delete/*", "/questions/delete/{questionId}", "/profile"
     };
 
-    private final static String[] PERMITTED_PATTERNS = new String[]{
+    private static final String[] PERMITTED_PATTERNS = new String[]{
             "/", "/register", "/static/**", "/uploads/**",
             "/topics", "/topics/*"
     };

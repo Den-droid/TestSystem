@@ -23,7 +23,8 @@ public class EditQuestionMapper {
         QuestionDifficulty questionDifficulty = QuestionDifficulty
                 .getByText(dto.getQuestionDifficulty());
         question.setDifficulty(questionDifficulty);
-        question.setLastCorrectAnswerCoefficient(questionDifficulty.getCoefficientThreshold());
+        question.setLastCorrectAnswerCoefficient(
+                questionDifficulty.getCoefficientThreshold());
         if (question.getAnswerType() == AnswerType.MATCH) {
             List<Question> subQuestions = new ArrayList<>();
             for (int i = 0; i < dto.getSubQuestions().length; i++) {
@@ -35,8 +36,10 @@ public class EditQuestionMapper {
                 subQuestion.setLastCorrectAnswerCoefficient(0);
 
                 Answer answer = new Answer();
-                if (!dto.getAnswerIds()[i].isEmpty())
+                if (!dto.getAnswerIds()[i].isEmpty()) {
                     answer.setId(Long.parseLong(dto.getAnswerIds()[i]));
+                }
+
                 answer.setText(dto.getAnswers()[i]);
                 answer.setCorrect(true);
                 answer.setQuestion(subQuestion);
@@ -49,8 +52,10 @@ public class EditQuestionMapper {
             List<Answer> answers = new ArrayList<>();
             for (int i = 0; i < dto.getAnswers().length; i++) {
                 Answer answer = new Answer();
-                if (!dto.getAnswerIds()[i].isEmpty())
+                if (!dto.getAnswerIds()[i].isEmpty()) {
                     answer.setId(Long.parseLong(dto.getAnswerIds()[i]));
+                }
+
                 answer.setText(dto.getAnswers()[i]);
                 answer.setQuestion(question);
                 answer.setCorrect(Integer.parseInt(dto.getIsCorrect()[0]) == i);
@@ -61,10 +66,13 @@ public class EditQuestionMapper {
             List<Answer> answers = new ArrayList<>();
             for (int i = 0; i < dto.getAnswers().length; i++) {
                 Answer answer = new Answer();
-                if (!dto.getAnswerIds()[i].isEmpty())
+                if (!dto.getAnswerIds()[i].isEmpty()) {
                     answer.setId(Long.parseLong(dto.getAnswerIds()[i]));
+                }
+
                 answer.setText(dto.getAnswers()[i]);
                 answer.setQuestion(question);
+
                 int index = i;
                 answer.setCorrect(Arrays.stream(dto.getIsCorrect())
                         .anyMatch(x -> Integer.parseInt(x) == index));
@@ -75,8 +83,10 @@ public class EditQuestionMapper {
             List<Answer> answers = new ArrayList<>();
             for (int i = 0; i < dto.getAnswers().length; i++) {
                 Answer answer = new Answer();
-                if (!dto.getAnswerIds()[i].isEmpty())
+                if (!dto.getAnswerIds()[i].isEmpty()) {
                     answer.setId(Long.parseLong(dto.getAnswerIds()[i]));
+                }
+
                 answer.setText(dto.getAnswers()[i]);
                 answer.setQuestion(question);
                 answer.setCorrect(true);

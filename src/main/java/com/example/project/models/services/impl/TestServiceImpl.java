@@ -57,8 +57,11 @@ public class TestServiceImpl implements TestService {
             questionsCount += topic.getQuestions().size();
             topics.add(topic);
         }
-        if (questionsCount < test.getQuestionsCount())
-            throw new IllegalArgumentException();
+        if (questionsCount < test.getQuestionsCount()) {
+            throw new IllegalArgumentException("System doesn't have necessary amount "
+                    + "of questions for this topic. Try another topics or add questions "
+                    + "to topics you've chosen!!!");
+        }
 
         test.setTopics(topics);
 
@@ -67,8 +70,9 @@ public class TestServiceImpl implements TestService {
             User assignedUser = userRepository.findByUsernameIgnoreCase(username);
             users.add(assignedUser);
         }
-        if (dto.getIncludeMe() != null)
+        if (dto.getIncludeMe() != null) {
             users.add(user);
+        }
         test.setUsersAssigned(users);
 
         generate(test);
@@ -77,17 +81,18 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public void saveAnswer(User user, String testId, TestWalkthroughDto testWalkthroughDto) {
-        if (testWalkthroughDto.getAnswers() == null ||
-                testWalkthroughDto.getAnswers().size() == 0)
+        if (testWalkthroughDto.getAnswers() == null
+                || testWalkthroughDto.getAnswers().size() == 0) {
             return;
+        }
 
         Test test = testRepository.findById(testId)
                 .orElseThrow(NoSuchElementException::new);
         Question question = questionRepository.findById(testWalkthroughDto.getQuestionId())
                 .orElseThrow(NoSuchElementException::new);
         AnswerType answerType = AnswerType.getByText(testWalkthroughDto.getAnswerType());
-        List<TestAnswer> testAnswers = testAnswerRepository.findByTestAndUserAndQuestion(test,
-                user, question);
+        List<TestAnswer> testAnswers = testAnswerRepository
+                .findByTestAndUserAndQuestion(test, user, question);
 
         if (answerType.equals(AnswerType.MULTIPLE)) {
             List<String> answers = testWalkthroughDto.getAnswers();
@@ -120,18 +125,18 @@ public class TestServiceImpl implements TestService {
             List<String> answers = testWalkthroughDto.getAnswers();
             testAnswers = new ArrayList<>(answers.size());
             for (int i = 0; i < answers.size(); i++) {
-                if (answers.get(i).equals(""))
+                if (answers.get(i).equals("")) {
                     continue;
+                }
 
-                Question matchQuestion = questionRepository.findBySupQuestionAndText(question,
-                        subQuestionText.get(i));
-                List<TestAnswer> matchQuestionAnswer = testAnswerRepository.
-                        findByTestAndUserAndQuestion(test, user, matchQuestion);
+                Question matchQuestion = questionRepository
+                        .findBySupQuestionAndText(question, subQuestionText.get(i));
+                List<TestAnswer> matchQuestionAnswer = testAnswerRepository
+                        .findByTestAndUserAndQuestion(test, user, matchQuestion);
 
                 TestAnswer testAnswer;
                 if (matchQuestionAnswer == null || matchQuestionAnswer.size() == 0) {
-                    testAnswer = getTestAnswer(test, user, matchQuestion,
-                            answers.get(i));
+                    testAnswer = getTestAnswer(test, user, matchQuestion, answers.get(i));
                 } else {
                     testAnswer = matchQuestionAnswer.get(0);
                     testAnswer.setAnswer(answers.get(i));
@@ -176,8 +181,9 @@ public class TestServiceImpl implements TestService {
         Test test = testRepository.findById(testId)
                 .orElseThrow(NoSuchElementException::new);
 
-        if (finishedTestRepository.findByUserAndTest(user, test) != null)
+        if (finishedTestRepository.findByUserAndTest(user, test) != null) {
             return;
+        }
 
         CurrentTest currentTest = currentTestRepository.findByUserAndTest(user, test);
         currentTestRepository.delete(currentTest);
@@ -196,8 +202,9 @@ public class TestServiceImpl implements TestService {
         TestType testType = TestType.ASSIGNED;
         String username = user.getUsername();
         List<Test> tests;
-        if (type != null)
+        if (type != null) {
             testType = TestType.getByText(type);
+        }
         switch (testType) {
             case ASSIGNED:
                 tests = getAssignedToUserByUsername(username);
@@ -230,14 +237,16 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public boolean canWalkthrough(User user, String testId) {
-        Test test = testRepository.findById(testId).orElseThrow(NoSuchElementException::new);
+        Test test = testRepository.findById(testId)
+                .orElseThrow(NoSuchElementException::new);
         Set<Test> testAssigned = user.getAssignedTests();
         return testAssigned.contains(test);
     }
 
     @Override
     public LocalTime getTimeLeft(User user, String testId) {
-        Test test = testRepository.findById(testId).orElseThrow(NoSuchElementException::new);
+        Test test = testRepository.findById(testId)
+                .orElseThrow(NoSuchElementException::new);
         CurrentTest currentTest = currentTestRepository.findByUserAndTest(user, test);
 
         LocalDateTime dateStarted = currentTest.getDateStarted();
@@ -245,8 +254,8 @@ public class TestServiceImpl implements TestService {
         LocalDateTime now = LocalDateTime.now();
 
         Duration timePassed = Duration.between(dateStarted, now);
-        Duration timeLeft = Duration.between(LocalTime.of(0, 0, 0), timeLimit)
-                .minus(timePassed);
+        Duration timeLimitDuration = Duration.between(LocalTime.of(0, 0, 0), timeLimit);
+        Duration timeLeft = timeLimitDuration.minus(timePassed);
         if (timeLeft.isNegative() || timeLeft.isZero()) {
             return LocalTime.of(0, 0, 0);
         } else {
@@ -256,7 +265,8 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public boolean isTestOutdated(String testId) {
-        Test test = testRepository.findById(testId).orElseThrow(NoSuchElementException::new);
+        Test test = testRepository.findById(testId)
+                .orElseThrow(NoSuchElementException::new);
         LocalDateTime testFinishDate = test.getFinishDate();
 
         LocalDateTime now = LocalDateTime.now();
@@ -265,14 +275,16 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public boolean isTimeUnlimited(String testId) {
-        Test test = testRepository.findById(testId).orElseThrow(NoSuchElementException::new);
+        Test test = testRepository.findById(testId)
+                .orElseThrow(NoSuchElementException::new);
         LocalTime testTimeLimit = test.getTimeLimit();
         return testTimeLimit.toSecondOfDay() == 0;
     }
 
     @Override
     public boolean isTestTooEarly(String testId) {
-        Test test = testRepository.findById(testId).orElseThrow(NoSuchElementException::new);
+        Test test = testRepository.findById(testId)
+                .orElseThrow(NoSuchElementException::new);
         LocalDateTime testStartDate = test.getStartDate();
 
         LocalDateTime now = LocalDateTime.now();
@@ -281,14 +293,16 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public boolean hasStarted(User user, String testId) {
-        Test test = testRepository.findById(testId).orElseThrow(NoSuchElementException::new);
+        Test test = testRepository.findById(testId)
+                .orElseThrow(NoSuchElementException::new);
         CurrentTest currentTest = currentTestRepository.findByUserAndTest(user, test);
         return currentTest != null;
     }
 
     @Override
     public boolean hasFinished(User user, String testId) {
-        Test test = testRepository.findById(testId).orElseThrow(NoSuchElementException::new);
+        Test test = testRepository.findById(testId)
+                .orElseThrow(NoSuchElementException::new);
         FinishedTest finishedTest = finishedTestRepository.findByUserAndTest(user, test);
         return finishedTest != null;
     }
@@ -304,18 +318,109 @@ public class TestServiceImpl implements TestService {
     public TestQuestionDto getTestQuestionByNumber(String testId, int number) {
         Test test = testRepository.findById(testId)
                 .orElseThrow(NoSuchElementException::new);
-        if (number < 1 || number > test.getQuestionsCount())
+        if (number < 1 || number > test.getQuestionsCount()) {
             throw new IllegalArgumentException();
+        }
         return getTestQuestionByNumber(test, number);
     }
 
+    private TestQuestionDto getTestQuestionByNumber(Test test, int number) {
+        TestQuestion testQuestion = test.getQuestions().get(number - 1);
+        Question question = testQuestion.getQuestion();
+
+        TestQuestionDto dto = new TestQuestionDto();
+        dto.setQuestionId(question.getId());
+        dto.setQuestionText(question.getText());
+        dto.setQuestionMedia(question.getMediaUrl());
+        dto.setQuestionAnswerDescription(question.getAnswerDescription());
+        dto.setAnswerType(question.getAnswerType().getText());
+
+        if (question.getAnswerType().equals(AnswerType.SINGLE) ||
+                question.getAnswerType().equals(AnswerType.MULTIPLE)) {
+            List<Answer> answers = question.getAnswers();
+            List<String> answersText = answers.stream()
+                    .map(Answer::getText)
+                    .collect(Collectors.toList());
+            dto.setAnswersVariants(answersText);
+        }
+
+        dto.setNextNumber(number + 1);
+        dto.setPreviousNumber(number - 1);
+        dto.setLast(number == test.getQuestionsCount());
+        dto.setQuestionType(question.getType().getText());
+
+        return dto;
+    }
+
     @Override
-    public TestAnswerDto getTestQuestionAnswerByUserAndNumber(User user, String testId, int number) {
+    public TestAnswerDto getTestQuestionAnswerByUserAndNumber(User user,
+                                                              String testId,
+                                                              int number) {
         Test test = testRepository.findById(testId)
                 .orElseThrow(NoSuchElementException::new);
-        if (number < 1 || number > test.getQuestionsCount())
+        if (number < 1 || number > test.getQuestionsCount()) {
             throw new IllegalArgumentException();
+        }
         return getTestQuestionAnswerByUserAndNumber(test, user, number);
+    }
+
+    private TestAnswerDto getTestQuestionAnswerByUserAndNumber(Test test, User user, int number) {
+        TestQuestion testQuestion = test.getQuestions().get(number - 1);
+        Question question = testQuestion.getQuestion();
+
+        TestAnswerDto dto = new TestAnswerDto();
+        if (question.getAnswerType().equals(AnswerType.MATCH)) {
+            List<Question> subQuestions = questionRepository.findAllBySupQuestion(question);
+            List<String> subQuestionsText = subQuestions.stream()
+                    .map(Question::getText)
+                    .collect(Collectors.toList());
+            dto.setSubQuestionsText(subQuestionsText);
+
+            List<TestAnswer> testAnswers = new ArrayList<>(subQuestions.size());
+
+            List<TestAnswer> firstSubQuestionAnswers = testAnswerRepository
+                    .findByTestAndUserAndQuestion(test, user, subQuestions.get(0));
+            boolean isAnswersSet = true;
+            if (firstSubQuestionAnswers == null || firstSubQuestionAnswers.size() == 0) {
+                isAnswersSet = false;
+                dto.setMatchQuestionNumOfAnswers(null);
+            } else {
+                for (Question subQuestion : subQuestions) {
+                    testAnswers.addAll(testAnswerRepository
+                            .findByTestAndUserAndQuestion(test, user, subQuestion));
+                }
+            }
+
+            List<Answer> answers = subQuestions.stream()
+                    .map(x -> x.getAnswers().get(0))
+                    .collect(Collectors.toList());
+            Collections.shuffle(answers);
+            List<String> testAnswersText = answers.stream()
+                    .map(Answer::getText)
+                    .collect(Collectors.toList());
+            dto.setAnswers(testAnswersText);
+
+            if (isAnswersSet) {
+                List<Integer> numOfAnswers = new ArrayList<>(subQuestionsText.size());
+                for (int i = 0; i < subQuestionsText.size(); i++) {
+                    numOfAnswers.add(testAnswersText.indexOf(testAnswers.get(i).getAnswer()));
+                }
+                dto.setMatchQuestionNumOfAnswers(numOfAnswers);
+            }
+        } else {
+            List<TestAnswer> testAnswers = testAnswerRepository
+                    .findByTestAndUserAndQuestion(test, user, question);
+            if (testAnswers == null) {
+                dto.setAnswers(null);
+            } else {
+                List<String> answers = testAnswers.stream()
+                        .map(TestAnswer::getAnswer)
+                        .collect(Collectors.toList());
+                dto.setAnswers(answers);
+            }
+        }
+
+        return dto;
     }
 
     @Override
@@ -356,7 +461,8 @@ public class TestServiceImpl implements TestService {
                 .collect(Collectors.toList());
         double averageMark = finishedTests.stream()
                 .mapToDouble(FinishedTest::getMark)
-                .average().orElseThrow(() -> new RuntimeException("Can't get average mark!!!"));
+                .average()
+                .orElseThrow(() -> new RuntimeException("Can't get average mark!!!"));
 
         dto.setAverageMark(averageMark);
         dto.setUsersAssigned(getUsersAssignedToTest(test));
@@ -426,10 +532,11 @@ public class TestServiceImpl implements TestService {
                 List<Question> subQuestions = questionRepository.findAllBySupQuestion(question);
                 List<TestAnswer> submitTestAnswers = new ArrayList<>(subQuestions.size());
                 for (Question subQuestion : subQuestions) {
-                    List<TestAnswer> testAnswers = testAnswerRepository.findByTestAndUserAndQuestion(
-                            test, user, subQuestion);
-                    if (testAnswers == null || testAnswers.size() == 0)
+                    List<TestAnswer> testAnswers = testAnswerRepository
+                            .findByTestAndUserAndQuestion(test, user, subQuestion);
+                    if (testAnswers == null || testAnswers.size() == 0) {
                         continue;
+                    }
                     TestAnswer testAnswer = testAnswers.get(0);
 
                     String correctAnswer = subQuestion
@@ -442,18 +549,22 @@ public class TestServiceImpl implements TestService {
                     }
                     submitTestAnswers.add(testAnswer);
                 }
-                if (correctAnswersCount == subQuestions.size())
+
+                if (correctAnswersCount == subQuestions.size()) {
                     mark += testQuestion.getValue();
-                else {
+                } else {
                     mark += testQuestion.getValue() *
                             ((correctAnswersCount + 0.0) / subQuestions.size());
                 }
+
                 testAnswerRepository.saveAll(submitTestAnswers);
             } else {
-                List<TestAnswer> testAnswers = testAnswerRepository.findByTestAndUserAndQuestion(
-                        test, user, question);
-                if (testAnswers == null || testAnswers.size() == 0)
+                List<TestAnswer> testAnswers = testAnswerRepository
+                        .findByTestAndUserAndQuestion(test, user, question);
+                if (testAnswers == null || testAnswers.size() == 0) {
                     continue;
+                }
+
                 List<String> correctAnswers = question.getAnswers().stream()
                         .filter(Answer::isCorrect)
                         .map(Answer::getText)
@@ -483,23 +594,25 @@ public class TestServiceImpl implements TestService {
                         }
                     }
 
-                    if (correctAnswersCount == correctAnswers.size())
+                    if (correctAnswersCount == correctAnswers.size()) {
                         mark += testQuestion.getValue();
-                    else {
+                    } else {
                         mark += testQuestion.getValue() *
                                 ((correctAnswersCount + 0.0) / correctAnswers.size());
                     }
                 }
 
-                if (isCorrect && !question.getAnswerType().equals(AnswerType.MULTIPLE))
+                if (isCorrect && !question.getAnswerType().equals(AnswerType.MULTIPLE)) {
                     mark += testQuestion.getValue();
+                }
 
                 testAnswerRepository.saveAll(testAnswers);
             }
         }
 
-        if (mark > 99.99)
+        if (mark > 99.99) {
             mark = 100;
+        }
         return mark;
     }
 
@@ -510,93 +623,6 @@ public class TestServiceImpl implements TestService {
         testAnswer.setQuestion(question);
         testAnswer.setAnswer(answer);
         return testAnswer;
-    }
-
-    private TestAnswerDto getTestQuestionAnswerByUserAndNumber(Test test, User user, int number) {
-        TestQuestion testQuestion = test.getQuestions().get(number - 1);
-        Question question = testQuestion.getQuestion();
-
-        TestAnswerDto dto = new TestAnswerDto();
-        if (question.getAnswerType().equals(AnswerType.MATCH)) {
-            List<Question> subQuestions = questionRepository.findAllBySupQuestion(question);
-            List<String> subQuestionsText = subQuestions.stream()
-                    .map(Question::getText)
-                    .collect(Collectors.toList());
-            dto.setSubQuestionsText(subQuestionsText);
-
-            List<TestAnswer> testAnswers = new ArrayList<>(subQuestions.size());
-
-            List<TestAnswer> firstSubQuestionAnswers = testAnswerRepository
-                    .findByTestAndUserAndQuestion(test, user, subQuestions.get(0));
-            boolean isAnswersSet = true;
-            if (firstSubQuestionAnswers == null || firstSubQuestionAnswers.size() == 0) {
-                isAnswersSet = false;
-                dto.setMatchQuestionNumOfAnswers(null);
-            } else {
-                for (Question subQuestion : subQuestions) {
-                    testAnswers.addAll(testAnswerRepository.findByTestAndUserAndQuestion(
-                            test, user, subQuestion));
-                }
-            }
-
-            List<Answer> answers = subQuestions.stream()
-                    .map(x -> x.getAnswers().get(0))
-                    .collect(Collectors.toList());
-            Collections.shuffle(answers);
-            List<String> testAnswersText = answers.stream()
-                    .map(Answer::getText)
-                    .collect(Collectors.toList());
-            dto.setAnswers(testAnswersText);
-
-            if (isAnswersSet) {
-                List<Integer> numOfAnswers = new ArrayList<>(subQuestionsText.size());
-                for (int i = 0; i < subQuestionsText.size(); i++) {
-                    numOfAnswers.add(testAnswersText.indexOf(testAnswers.get(i).getAnswer()));
-                }
-                dto.setMatchQuestionNumOfAnswers(numOfAnswers);
-            }
-        } else {
-            List<TestAnswer> testAnswers = testAnswerRepository.findByTestAndUserAndQuestion(
-                    test, user, question);
-            if (testAnswers == null)
-                dto.setAnswers(null);
-            else {
-                List<String> answers = testAnswers.stream()
-                        .map(TestAnswer::getAnswer)
-                        .collect(Collectors.toList());
-                dto.setAnswers(answers);
-            }
-        }
-
-        return dto;
-    }
-
-    private TestQuestionDto getTestQuestionByNumber(Test test, int number) {
-        TestQuestion testQuestion = test.getQuestions().get(number - 1);
-        Question question = testQuestion.getQuestion();
-
-        TestQuestionDto dto = new TestQuestionDto();
-        dto.setQuestionId(question.getId());
-        dto.setQuestionText(question.getText());
-        dto.setQuestionMedia(question.getMediaUrl());
-        dto.setQuestionAnswerDescription(question.getAnswerDescription());
-        dto.setAnswerType(question.getAnswerType().getText());
-
-        if (question.getAnswerType().equals(AnswerType.SINGLE) ||
-                question.getAnswerType().equals(AnswerType.MULTIPLE)) {
-            List<Answer> answers = question.getAnswers();
-            List<String> answersText = answers.stream()
-                    .map(Answer::getText)
-                    .collect(Collectors.toList());
-            dto.setAnswersVariants(answersText);
-        }
-
-        dto.setNextNumber(number + 1);
-        dto.setPreviousNumber(number - 1);
-        dto.setLast(number == test.getQuestionsCount());
-        dto.setQuestionType(question.getType().getText());
-
-        return dto;
     }
 
     private void generate(Test test) {
@@ -616,7 +642,8 @@ public class TestServiceImpl implements TestService {
         Question addToTest = questions.get(0);
         for (int i = 0; i < test.getQuestionsCount(); i++) {
             minDifference = 1.0;
-            additionalCoefficient = getAdditionalCoefficientForTestDifficulty(test.getDifficulty());
+            additionalCoefficient = getAdditionalCoefficientForTestDifficulty(
+                    test.getDifficulty());
 
             for (Question question : questions) {
                 double tmpDifference = Math.abs(question.getDifficulty().getCoefficient()

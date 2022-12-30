@@ -22,7 +22,8 @@ public class RegisterController {
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute(name = "register") RegisterDto registerDto, Model model) {
+    public String register(@ModelAttribute(name = "register") RegisterDto registerDto,
+                           Model model) {
         try {
             userService.register(registerDto);
         } catch (IllegalArgumentException ex) {

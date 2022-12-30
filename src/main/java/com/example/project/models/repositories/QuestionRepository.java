@@ -12,17 +12,25 @@ import java.util.List;
 public interface QuestionRepository extends PagingAndSortingRepository<Question, Long> {
     List<Question> findByTopic(Topic topic);
 
-    List<Question> findByIdNotInAndSupQuestion(List<Long> ids, Question supQuestion);
+    List<Question> findByIdNotInAndSupQuestion(List<Long> ids,
+                                               Question supQuestion);
 
     List<Question> findAllBySupQuestion(Question question);
 
-    Page<Question> findAllByTopic(Topic topic, Pageable pageable);
+    Page<Question> findAllByTopic(Topic topic,
+                                  Pageable pageable);
 
-    Page<Question> findAllByTopicAndTextContainsIgnoreCase(Topic topic, String text, Pageable pageable);
+    Page<Question> findAllByTopicAndTextContainsIgnoreCase(Topic topic,
+                                                           String text,
+                                                           Pageable pageable);
 
-    Page<Question> findAllByUser(User user, Pageable pageable);
+    Page<Question> findAllByUser(User user,
+                                 Pageable pageable);
 
-    Page<Question> findAllByUserAndTextContainsIgnoreCase(User user, String text, Pageable pageable);
+    Page<Question> findAllByUserAndTextContainsIgnoreCase(User user,
+                                                          String text,
+                                                          Pageable pageable);
 
-    Question findBySupQuestionAndText(Question supQuestion, String text);
+    Question findBySupQuestionAndText(Question supQuestion,
+                                      String text);
 }

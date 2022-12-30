@@ -81,9 +81,7 @@ public class TestController {
         } catch (IllegalArgumentException ex) {
             LocalDateTime now = LocalDateTime.now().plusMinutes(1)
                     .withSecond(0).withNano(0);
-            model.addAttribute("error", "System doesn't have necessary amount " +
-                    "of questions for this topic. Try another topics or add questions " +
-                    "to topics you've chosen!!!");
+            model.addAttribute("error", ex.getMessage());
             model.addAttribute("difficulties", testService.getTestDifficulties());
             model.addAttribute("currentDate", now);
             model.addAttribute("previous", addTestDto);
@@ -96,7 +94,6 @@ public class TestController {
 
     @GetMapping("/test/{testId}/intro")
     public String getIntroPage(@PathVariable String testId,
-                               @RequestParam(name = "error", required = false) String error,
                                Model model) {
         try {
             User user = userService.getCurrentLoggedIn();
@@ -137,7 +134,8 @@ public class TestController {
 
     @GetMapping("/test/{testId}/walkthrough")
     public String getWalkthroughPage(@PathVariable String testId,
-                                     @RequestParam(name = "question", required = false) Integer number,
+                                     @RequestParam(name = "question",
+                                             required = false) Integer number,
                                      Model model) {
         if (number == null) {
             number = 1;
@@ -211,7 +209,8 @@ public class TestController {
 
     @GetMapping("/test/{testId}/results")
     public String getAllResultsPage(@PathVariable String testId,
-                                    @RequestParam(name = "user", required = false) String username,
+                                    @RequestParam(name = "user",
+                                            required = false) String username,
                                     Model model) {
         try {
             if (username == null) {
@@ -249,12 +248,15 @@ public class TestController {
     }
 
     @GetMapping("/user/tests/{page}")
-    public String getByUsernameAndPageAndType(@PathVariable int page,
-                                              @RequestParam(name = "type", required = false) String type,
-                                              @RequestParam(name = "error", required = false) String error,
-                                              Model model) {
-        if (page < 1)
+    public String getPageByUserAndType(@PathVariable int page,
+                                       @RequestParam(name = "type",
+                                               required = false) String type,
+                                       @RequestParam(name = "error",
+                                               required = false) String error,
+                                       Model model) {
+        if (page < 1) {
             return "redirect:/error";
+        }
 
         try {
             PageDto<Test> tests = testService.getPage(type, null,
@@ -270,9 +272,9 @@ public class TestController {
             model.addAttribute("username", userService.getCurrentLoggedIn().getUsername());
             model.addAttribute("isTests", true);
             if (error != null) {
-                if (error.equals("notAssigned"))
+                if (error.equals("notAssigned")) {
                     model.addAttribute("error", "You are not assigned to this test!!!");
-                else if (error.equals("notUserCreated")) {
+                } else if (error.equals("notUserCreated")) {
                     model.addAttribute("error", "You did not create this test!!!");
                 }
             }
@@ -284,14 +286,17 @@ public class TestController {
     }
 
     @GetMapping("/user/tests/search")
-    public String getByUsernameAndPageAndTypeAndName(@RequestParam(name = "type", required = false) String type,
-                                                     @RequestParam(name = "page", required = false) Integer page,
-                                                     @RequestParam(name = "query") String name,
-                                                     Model model) {
-        if (page == null)
+    public String gePageByUserAndTypeAndName(@RequestParam(name = "query") String name,
+                                             @RequestParam(name = "type",
+                                                     required = false) String type,
+                                             @RequestParam(name = "page",
+                                                     required = false) Integer page,
+                                             Model model) {
+        if (page == null) {
             page = 1;
-        else if (page < 1)
+        } else if (page < 1) {
             return "redirect:/error";
+        }
 
         try {
             PageDto<Test> tests = testService.getPage(type, name,

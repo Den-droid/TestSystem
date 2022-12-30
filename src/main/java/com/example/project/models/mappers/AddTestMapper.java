@@ -10,7 +10,8 @@ public class AddTestMapper {
     public static Test map(AddTestDto addTestDto) {
         Test test = new Test();
         test.setName(addTestDto.getName());
-        test.setTestDifficulty(TestDifficulty.getByText(addTestDto.getDifficulty()));
+        test.setTestDifficulty(TestDifficulty
+                .getByText(addTestDto.getDifficulty()));
         test.setStartDate(LocalDateTime.parse(addTestDto.getStartDate()));
         test.setFinishDate(LocalDateTime.parse(addTestDto.getFinishDate()));
         test.setTimeLimit(addTestDto.getTimeLimit());

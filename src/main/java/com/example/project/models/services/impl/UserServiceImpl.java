@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -49,8 +50,9 @@ public class UserServiceImpl implements UserService {
     public void register(RegisterDto dto) {
         User user = RegisterMapper.map(dto);
         User check = userRepository.findByUsernameIgnoreCase(user.getUsername());
-        if (check != null)
+        if (check != null) {
             throw new IllegalArgumentException("There is already user with such username existed!!!");
+        }
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         userRepository.save(user);
     }
@@ -58,8 +60,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsernameIgnoreCase(username);
-        if (user == null)
-            throw new UsernameNotFoundException("There is no user with username " + username + "!!!");
+        if (user == null) {
+            throw new NoSuchElementException("There is no user with username "
+                    + username + "!!!");
+        }
         return user;
     }
 
@@ -76,8 +80,9 @@ public class UserServiceImpl implements UserService {
         }
 
         EditUserMapper.map(user, dto);
-        if (dto.getChangePassword() != null)
+        if (dto.getChangePassword() != null) {
             user.setPassword(new BCryptPasswordEncoder().encode(dto.getPassword()));
+        }
 
         userRepository.save(user);
         changeAuthentication(user.getUsername(), user.getPassword());
@@ -108,7 +113,8 @@ public class UserServiceImpl implements UserService {
     public User getCurrentLoggedIn() {
         Object userObject = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (userObject instanceof UserDetails) {
-            return userRepository.findByUsernameIgnoreCase(((UserDetails) userObject).getUsername());
+            return userRepository.findByUsernameIgnoreCase(
+                    ((UserDetails) userObject).getUsername());
         }
         return null;
     }
@@ -118,9 +124,9 @@ public class UserServiceImpl implements UserService {
                                                                     List<String> usernamesNotIn,
                                                                     Role role) {
         List<User> users;
-        if (usernamesNotIn == null || usernamesNotIn.size() == 0)
+        if (usernamesNotIn == null || usernamesNotIn.size() == 0) {
             users = userRepository.findAllByUsernameContainsIgnoreCase(usernamePart);
-        else {
+        } else {
             users = userRepository.findAllByUsernameContainsIgnoreCaseAndUsernameNotIn
                     (usernamePart, usernamesNotIn);
         }

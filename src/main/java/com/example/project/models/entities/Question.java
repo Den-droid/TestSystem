@@ -107,7 +107,6 @@ public class Question {
         this.subQuestions.remove(question);
     }
 
-
     public Long getId() {
         return id;
     }

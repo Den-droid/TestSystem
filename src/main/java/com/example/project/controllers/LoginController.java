@@ -11,9 +11,11 @@ public class LoginController {
     }
 
     @GetMapping("/login")
-    public String getLogin(@RequestParam(name = "error", required = false) String error, Model model) {
-        if (Boolean.parseBoolean(error))
+    public String getLogin(@RequestParam(name = "error", required = false) String error,
+                           Model model) {
+        if (Boolean.parseBoolean(error)) {
             model.addAttribute("error", "Try another username or password");
+        }
         return "login";
     }
 }

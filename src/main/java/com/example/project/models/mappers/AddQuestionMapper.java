@@ -24,7 +24,8 @@ public class AddQuestionMapper {
         QuestionDifficulty questionDifficulty = QuestionDifficulty
                 .getByText(dto.getQuestionDifficulty());
         question.setDifficulty(questionDifficulty);
-        question.setLastCorrectAnswerCoefficient(questionDifficulty.getCoefficientThreshold());
+        question.setLastCorrectAnswerCoefficient(
+                questionDifficulty.getCoefficientThreshold());
         if (question.getAnswerType() == AnswerType.MATCH) {
             List<Question> subQuestions = new ArrayList<>();
             for (int i = 0; i < dto.getSubQuestions().length; i++) {
