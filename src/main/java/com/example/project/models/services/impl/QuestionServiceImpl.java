@@ -349,15 +349,13 @@ public class QuestionServiceImpl implements QuestionService {
                 if (correctAnswerCoefficient < coefficientThreshold) {
                     double lastCorrectAnswerCoefficient = question.getLastCorrectAnswerCoefficient();
                     double newCoefficient = question.getCoefficient();
+                    double absoluteDifference =
+                            Math.abs(correctAnswerCoefficient - lastCorrectAnswerCoefficient);
 
                     if (correctAnswerCoefficient > lastCorrectAnswerCoefficient) {
-                        newCoefficient -= newCoefficient *
-                                question.getDifficulty().getCoefficient() *
-                                (correctAnswerCoefficient - lastCorrectAnswerCoefficient);
+                        newCoefficient -= absoluteDifference;
                     } else if (correctAnswerCoefficient < lastCorrectAnswerCoefficient) {
-                        newCoefficient += newCoefficient *
-                                question.getDifficulty().getCoefficient() *
-                                (lastCorrectAnswerCoefficient - correctAnswerCoefficient);
+                        newCoefficient += absoluteDifference;
                     }
 
                     question.setCoefficient(newCoefficient);
