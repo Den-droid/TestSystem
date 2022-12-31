@@ -19,9 +19,6 @@ public class FinishedTest {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public FinishedTest() {
-    }
-
     public Long getId() {
         return id;
     }

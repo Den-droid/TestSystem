@@ -3,6 +3,7 @@ package com.example.project.controllers;
 import com.example.project.dto.page.PageDto;
 import com.example.project.models.entities.Topic;
 import com.example.project.models.entities.User;
+import com.example.project.models.enums.Role;
 import com.example.project.models.services.TopicService;
 import com.example.project.models.services.UserService;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,8 @@ import java.util.NoSuchElementException;
 public class TopicController {
     private final TopicService topicService;
     private final UserService userService;
+    private static final String ERROR_URL = "/error";
+    private static final String REDIRECT = "redirect:";
 
     public TopicController(TopicService topicService, UserService userService) {
         this.topicService = topicService;
@@ -41,7 +44,7 @@ public class TopicController {
         Topic topic = topicService.getByName(name);
         String url = "/topic/" + topic.getId() + "/questions/add";
 
-        return "redirect:" + url;
+        return REDIRECT + url;
     }
 
     @GetMapping("/topics/add")
@@ -58,8 +61,8 @@ public class TopicController {
             model.addAttribute("error", ex.getMessage());
             return "topics/add";
         }
-        String url = getRedirectUrlToUserPage();
-        return "redirect:" + url;
+
+        return REDIRECT + getUrlToUserPage(userService.getCurrentLoggedIn());
     }
 
     @GetMapping("/topics/edit/{id}")
@@ -69,7 +72,7 @@ public class TopicController {
             model.addAttribute("topic", topicService.getById(id));
             return "topics/edit";
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
     }
 
@@ -80,14 +83,14 @@ public class TopicController {
         try {
             topicService.edit(id, name);
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         } catch (IllegalArgumentException ex) {
             model.addAttribute("topic", topicService.getById(id));
             model.addAttribute("error", ex.getMessage());
             return "topics/edit";
         }
-        String url = getRedirectUrlToUserPage();
-        return "redirect:" + url;
+
+        return REDIRECT + getUrlToUserPage(userService.getCurrentLoggedIn());
     }
 
     @GetMapping("/topics/delete/{id}")
@@ -102,7 +105,7 @@ public class TopicController {
         try {
             model.addAttribute("topic", topicService.getById(id));
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         return "topics/delete";
@@ -114,35 +117,35 @@ public class TopicController {
         try {
             topicService.remove(id, transferTopicName);
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
-        String url = getRedirectUrlToUserPage();
-        return "redirect:" + url;
+
+        return REDIRECT + getUrlToUserPage(userService.getCurrentLoggedIn());
     }
 
     @GetMapping("/admin/topics")
     public String redirectToAdminPage() {
         String url = "/admin/topics/" + 1;
-        return "redirect:" + url;
+        return REDIRECT + url;
     }
 
     @GetMapping("/topics")
     public String redirectToPage() {
         String url = "/topics/" + 1;
-        return "redirect:" + url;
+        return REDIRECT + url;
     }
 
     @GetMapping("/user/topics")
     public String redirectToUserPage() {
         String url = "/user/topics/" + 1;
-        return "redirect:" + url;
+        return REDIRECT + url;
     }
 
     @GetMapping("/admin/topics/{page}")
     public String getForAdmin(@PathVariable(name = "page") Integer page,
-                                    Model model) {
+                              Model model) {
         if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         PageDto<Topic> topics = topicService.getPage(page, 10);
@@ -159,7 +162,7 @@ public class TopicController {
         if (page == null) {
             page = 1;
         } else if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         PageDto<Topic> topics = topicService.getPageByName(page, 10, name);
@@ -174,9 +177,9 @@ public class TopicController {
 
     @GetMapping("/topics/{page}")
     public String get(@PathVariable(name = "page") Integer page,
-                            Model model) {
+                      Model model) {
         if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         PageDto<Topic> topics = topicService.getPage(page, 10);
@@ -194,7 +197,7 @@ public class TopicController {
         if (page == null) {
             page = 1;
         } else if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         PageDto<Topic> topics = topicService.getPageByName(page, 10, name);
@@ -209,9 +212,9 @@ public class TopicController {
 
     @GetMapping("/user/topics/{page}")
     public String getForUser(@PathVariable(name = "page") Integer page,
-                                   Model model) {
+                             Model model) {
         if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         PageDto<Topic> topics = topicService.getPageByUser(page, 10,
@@ -226,12 +229,12 @@ public class TopicController {
 
     @GetMapping("/user/topics/search")
     public String getByUsernameForUser(@RequestParam(name = "page", required = false) Integer page,
-                                              @RequestParam(name = "query") String name,
-                                              Model model) {
+                                       @RequestParam(name = "query") String name,
+                                       Model model) {
         if (page == null) {
             page = 1;
         } else if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         PageDto<Topic> topics = topicService.getPageByNameAndUser(page, 10,
@@ -246,13 +249,11 @@ public class TopicController {
         return "user/topics";
     }
 
-    private String getRedirectUrlToUserPage() {
-        User user = userService.getCurrentLoggedIn();
-        switch (user.getRole()) {
-            case USER:
-                return "/user/topics";
-            case ADMIN:
-                return "/admin/topics";
+    private String getUrlToUserPage(User user) {
+        if (user.getRole().equals(Role.USER)) {
+            return "/user/topics";
+        } else if (user.getRole().equals(Role.ADMIN)) {
+            return "/admin/topics";
         }
         return null;
     }

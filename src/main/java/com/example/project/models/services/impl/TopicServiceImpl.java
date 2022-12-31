@@ -134,7 +134,7 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public List<Topic> getByNameContainsAndNamesNot(String namePart, List<String> namesNotIn) {
-        if (namesNotIn == null || namesNotIn.size() == 0) {
+        if (namesNotIn == null || namesNotIn.isEmpty()) {
             return topicRepository.findAllByNameContainsIgnoreCase(namePart);
         }
         return topicRepository

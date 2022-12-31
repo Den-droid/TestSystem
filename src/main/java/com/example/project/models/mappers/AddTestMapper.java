@@ -7,6 +7,9 @@ import com.example.project.models.enums.TestDifficulty;
 import java.time.LocalDateTime;
 
 public class AddTestMapper {
+    private AddTestMapper() {
+    }
+
     public static Test map(AddTestDto addTestDto) {
         Test test = new Test();
         test.setName(addTestDto.getName());

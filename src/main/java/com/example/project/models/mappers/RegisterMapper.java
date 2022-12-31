@@ -5,6 +5,9 @@ import com.example.project.models.entities.User;
 import com.example.project.models.enums.Role;
 
 public class RegisterMapper {
+    private RegisterMapper() {
+    }
+
     public static User map(RegisterDto dto) {
         User user = new User();
         user.setUsername(dto.getUsername());

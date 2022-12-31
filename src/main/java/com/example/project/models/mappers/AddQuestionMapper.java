@@ -13,6 +13,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class AddQuestionMapper {
+    private AddQuestionMapper() {
+    }
+
     public static Question map(AddQuestionDto dto) {
         Question question = new Question();
         question.setText(dto.getQuestionText().trim());

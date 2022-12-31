@@ -82,7 +82,7 @@ public class TestServiceImpl implements TestService {
     @Override
     public void saveAnswer(User user, String testId, TestWalkthroughDto testWalkthroughDto) {
         if (testWalkthroughDto.getAnswers() == null
-                || testWalkthroughDto.getAnswers().size() == 0) {
+                || testWalkthroughDto.getAnswers().isEmpty()) {
             return;
         }
 
@@ -96,7 +96,7 @@ public class TestServiceImpl implements TestService {
 
         if (answerType.equals(AnswerType.MULTIPLE)) {
             List<String> answers = testWalkthroughDto.getAnswers();
-            if (testAnswers == null || testAnswers.size() == 0) {
+            if (testAnswers == null || testAnswers.isEmpty()) {
                 testAnswers = new ArrayList<>(testWalkthroughDto.getAnswers().size());
                 for (String answer : answers) {
                     TestAnswer testAnswer = getTestAnswer(test, user, question, answer);
@@ -105,7 +105,7 @@ public class TestServiceImpl implements TestService {
             } else {
                 List<TestAnswer> testAnswersToRemove = testAnswerRepository
                         .findByTestAndUserAndQuestionAndAnswerNotIn(test, user, question, answers);
-                if (testAnswersToRemove != null && testAnswersToRemove.size() != 0) {
+                if (testAnswersToRemove != null && !testAnswersToRemove.isEmpty()) {
                     testAnswerRepository.deleteAll(testAnswersToRemove);
                 }
                 List<TestAnswer> testAnswersExisted = testAnswerRepository
@@ -135,7 +135,7 @@ public class TestServiceImpl implements TestService {
                         .findByTestAndUserAndQuestion(test, user, matchQuestion);
 
                 TestAnswer testAnswer;
-                if (matchQuestionAnswer == null || matchQuestionAnswer.size() == 0) {
+                if (matchQuestionAnswer == null || matchQuestionAnswer.isEmpty()) {
                     testAnswer = getTestAnswer(test, user, matchQuestion, answers.get(i));
                 } else {
                     testAnswer = matchQuestionAnswer.get(0);
@@ -145,7 +145,7 @@ public class TestServiceImpl implements TestService {
             }
             testAnswerRepository.saveAll(testAnswers);
         } else {
-            if (testAnswers == null || testAnswers.size() == 0) {
+            if (testAnswers == null || testAnswers.isEmpty()) {
                 TestAnswer testAnswer = getTestAnswer(test, user, question,
                         testWalkthroughDto.getAnswers().get(0));
                 testAnswerRepository.save(testAnswer);
@@ -381,7 +381,7 @@ public class TestServiceImpl implements TestService {
             List<TestAnswer> firstSubQuestionAnswers = testAnswerRepository
                     .findByTestAndUserAndQuestion(test, user, subQuestions.get(0));
             boolean isAnswersSet = true;
-            if (firstSubQuestionAnswers == null || firstSubQuestionAnswers.size() == 0) {
+            if (firstSubQuestionAnswers == null || firstSubQuestionAnswers.isEmpty()) {
                 isAnswersSet = false;
                 dto.setMatchQuestionNumOfAnswers(null);
             } else {
@@ -462,7 +462,7 @@ public class TestServiceImpl implements TestService {
         double averageMark = finishedTests.stream()
                 .mapToDouble(FinishedTest::getMark)
                 .average()
-                .orElseThrow(() -> new RuntimeException("Can't get average mark!!!"));
+                .orElse(0);
 
         dto.setAverageMark(averageMark);
         dto.setUsersAssigned(getUsersAssignedToTest(test));
@@ -534,9 +534,11 @@ public class TestServiceImpl implements TestService {
                 for (Question subQuestion : subQuestions) {
                     List<TestAnswer> testAnswers = testAnswerRepository
                             .findByTestAndUserAndQuestion(test, user, subQuestion);
-                    if (testAnswers == null || testAnswers.size() == 0) {
+
+                    if (testAnswers == null || testAnswers.isEmpty()) {
                         continue;
                     }
+
                     TestAnswer testAnswer = testAnswers.get(0);
 
                     String correctAnswer = subQuestion
@@ -561,7 +563,7 @@ public class TestServiceImpl implements TestService {
             } else {
                 List<TestAnswer> testAnswers = testAnswerRepository
                         .findByTestAndUserAndQuestion(test, user, question);
-                if (testAnswers == null || testAnswers.size() == 0) {
+                if (testAnswers == null || testAnswers.isEmpty()) {
                     continue;
                 }
 

@@ -23,9 +23,6 @@ public class TestAnswer {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public TestAnswer() {
-    }
-
     public Long getId() {
         return id;
     }

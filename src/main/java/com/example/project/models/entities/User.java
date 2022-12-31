@@ -44,9 +44,6 @@ public class User {
     @ManyToMany(mappedBy = "usersAssigned")
     private Set<Test> assignedTests;
 
-    public User() {
-    }
-
     public String getId() {
         return id;
     }

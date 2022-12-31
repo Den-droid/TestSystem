@@ -60,8 +60,6 @@ public class Question {
     @OneToOne(mappedBy = "question")
     private QuestionStatistic statistic;
 
-    public Question() {
-    }
 
     public void setAnswer(Answer answer) {
         Answer originalAnswer = this.answers.stream()

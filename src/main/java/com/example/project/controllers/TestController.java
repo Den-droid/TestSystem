@@ -30,6 +30,8 @@ public class TestController {
     private final TestService testService;
     private final TopicService topicService;
     private final QuestionService questionService;
+    private static final String ERROR_URL = "/error";
+    private static final String REDIRECT = "redirect:";
 
     public TestController(UserService userService,
                           TestService testService,
@@ -89,7 +91,7 @@ public class TestController {
         }
 
         String url = "/user/tests";
-        return "redirect:" + url;
+        return REDIRECT + url;
     }
 
     @GetMapping("/test/{testId}/intro")
@@ -103,18 +105,18 @@ public class TestController {
                 model.addAttribute("error", "Too early to start test!!!");
             } else if (hasStarted) {
                 String url = "/test/" + testId + "/walkthrough";
-                return "redirect:" + url;
+                return REDIRECT + url;
             }
 
             if (testService.canWalkthrough(user, testId)) {
                 Test test = testService.getById(testId);
                 model.addAttribute("test", testService.getIntro(test));
             } else {
-                String url = "/user/tests/1?error=notAssigned";
-                return "redirect:" + url;
+                String url = "/user/tests/1";
+                return REDIRECT + setParameterInUrl(url, "error", "notAssigned");
             }
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         return "test/intro";
@@ -125,11 +127,11 @@ public class TestController {
         try {
             testService.start(userService.getCurrentLoggedIn(), testId);
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         String walkthroughUrl = "/test/" + testId + "/walkthrough";
-        return "redirect:" + walkthroughUrl;
+        return REDIRECT + walkthroughUrl;
     }
 
     @GetMapping("/test/{testId}/walkthrough")
@@ -149,14 +151,14 @@ public class TestController {
             boolean hasStarted = testService.hasStarted(user, testId);
             if (!hasStarted) {
                 String url = "/test/" + testId + "/intro";
-                return "redirect:" + url;
+                return REDIRECT + url;
             } else if (isTestOutdated) {
                 testService.finish(user, testId);
-                String url = "/test/" + testId + "/results?user=" + user.getUsername();
-                return "redirect:" + url;
+                String url = "/test/" + testId + "/results";
+                return REDIRECT + setParameterInUrl(url, "user", user.getUsername());
             } else if (hasFinished) {
                 String url = "/test/" + testId + "/results?user=" + user.getUsername();
-                return "redirect:" + url;
+                return REDIRECT + url;
             }
 
             TestQuestionDto question = testService.getTestQuestionByNumber(testId, number);
@@ -176,7 +178,7 @@ public class TestController {
                 model.addAttribute("hasTimeToComplete", false);
             }
         } catch (NoSuchElementException | IllegalArgumentException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         return "test/walkthrough";
@@ -190,21 +192,22 @@ public class TestController {
         testService.saveAnswer(user, testId, dto);
 
         if (!dto.getAction().equals("submit")) {
-            String url;
+            String url = "/test/" + testId + "/walkthrough";
             if (dto.getAction().equals("previous")) {
-                url = "/test/" + testId + "/walkthrough?question=" + dto.getPreviousNumber();
+                url = setParameterInUrl(url, "question", dto.getPreviousNumber().toString());
             } else {
-                url = "/test/" + testId + "/walkthrough?question=" + dto.getNextNumber();
+                url = setParameterInUrl(url, "question", dto.getNextNumber().toString());
             }
-            return "redirect:" + url;
+            return REDIRECT + url;
         }
 
         testService.finish(user, testId);
         questionService.setStatistic(testId, user);
         questionService.changeCoefficient(testId);
 
-        String url = "/test/" + testId + "/results?user=" + user.getUsername();
-        return "redirect:" + url;
+        String url = "/test/" + testId + "/results";
+        url = setParameterInUrl(url, "user", user.getUsername());
+        return REDIRECT + url;
     }
 
     @GetMapping("/test/{testId}/results")
@@ -221,8 +224,9 @@ public class TestController {
                     model.addAttribute("testId", testId);
                     return "test/resultInfo";
                 } else {
-                    String url = "/user/tests/1?error=notUserCreated";
-                    return "redirect:" + url;
+                    String url = "/user/tests/1";
+                    url = setParameterInUrl(url, "error", "notUserCreated");
+                    return REDIRECT + url;
                 }
             } else {
                 boolean hasFinished = testService.hasFinished(
@@ -233,18 +237,18 @@ public class TestController {
                     return "test/result";
                 } else {
                     String url = "/test/" + testId + "/walkthrough";
-                    return "redirect:" + url;
+                    return REDIRECT + url;
                 }
             }
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
     }
 
     @GetMapping("/user/tests")
     public String redirectToUserTestPage() {
         String url = "/user/tests/" + 1;
-        return "redirect:" + url;
+        return REDIRECT + url;
     }
 
     @GetMapping("/user/tests/{page}")
@@ -255,7 +259,7 @@ public class TestController {
                                                required = false) String error,
                                        Model model) {
         if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         try {
@@ -279,7 +283,7 @@ public class TestController {
                 }
             }
         } catch (IllegalArgumentException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         return "user/tests";
@@ -295,7 +299,7 @@ public class TestController {
         if (page == null) {
             page = 1;
         } else if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         try {
@@ -314,9 +318,13 @@ public class TestController {
             model.addAttribute("isSearch", true);
             model.addAttribute("name", name);
         } catch (IllegalArgumentException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         return "user/tests";
+    }
+
+    private String setParameterInUrl(String initialString, String paramName, String errorLabel) {
+        return initialString + "?" + paramName + "=" + errorLabel;
     }
 }

@@ -7,9 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TestRepository extends JpaRepository<Test, String> {
-    List<Test> findTestsByTopicsId(Integer topics_id);
+    List<Test> findTestsByTopicsId(Integer topicId);
 
-    List<Test> findTestsByUsersAssignedUsername(String usersAssigned_username);
+    List<Test> findTestsByUsersAssignedUsername(String usersAssignedUsername);
 
     List<Test> findAllByUserCreated(User user);
 }

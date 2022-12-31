@@ -21,9 +21,6 @@ public class CurrentTest {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public CurrentTest() {
-    }
-
     public Integer getId() {
         return id;
     }

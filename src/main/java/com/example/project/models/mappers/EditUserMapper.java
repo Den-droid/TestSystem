@@ -4,6 +4,9 @@ import com.example.project.dto.user.EditUserDto;
 import com.example.project.models.entities.User;
 
 public class EditUserMapper {
+    private EditUserMapper() {
+    }
+
     public static void map(User user, EditUserDto dto) {
         user.setUsername(dto.getUsername());
         user.setFirstName(dto.getFirstName());

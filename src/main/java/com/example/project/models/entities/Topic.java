@@ -21,9 +21,6 @@ public class Topic {
     @OneToMany(mappedBy = "topic")
     private List<Question> questions;
 
-    public Topic() {
-    }
-
     public Integer getId() {
         return id;
     }

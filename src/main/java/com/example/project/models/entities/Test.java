@@ -59,9 +59,6 @@ public class Test {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> usersAssigned;
 
-    public Test() {
-    }
-
     public String getId() {
         return id;
     }

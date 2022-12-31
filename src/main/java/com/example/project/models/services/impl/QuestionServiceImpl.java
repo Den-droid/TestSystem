@@ -226,7 +226,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public boolean canBeChanged(Question question) {
         List<TestQuestion> tests = testQuestionRepository.findByQuestion(question);
-        return tests == null || tests.size() == 0;
+        return tests == null || tests.isEmpty();
     }
 
     @Override
@@ -316,7 +316,7 @@ public class QuestionServiceImpl implements QuestionService {
             if (correctAnswers + wrongAnswers - lastChangeAnswerCount >= 100) {
                 double coefficientThreshold = question.getDifficulty()
                         .getCoefficientThreshold();
-                double allAnswersCount = correctAnswers + wrongAnswers;
+                double allAnswersCount = correctAnswers + wrongAnswers + 0.0;
                 double correctAnswerCoefficient = correctAnswers / allAnswersCount;
                 if (correctAnswerCoefficient < coefficientThreshold) {
                     double lastCorrectAnswerCoefficient = question

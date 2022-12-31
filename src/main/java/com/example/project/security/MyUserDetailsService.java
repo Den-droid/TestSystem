@@ -2,7 +2,6 @@ package com.example.project.security;
 
 import com.example.project.models.entities.User;
 import com.example.project.models.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

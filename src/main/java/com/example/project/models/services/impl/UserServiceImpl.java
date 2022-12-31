@@ -91,7 +91,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(User user) {
         List<User> admins = userRepository.findAllByRole(Role.ADMIN);
-        User admin = admins.get(new Random().nextInt(admins.size()));
+
+        Random random = new Random();
+        User admin = admins.get(random.nextInt(admins.size()));
 
         user.getTopics().forEach(x -> x.setUser(admin));
         topicRepository.saveAll(user.getTopics());
@@ -124,7 +126,7 @@ public class UserServiceImpl implements UserService {
                                                                     List<String> usernamesNotIn,
                                                                     Role role) {
         List<User> users;
-        if (usernamesNotIn == null || usernamesNotIn.size() == 0) {
+        if (usernamesNotIn == null || usernamesNotIn.isEmpty()) {
             users = userRepository.findAllByUsernameContainsIgnoreCase(usernamePart);
         } else {
             users = userRepository.findAllByUsernameContainsIgnoreCaseAndUsernameNotIn

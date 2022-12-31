@@ -19,9 +19,6 @@ public class TestQuestion {
     @JoinColumn(name = "question_id")
     private Question question;
 
-    public TestQuestion() {
-    }
-
     public Long getId() {
         return id;
     }

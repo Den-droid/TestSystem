@@ -7,6 +7,7 @@ import com.example.project.dto.question.EditQuestionDto;
 import com.example.project.dto.question.EditQuestionPageDto;
 import com.example.project.models.entities.Question;
 import com.example.project.models.entities.User;
+import com.example.project.models.enums.Role;
 import com.example.project.models.services.QuestionService;
 import com.example.project.models.services.TopicService;
 import com.example.project.models.services.UserService;
@@ -23,6 +24,8 @@ public class QuestionController {
     private final QuestionService questionService;
     private final TopicService topicService;
     private final UserService userService;
+    private static final String ERROR_URL = "/error";
+    private static final String REDIRECT = "redirect:";
 
     public QuestionController(QuestionService questionService,
                               TopicService topicService,
@@ -35,7 +38,7 @@ public class QuestionController {
     @GetMapping("/topic/{id}/questions/add")
     public String getAddPage(@PathVariable int id, Model model) {
         if (!topicService.existsById(id)) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
         model.addAttribute("topicId", id);
 
@@ -56,11 +59,10 @@ public class QuestionController {
         try {
             questionService.add(id, user, addQuestionDto, file);
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
-        String url = getRedirectUrlToQuestionPage(user, null);
-        return "redirect:" + url;
+        return REDIRECT + getUrlToQuestionPage(user, null);
     }
 
     @GetMapping("/questions/edit/{questionId}")
@@ -76,14 +78,13 @@ public class QuestionController {
                 model.addAttribute("questionDifficulties", dto.getQuestionDifficulties());
                 model.addAttribute("answerTypes", dto.getAnswerTypes());
                 model.addAttribute("subQuestions", dto.getSubQuestions());
-                model.addAttribute("answers", dto.getSubQuestions());
+                model.addAttribute("answers", dto.getAnswers());
             } else {
                 User user = userService.getCurrentLoggedIn();
-                String url = getRedirectUrlToQuestionPage(user, null) + "?error=edit";
-                return "redirect:" + url;
+                return REDIRECT + setErrorInUrl(getUrlToQuestionPage(user, null), "edit");
             }
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         return "questions/edit";
@@ -97,8 +98,7 @@ public class QuestionController {
         questionService.edit(questionId, dto, file);
 
         User user = userService.getCurrentLoggedIn();
-        String url = getRedirectUrlToQuestionPage(user, null);
-        return "redirect:" + url;
+        return REDIRECT + getUrlToQuestionPage(user, null);
     }
 
     @GetMapping("/questions/delete/{questionId}")
@@ -109,32 +109,32 @@ public class QuestionController {
             questionService.delete(questionId);
 
             User user = userService.getCurrentLoggedIn();
-            url = getRedirectUrlToQuestionPage(user, topicService.getIdByQuestionId(questionId));
+            url = getUrlToQuestionPage(user, topicService.getIdByQuestionId(questionId));
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         } catch (IllegalArgumentException ex) {
-            url += "?error=delete";
+            url = setErrorInUrl(url, "delete");
         }
 
-        return "redirect:" + url;
+        return REDIRECT + url;
     }
 
     @GetMapping("/admin/topic/{id}/questions")
     public String redirectToAdminPage(@PathVariable int id) {
         String url = "/admin/topic/" + id + "/questions/" + 1;
-        return "redirect:" + url;
+        return REDIRECT + url;
     }
 
     @GetMapping("/topic/{id}/questions")
     public String redirectToPage(@PathVariable int id) {
         String url = "/topic/" + id + "/questions/" + 1;
-        return "redirect:" + url;
+        return REDIRECT + url;
     }
 
     @GetMapping("/user/questions")
     public String redirectToUserPage() {
         String url = "/user/questions/" + 1;
-        return "redirect:" + url;
+        return REDIRECT + url;
     }
 
     @GetMapping("/admin/topic/{id}/questions/{page}")
@@ -144,7 +144,7 @@ public class QuestionController {
                                                  required = false) String error,
                                          Model model) {
         if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         try {
@@ -154,7 +154,7 @@ public class QuestionController {
             model.addAttribute("totalPages", questions.getTotalPages());
             model.addAttribute("topicName", topicService.getById(id).getName());
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         if (error != null && (error.equals("delete") || error.equals("edit"))) {
@@ -174,7 +174,7 @@ public class QuestionController {
         if (page == null) {
             page = 1;
         } else if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         try {
@@ -186,7 +186,7 @@ public class QuestionController {
             model.addAttribute("text", text);
             model.addAttribute("topicName", topicService.getById(id).getName());
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         return "admin/questions";
@@ -197,7 +197,7 @@ public class QuestionController {
                                  @PathVariable int id,
                                  Model model) {
         if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         try {
@@ -209,7 +209,7 @@ public class QuestionController {
             model.addAttribute("statistics", questionService.getStatistic(questions.getElements()));
             model.addAttribute("topicName", topicService.getById(id).getName());
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         return "main/questions";
@@ -224,7 +224,7 @@ public class QuestionController {
         if (page == null) {
             page = 1;
         } else if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         try {
@@ -237,7 +237,7 @@ public class QuestionController {
             model.addAttribute("text", text);
             model.addAttribute("topicName", topicService.getById(id).getName());
         } catch (NoSuchElementException ex) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         return "main/questions";
@@ -249,7 +249,7 @@ public class QuestionController {
                                         required = false) String error,
                                 Model model) {
         if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         PageDto<Question> questions = questionService.getPageByUser(
@@ -278,7 +278,7 @@ public class QuestionController {
         if (page == null) {
             page = 1;
         } else if (page < 1) {
-            return "redirect:/error";
+            return REDIRECT + ERROR_URL;
         }
 
         PageDto<Question> questions = questionService.getPageByUserAndName(
@@ -295,13 +295,16 @@ public class QuestionController {
         return "user/questions";
     }
 
-    private String getRedirectUrlToQuestionPage(User user, Integer topicId) {
-        switch (user.getRole()) {
-            case USER:
-                return "/user/questions/1";
-            case ADMIN:
-                return "/admin/topic/" + topicId + "/questions/1";
+    private String getUrlToQuestionPage(User user, Integer topicId) {
+        if (user.getRole().equals(Role.USER)) {
+            return "/user/questions/1";
+        } else if (user.getRole().equals(Role.ADMIN)) {
+            return "/admin/topic/" + topicId + "/questions/1";
         }
         return null;
+    }
+
+    private String setErrorInUrl(String initialString, String errorLabel) {
+        return initialString + "?error=" + errorLabel;
     }
 }
