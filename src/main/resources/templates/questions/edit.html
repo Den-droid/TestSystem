@@ -12,6 +12,7 @@
     <h2 style="text-align: center">Edit Question</h2>
     <form name="editQuestion" method="post" enctype="multipart/form-data"
           onsubmit="return validateEditForm()">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <div class="mb-3 row">
             <label for="selectQuestionType" class="col-sm-4 col-form-label">
                 Select question type:

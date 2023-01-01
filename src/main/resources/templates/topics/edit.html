@@ -11,6 +11,7 @@
 <main>
     <h2 style="text-align: center">Edit Topic</h2>
     <form name="addTopic" method="post" onsubmit="return topicValidation()">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <div class="mb-3 row">
             <label for="name" class="col-sm-4 col-form-label">Enter new name: </label>
             <div class="col-sm-8">

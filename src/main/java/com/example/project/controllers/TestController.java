@@ -324,7 +324,7 @@ public class TestController {
         return "user/tests";
     }
 
-    private String setParameterInUrl(String initialString, String paramName, String errorLabel) {
-        return initialString + "?" + paramName + "=" + errorLabel;
+    private String setParameterInUrl(String initialString, String paramName, String paramValue) {
+        return initialString + "?" + paramName + "=" + paramValue;
     }
 }

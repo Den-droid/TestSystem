@@ -20,6 +20,7 @@
 <main>
     <h2 style="text-align: center">Login</h2>
     <form name="login" method="post" onsubmit="return validateLogin()">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <div class="mb-3 row">
             <label for="username" class="col-sm-4 col-form-label">Enter username:</label>
             <div class="col-sm-8">

@@ -18,6 +18,7 @@
     <div>
         <h3>Search for Topics</h3>
         <form method="get" onsubmit="return validateSearch()">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <div class="mb-3 row">
                 <label for="query" class="col-sm-4 col-form-label">Enter name: </label>
                 <div class="col-sm-8">
@@ -28,6 +29,7 @@
         </form>
     </div>
     <form method="post" name="deleteTopic" onsubmit="return validateChooseTopic()">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <div class="form-check"
              th:if="${topics} ne null and ${!#lists.isEmpty(topics)}"
              th:each="topic, topicStat : ${topics}">

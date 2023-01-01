@@ -20,7 +20,7 @@ function timeOver() {
         }
     } else {
         for (let i = 0; i < answers.length; i++) {
-            answers.item(i).readonly = true;
+            answers.item(i).readOnly = true;
         }
     }
 }

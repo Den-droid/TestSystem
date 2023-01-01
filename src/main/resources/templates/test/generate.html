@@ -13,6 +13,7 @@
         Generate test
     </h2>
     <form name="generateTest" method="post" onsubmit="return addTestSubmit()">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <div class="mb-3 row">
             <label for="name" class="col-sm-4 col-form-label">Enter name: </label>
             <div class="col-sm-8">
