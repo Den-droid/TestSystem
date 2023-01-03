@@ -6,8 +6,7 @@ import javax.persistence.*;
 @Table(name = "question_statistic")
 public class QuestionStatistic {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
+    @Column(name = "question_id")
     private Long id;
     @Column(name = "correct_answers")
     private int correctAnswers;
@@ -16,8 +15,9 @@ public class QuestionStatistic {
     @Column(name = "coef_change_answers_count")
     private int coefficientChangeAnswersCount;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "question_id", referencedColumnName = "id")
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "question_id")
     private Question question;
 
     public Long getId() {

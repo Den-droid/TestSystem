@@ -21,7 +21,6 @@
     <div>
         <h3>Search for Questions</h3>
         <form method="get" th:action="@{search}" onsubmit="return validateSearch()">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
             <div class="mb-3 row">
                 <label for="query" class="col-sm-4 col-form-label">Enter text: </label>
                 <div class="col-sm-8">

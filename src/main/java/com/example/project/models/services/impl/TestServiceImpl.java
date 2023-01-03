@@ -634,7 +634,6 @@ public class TestServiceImpl implements TestService {
         for (Topic topic : topics) {
             questions.addAll(topic.getQuestions());
         }
-        Collections.shuffle(questions);
 
         List<TestQuestion> testQuestions = new ArrayList<>(test.getQuestionsCount());
 
@@ -646,6 +645,7 @@ public class TestServiceImpl implements TestService {
             minDifference = 1.0;
             additionalCoefficient = getAdditionalCoefficientForTestDifficulty(
                     test.getDifficulty());
+            Collections.shuffle(questions);
 
             for (Question question : questions) {
                 double tmpDifference = Math.abs(question.getDifficulty().getCoefficient()

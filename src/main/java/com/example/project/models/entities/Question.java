@@ -57,9 +57,9 @@ public class Question {
     @OneToMany(mappedBy = "question")
     private List<TestAnswer> testAnswers;
 
-    @OneToOne(mappedBy = "question")
+    @OneToOne(mappedBy = "question", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
     private QuestionStatistic statistic;
-
 
     public void setAnswer(Answer answer) {
         Answer originalAnswer = this.answers.stream()

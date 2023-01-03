@@ -37,14 +37,15 @@
             <div class="form-check"
                  th:each="answerVariant, answerVariantStat : ${question.answersVariants}">
                 <input class="form-check-input"
-                       type="radio" name="answers"
-                       th:id="'flexRadio' + ${answerVariantStat.count}"
+                       type="radio"
+                       th:name="'group' + ${questionStat.count}"
+                       th:id="'flexRadio' + ${questionStat.count} + ${answerVariantStat.count}"
                        th:checked="${!#lists.isEmpty(testResult.answers[questionStat.index].answers)}
                             and ${#lists.contains(testResult.answers[questionStat.index].answers,
                                         answerVariant)}"
                        th:value="${answerVariant}" disabled>
                 <label class="form-check-label"
-                       th:for="'flexRadio' + ${answerVariantStat.count}"
+                       th:for="'flexRadio' + ${questionStat.count} + ${answerVariantStat.count}"
                        th:text="${answerVariant}">
                 </label>
             </div>
@@ -53,14 +54,15 @@
             <div class="form-check"
                  th:each="answerVariant, answerVariantStat : ${question.answersVariants}">
                 <input class="form-check-input"
-                       type="checkbox" name="answers"
-                       th:id="'flexCheck' + ${answerVariantStat.count}"
+                       type="checkbox"
+                       th:name="'group' + ${questionStat.count}"
+                       th:id="'flexCheck' + ${questionStat.count} + ${answerVariantStat.count}"
                        th:checked="${!#lists.isEmpty(testResult.answers[questionStat.index].answers)}
                             and ${#lists.contains(testResult.answers[questionStat.index].answers,
                                         answerVariant)}"
                        th:value="${answerVariant}" disabled>
                 <label class="form-check-label"
-                       th:for="'flexCheck' + ${answerVariantStat.count}"
+                       th:for="'flexCheck' + ${questionStat.count} + ${answerVariantStat.count}"
                        th:text="${answerVariant}">
                 </label>
             </div>
@@ -71,7 +73,8 @@
                 <div class="col-sm-8">
                     <input th:value="${!#lists.isEmpty(testResult.answers[questionStat.index].answers) ?
                                 testResult.answers[questionStat.index].answers[0] : ''}"
-                           name="answers" type="text" class="form-control" id="answer" readonly>
+                           th:name="'group' + ${questionStat.count}"
+                           type="text" class="form-control" id="answer" readonly>
                 </div>
             </div>
         </th:block>
@@ -88,7 +91,8 @@
                                th:id="'matchSubText' + ${subQuestionTextStat.index}">
                     </div>
                     <div class="col-sm-3">
-                        <select name="answers" id="selectVariant" class="form-select form-select-sm">
+                        <select th:name="'group' + ${questionStat.count}"
+                                id="selectVariant" class="form-select form-select-sm">
                             <option th:if="${testResult.answers[questionStat.index]
                                                     .matchQuestionNumOfAnswers eq null}"
                                     selected>
