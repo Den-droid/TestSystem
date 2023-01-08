@@ -1,13 +1,13 @@
 package com.example.project.models.services.impl;
 
-import com.example.project.dto.register.RegisterDto;
-import com.example.project.dto.user.EditUserDto;
-import com.example.project.dto.user.UserDto;
+import com.example.project.dto.user.RegisterDto;
+import com.example.project.dto.user.EditUserProfileDto;
+import com.example.project.dto.user.UserProfileDto;
 import com.example.project.models.entities.User;
 import com.example.project.models.enums.Role;
 import com.example.project.models.mappers.EditUserMapper;
 import com.example.project.models.mappers.RegisterMapper;
-import com.example.project.models.mappers.UserMapper;
+import com.example.project.models.mappers.UserProfileMapper;
 import com.example.project.models.repositories.QuestionRepository;
 import com.example.project.models.repositories.TestRepository;
 import com.example.project.models.repositories.TopicRepository;
@@ -68,12 +68,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getProfile(User user) {
-        return UserMapper.map(user);
+    public UserProfileDto getProfile(User user) {
+        return UserProfileMapper.map(user);
     }
 
     @Override
-    public void edit(User user, EditUserDto dto) {
+    public void edit(User user, EditUserProfileDto dto) {
         User repoUser = userRepository.findByUsernameIgnoreCase(dto.getUsername());
         if (repoUser != null && !repoUser.equals(user)) {
             throw new IllegalArgumentException("There is already user with such username!!!");

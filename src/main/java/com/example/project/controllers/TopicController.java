@@ -191,7 +191,7 @@ public class TopicController {
     }
 
     @GetMapping("/topics/search")
-    public String getByPage(@RequestParam(name = "page", required = false) Integer page,
+    public String getByName(@RequestParam(name = "page", required = false) Integer page,
                             @RequestParam(name = "query") String name,
                             Model model) {
         if (page == null) {

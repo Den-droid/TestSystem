@@ -1,20 +1,10 @@
-package com.example.project.dto.register;
+package com.example.project.dto.user;
 
-public class RegisterDto {
+public class UserProfileDto {
     private String username;
-    private String password;
-    private String confirmPassword;
     private String firstName;
     private String lastName;
     private String email;
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getUsername() {
         return username;
@@ -46,13 +36,5 @@ public class RegisterDto {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getConfirmPassword() {
-        return confirmPassword;
-    }
-
-    public void setConfirmPassword(String confirmPassword) {
-        this.confirmPassword = confirmPassword;
     }
 }

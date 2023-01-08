@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-public class TestDto {
+public class TestIntroDto {
     private String name;
     private String authorUsername;
     private LocalTime timeLimit;

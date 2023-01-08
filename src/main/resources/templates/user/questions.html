@@ -29,7 +29,8 @@
         </a>
     </button>
     <div>
-        <h2>Your Questions</h2>
+        <h2>Your Questions <span th:if="${text ne null}"
+                                 th:text="'By Text: ' + ${text}"></span></h2>
         <p th:if="${#lists.isEmpty(questions)}">
             There are no questions with such parameters!!!
         </p>

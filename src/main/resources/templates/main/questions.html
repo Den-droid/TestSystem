@@ -33,7 +33,9 @@
     <div th:replace="fragments/general.html :: error(null)">
     </div>
     <div>
-        <h2>Questions for Topic "<span th:text="${topicName}"></span>"</h2>
+        <h2>Questions for Topic "<span th:text="${topicName}"></span>"
+            <span th:if="${text ne null}"
+                  th:text="'By Text: ' + ${text}"></span></h2>
         <p th:if="${#lists.isEmpty(questions)}">
             There are no questions with such parameters!!!
         </p>

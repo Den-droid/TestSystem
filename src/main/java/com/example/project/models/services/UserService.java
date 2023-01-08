@@ -1,8 +1,8 @@
 package com.example.project.models.services;
 
-import com.example.project.dto.register.RegisterDto;
-import com.example.project.dto.user.EditUserDto;
-import com.example.project.dto.user.UserDto;
+import com.example.project.dto.user.RegisterDto;
+import com.example.project.dto.user.EditUserProfileDto;
+import com.example.project.dto.user.UserProfileDto;
 import com.example.project.models.entities.User;
 import com.example.project.models.enums.Role;
 
@@ -13,9 +13,9 @@ public interface UserService {
 
     User getByUsername(String username);
 
-    UserDto getProfile(User user);
+    UserProfileDto getProfile(User user);
 
-    void edit(User user, EditUserDto dto);
+    void edit(User user, EditUserProfileDto dto);
 
     void delete(User user);
 

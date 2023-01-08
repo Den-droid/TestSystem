@@ -42,7 +42,8 @@
         </a>
     </button>
     <div>
-        <h2>Your Tests</h2>
+        <h2>Your Tests <span th:if="${name ne null}"
+                             th:text="'By Name: ' + ${name}"></span></h2>
         <p th:if="${#lists.isEmpty(tests)}">
             There are no tests with such parameters!!!
         </p>

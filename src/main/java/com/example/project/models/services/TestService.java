@@ -41,7 +41,7 @@ public interface TestService {
 
     TestAnswerDto getTestQuestionAnswerByUserAndNumber(User user, String testId, int number);
 
-    TestDto getIntro(Test test);
+    TestIntroDto getIntro(Test test);
 
     TestResultInfoDto getResultInfo(String testId);
 

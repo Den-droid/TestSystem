@@ -24,7 +24,8 @@
     <div th:replace="fragments/general.html :: error(${error})">
     </div>
     <div>
-        <h2>Topics</h2>
+        <h2>Topics <span th:if="${name ne null}"
+                         th:text="'By Name: ' + ${name}"></span></h2>
         <p th:if="${#lists.isEmpty(topics)}">
             There are no topics with such parameters!!!
         </p>

@@ -1,14 +1,14 @@
 package com.example.project.models.mappers;
 
-import com.example.project.dto.user.UserDto;
+import com.example.project.dto.user.UserProfileDto;
 import com.example.project.models.entities.User;
 
-public class UserMapper {
-    private UserMapper() {
+public class UserProfileMapper {
+    private UserProfileMapper() {
     }
 
-    public static UserDto map(User user) {
-        UserDto dto = new UserDto();
+    public static UserProfileDto map(User user) {
+        UserProfileDto dto = new UserProfileDto();
         dto.setEmail(user.getEmail());
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());

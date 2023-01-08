@@ -1,6 +1,6 @@
 package com.example.project.dto.user;
 
-public class EditUserDto {
+public class EditUserProfileDto {
     private String username;
     private String password;
     private String firstName;

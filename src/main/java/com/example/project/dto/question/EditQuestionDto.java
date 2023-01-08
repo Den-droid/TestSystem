@@ -9,7 +9,6 @@ public class EditQuestionDto {
     private String[] subQuestions;
     private String[] answers;
     private String[] isCorrect;
-
     private String[] answerIds;
     private String[] subQuestionIds;
 

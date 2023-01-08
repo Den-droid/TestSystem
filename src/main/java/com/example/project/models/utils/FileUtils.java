@@ -1,7 +1,6 @@
 package com.example.project.models.utils;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -12,9 +11,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
-@Component
 public class FileUtils {
-    private static final String UPLOAD_PATH = "uploads";
+    @Value("${upload.path}")
+    private static String uploadPath;
 
     private FileUtils() {
     }
@@ -23,7 +22,7 @@ public class FileUtils {
         String uuidFile = UUID.randomUUID().toString();
         String resultFilename = uuidFile + "-" + file.getOriginalFilename();
 
-        Path uploadDir = Paths.get(UPLOAD_PATH);
+        Path uploadDir = Paths.get(uploadPath);
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
         }
@@ -37,7 +36,7 @@ public class FileUtils {
     }
 
     public static void delete(String filename) throws IOException {
-        Path path = Paths.get(UPLOAD_PATH).resolve(filename);
+        Path path = Paths.get(uploadPath).resolve(filename);
         Files.deleteIfExists(path);
     }
 }

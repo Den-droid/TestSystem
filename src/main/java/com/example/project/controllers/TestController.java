@@ -149,15 +149,15 @@ public class TestController {
             boolean hasFinished = testService.hasFinished(user, testId);
             boolean isTestOutdated = testService.isTestOutdated(testId);
             boolean hasStarted = testService.hasStarted(user, testId);
-            if (!hasStarted) {
-                String url = "/test/" + testId + "/intro";
-                return REDIRECT + url;
-            } else if (isTestOutdated) {
+            if (isTestOutdated) {
                 testService.finish(user, testId);
                 String url = "/test/" + testId + "/results";
                 return REDIRECT + setParameterInUrl(url, "user", user.getUsername());
             } else if (hasFinished) {
-                String url = "/test/" + testId + "/results?user=" + user.getUsername();
+                String url = "/test/" + testId + "/results";
+                return REDIRECT + setParameterInUrl(url, "user", user.getUsername());
+            } else if (!hasStarted) {
+                String url = "/test/" + testId + "/intro";
                 return REDIRECT + url;
             }
 

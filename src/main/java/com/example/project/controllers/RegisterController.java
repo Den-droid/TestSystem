@@ -1,6 +1,6 @@
 package com.example.project.controllers;
 
-import com.example.project.dto.register.RegisterDto;
+import com.example.project.dto.user.RegisterDto;
 import com.example.project.models.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -29,7 +29,8 @@
         </a>
     </button>
     <div>
-        <h2>Your Topics</h2>
+        <h2>Your Topics <span th:if="${name ne null}"
+                              th:text="'By Name: ' + ${name}"></span></h2>
         <p th:if="${#lists.isEmpty(topics)}">
             There are no topics with such parameters!!!
         </p>

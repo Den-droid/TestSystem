@@ -424,8 +424,8 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    public TestDto getIntro(Test test) {
-        TestDto dto = new TestDto();
+    public TestIntroDto getIntro(Test test) {
+        TestIntroDto dto = new TestIntroDto();
         dto.setName(test.getName());
         dto.setDifficulty(test.getDifficulty().getText());
         dto.setAuthorUsername(test.getUserCreated().getUsername());
@@ -634,7 +634,6 @@ public class TestServiceImpl implements TestService {
         for (Topic topic : topics) {
             questions.addAll(topic.getQuestions());
         }
-
         List<TestQuestion> testQuestions = new ArrayList<>(test.getQuestionsCount());
 
         double sumCoefficients = 0.0;

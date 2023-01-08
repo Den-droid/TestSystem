@@ -7,9 +7,6 @@ public class PageDto<T> {
     int currentPage;
     int totalPages;
 
-    public PageDto() {
-    }
-
     public PageDto(List<T> elements, int currentPage, int totalPages) {
         this.elements = elements;
         this.currentPage = currentPage;

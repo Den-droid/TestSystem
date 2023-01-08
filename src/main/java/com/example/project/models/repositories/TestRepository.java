@@ -2,11 +2,11 @@ package com.example.project.models.repositories;
 
 import com.example.project.models.entities.Test;
 import com.example.project.models.entities.User;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface TestRepository extends JpaRepository<Test, String> {
+public interface TestRepository extends CrudRepository<Test, String> {
     List<Test> findTestsByTopicsId(Integer topicId);
 
     List<Test> findTestsByUsersAssignedUsername(String usersAssignedUsername);

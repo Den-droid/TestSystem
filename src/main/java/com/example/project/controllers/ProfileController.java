@@ -1,6 +1,6 @@
 package com.example.project.controllers;
 
-import com.example.project.dto.user.EditUserDto;
+import com.example.project.dto.user.EditUserProfileDto;
 import com.example.project.models.entities.User;
 import com.example.project.models.services.UserService;
 import org.springframework.stereotype.Controller;
@@ -25,7 +25,7 @@ public class ProfileController {
     }
 
     @PostMapping("/profile")
-    public String changeUser(@ModelAttribute(name = "editProfile") EditUserDto dto,
+    public String changeUser(@ModelAttribute(name = "editProfile") EditUserProfileDto dto,
                              Model model) {
         User user = userService.getCurrentLoggedIn();
         if (dto.getAction().equals("edit")) {
