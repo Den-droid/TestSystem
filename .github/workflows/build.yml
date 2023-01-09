@@ -34,6 +34,6 @@ jobs:
           DB_HOST: mysql:3306
           DB_USERNAME: root
           DB_PASSWORD: ""
-          DB_DATABASE: test_system
+          DB_NAME: test_system
     - name: Build with Maven
       run: mvn -B package --file pom.xml
