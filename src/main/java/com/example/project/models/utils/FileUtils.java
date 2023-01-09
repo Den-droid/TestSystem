@@ -12,7 +12,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 public class FileUtils {
-    private static String uploadPath = "uploads";
+    @Value("${upload.path}")
+    private static String uploadPath;
 
     private FileUtils() {
     }
