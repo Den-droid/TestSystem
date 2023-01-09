@@ -552,12 +552,8 @@ public class TestServiceImpl implements TestService {
                     submitTestAnswers.add(testAnswer);
                 }
 
-                if (correctAnswersCount == subQuestions.size()) {
-                    mark += testQuestion.getValue();
-                } else {
-                    mark += testQuestion.getValue() *
-                            ((correctAnswersCount + 0.0) / subQuestions.size());
-                }
+                mark += testQuestion.getValue() *
+                        ((correctAnswersCount + 0.0) / subQuestions.size());
 
                 testAnswerRepository.saveAll(submitTestAnswers);
             } else {
@@ -585,6 +581,7 @@ public class TestServiceImpl implements TestService {
                     testAnswers.get(0).setCorrect(isCorrect);
                 } else if (question.getAnswerType().equals(AnswerType.MULTIPLE)) {
                     int correctAnswersCount = 0;
+                    int wrongAnswersCount = 0;
 
                     for (int i = 0; i < testAnswers.size(); i++) {
                         if (correctAnswers.contains(questionAnswers.get(i))) {
@@ -593,15 +590,15 @@ public class TestServiceImpl implements TestService {
                         } else {
                             isCorrect = false;
                             testAnswers.get(i).setCorrect(false);
+                            wrongAnswersCount++;
                         }
                     }
 
-                    if (correctAnswersCount == correctAnswers.size()) {
-                        mark += testQuestion.getValue();
-                    } else {
-                        mark += testQuestion.getValue() *
-                                ((correctAnswersCount + 0.0) / correctAnswers.size());
-                    }
+                    mark += testQuestion.getValue() *
+                            ((correctAnswersCount + 0.0) / correctAnswers.size());
+
+                    mark -= testQuestion.getValue() *
+                            ((wrongAnswersCount + 0.0) / questionAnswers.size());
                 }
 
                 if (isCorrect && !question.getAnswerType().equals(AnswerType.MULTIPLE)) {
