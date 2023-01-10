@@ -635,12 +635,11 @@ public class TestServiceImpl implements TestService {
 
         double sumCoefficients = 0.0;
         double minDifference;
-        double additionalCoefficient;
+        double additionalCoefficient = getAdditionalCoefficientForTestDifficulty(
+                test.getDifficulty());
         Question addToTest = questions.get(0);
         for (int i = 0; i < test.getQuestionsCount(); i++) {
             minDifference = 1.0;
-            additionalCoefficient = getAdditionalCoefficientForTestDifficulty(
-                    test.getDifficulty());
             Collections.shuffle(questions);
 
             for (Question question : questions) {
