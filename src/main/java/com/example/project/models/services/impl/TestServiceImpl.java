@@ -47,6 +47,10 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public void add(User user, AddTestDto dto) {
+        if (testRepository.findByName(dto.getName()) != null) {
+            throw new IllegalArgumentException("There is already test with such name!!!");
+        }
+
         Test test = AddTestMapper.map(dto);
         test.setUserCreated(user);
 
@@ -676,9 +680,9 @@ public class TestServiceImpl implements TestService {
         Random random = new Random();
         double additionalCoefficient = 0;
         if (difficulty.equals(TestDifficulty.LOW_MEDIUM)) {
-            additionalCoefficient = (random.nextInt(20) + 1) / 100.0;
+            additionalCoefficient = random.nextInt(20) / 100.0;
         } else if (difficulty.equals(TestDifficulty.LOW_HIGH)) {
-            additionalCoefficient = (random.nextInt(6) + 1) / 100.0;
+            additionalCoefficient = ((random.nextInt(6) + 1) + random.nextDouble()) / 100.0;
         }
         return additionalCoefficient;
     }

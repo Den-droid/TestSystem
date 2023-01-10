@@ -12,4 +12,6 @@ public interface TestRepository extends CrudRepository<Test, String> {
     List<Test> findTestsByUsersAssignedUsername(String usersAssignedUsername);
 
     List<Test> findAllByUserCreated(User user);
+
+    Test findByName(String name);
 }
