@@ -16,4 +16,5 @@ jobs:
           heroku_app_name: "test-system-course-work" #Must be unique in Heroku
           heroku_email: "amerscan8@gmail.com"
           usedocker: true
+          dontuseforce: false
           branch: master
