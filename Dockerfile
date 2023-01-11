@@ -10,4 +10,4 @@ RUN ./mvnw clean install -DskipTests
 FROM eclipse-temurin:8-jre-jammy
 WORKDIR /opt/app
 COPY --from=builder /opt/app/target/TestSystemProject-0.0.1-SNAPSHOT.jar /opt/app/TestSystemProject-0.0.1-SNAPSHOT.jar
-ENTRYPOINT ["java", "-jar", "/opt/app/TestSystemProject-0.0.1-SNAPSHOT.jar" ]
+CMD ["java", "-jar", "/opt/app/TestSystemProject-0.0.1-SNAPSHOT.jar" ]
