@@ -17,4 +17,3 @@ jobs:
           heroku_email: "amerscan8@gmail.com"
           usedocker: true
           branch: master
-          buildpack: https://github.com/heroku/heroku-buildpack-java
