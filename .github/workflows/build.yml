@@ -16,3 +16,6 @@ jobs:
           heroku_app_name: "test-system-course-work" #Must be unique in Heroku
           heroku_email: "amerscan8@gmail.com"
           branch: master
+        env:
+          HD_LANG: C.UTF-8
+          HD_LC_ALL: C.UTF-8
