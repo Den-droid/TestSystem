@@ -35,7 +35,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<FinishedTest> finishedTests;
 
-    @OneToMany(mappedBy = "userCreated")
+    @OneToMany(mappedBy = "userCreated", cascade = CascadeType.REMOVE)
     private List<Test> testsCreated;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)

@@ -29,16 +29,16 @@ public class Test {
     @Column(length = 10)
     private TestDifficulty difficulty;
 
-    @OneToMany(mappedBy = "test")
+    @OneToMany(mappedBy = "test", cascade = CascadeType.REMOVE)
     private List<TestAnswer> testAnswers;
 
-    @OneToMany(mappedBy = "test")
+    @OneToMany(mappedBy = "test", cascade = CascadeType.REMOVE)
     private List<CurrentTest> currentTests;
 
     @OneToMany(mappedBy = "test", cascade = CascadeType.ALL)
     private List<TestQuestion> questions;
 
-    @OneToMany(mappedBy = "test")
+    @OneToMany(mappedBy = "test", cascade = CascadeType.REMOVE)
     private List<FinishedTest> finishedTests;
 
     @ManyToOne

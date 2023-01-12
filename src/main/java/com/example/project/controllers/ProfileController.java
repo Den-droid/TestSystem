@@ -40,6 +40,6 @@ public class ProfileController {
             userService.delete(user);
         }
 
-        return "redirect:/logout";
+        return "redirect:/";
     }
 }

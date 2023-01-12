@@ -1,7 +1,7 @@
 package com.example.project.models.services.impl;
 
-import com.example.project.dto.user.RegisterDto;
 import com.example.project.dto.user.EditUserProfileDto;
+import com.example.project.dto.user.RegisterDto;
 import com.example.project.dto.user.UserProfileDto;
 import com.example.project.models.entities.User;
 import com.example.project.models.enums.Role;
@@ -13,8 +13,6 @@ import com.example.project.models.repositories.TestRepository;
 import com.example.project.models.repositories.TopicRepository;
 import com.example.project.models.repositories.UserRepository;
 import com.example.project.models.services.UserService;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,7 +20,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -75,7 +72,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void edit(User user, EditUserProfileDto dto) {
         User repoUser = userRepository.findByUsernameIgnoreCase(dto.getUsername());
-        if (repoUser != null && !repoUser.equals(user)) {
+        if (repoUser != null) {
             throw new IllegalArgumentException("There is already user with such username!!!");
         }
 
@@ -85,7 +82,7 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(user);
-        changeAuthentication(user.getUsername(), user.getPassword());
+        deleteAuthentication();
     }
 
     @Override
@@ -100,9 +97,6 @@ public class UserServiceImpl implements UserService {
 
         user.getQuestions().forEach(x -> x.setUser(admin));
         questionRepository.saveAll(user.getQuestions());
-
-        user.getTestsCreated().forEach(x -> x.setUserCreated(admin));
-        testRepository.saveAll(user.getTestsCreated());
 
         user.getAssignedTests().forEach(x -> x.getUsersAssigned().remove(user));
         testRepository.saveAll(user.getAssignedTests());
@@ -135,18 +129,6 @@ public class UserServiceImpl implements UserService {
         return users.stream()
                 .filter(x -> x.getRole().equals(Role.USER))
                 .collect(Collectors.toList());
-    }
-
-    private void changeAuthentication(String newUsername, String newPassword) {
-        Collection<SimpleGrantedAuthority> nowAuthorities =
-                (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext()
-                        .getAuthentication()
-                        .getAuthorities();
-
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(newUsername, newPassword, nowAuthorities);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     private void deleteAuthentication() {
