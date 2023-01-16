@@ -28,6 +28,7 @@
             />
         </audio>
         <video th:if="${question.questionType eq 'Text with video'}"
+               width="320"
                controls>
             <source th:src="${#strings.concat('/uploads/', question.questionMedia)}"
             />

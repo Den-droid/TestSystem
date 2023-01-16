@@ -28,7 +28,7 @@ public class QuestionController {
     private static final String ERROR_URL = "/error";
     private static final String REDIRECT = "redirect:";
     private static final String EDIT_DELETE_QUESTION_ERROR_MESSAGE =
-            "You can't do this action because this question because it's used somewhere else";
+            "You can't do this action because this question because it's used somewhere else!!!";
 
     public QuestionController(QuestionService questionService,
                               TopicService topicService,
