@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Controller
@@ -26,6 +27,8 @@ public class QuestionController {
     private final UserService userService;
     private static final String ERROR_URL = "/error";
     private static final String REDIRECT = "redirect:";
+    private static final String EDIT_DELETE_QUESTION_ERROR_MESSAGE =
+            "You can't do this action because this question because it's used somewhere else";
 
     public QuestionController(QuestionService questionService,
                               TopicService topicService,
@@ -106,10 +109,10 @@ public class QuestionController {
         String url = "";
 
         try {
-            questionService.delete(questionId);
-
             User user = userService.getCurrentLoggedIn();
             url = getUrlToQuestionPage(user, topicService.getIdByQuestionId(questionId));
+
+            questionService.delete(questionId);
         } catch (NoSuchElementException ex) {
             return REDIRECT + ERROR_URL;
         } catch (IllegalArgumentException ex) {
@@ -148,18 +151,16 @@ public class QuestionController {
         }
 
         try {
-            PageDto<Question> questions = questionService.getPageByTopic(id, page, 10);
-            model.addAttribute("questions", questions.getElements());
-            model.addAttribute("currentPage", questions.getCurrentPage());
-            model.addAttribute("totalPages", questions.getTotalPages());
+            PageDto<Question> questionPage = questionService.getPageByTopic(id, page, 10);
+
+            model.addAttribute("questionPage", questionPage);
             model.addAttribute("topicName", topicService.getById(id).getName());
         } catch (NoSuchElementException ex) {
             return REDIRECT + ERROR_URL;
         }
 
         if (error != null && (error.equals("delete") || error.equals("edit"))) {
-            model.addAttribute("error", "You can't do this action because "
-                    + "this question because it's used somewhere else");
+            model.addAttribute("error", EDIT_DELETE_QUESTION_ERROR_MESSAGE);
         }
 
         return "admin/questions";
@@ -178,10 +179,10 @@ public class QuestionController {
         }
 
         try {
-            PageDto<Question> questions = questionService.getPageByTopicAndName(text, id, page, 10);
-            model.addAttribute("questions", questions.getElements());
-            model.addAttribute("currentPage", questions.getCurrentPage());
-            model.addAttribute("totalPages", questions.getTotalPages());
+            PageDto<Question> questionPage =
+                    questionService.getPageByTopicAndName(text, id, page, 10);
+
+            model.addAttribute("questionPage", questionPage);
             model.addAttribute("isSearch", true);
             model.addAttribute("text", text);
             model.addAttribute("topicName", topicService.getById(id).getName());
@@ -201,12 +202,9 @@ public class QuestionController {
         }
 
         try {
-            PageDto<Question> questions = questionService.getPageByTopic(id, page, 10);
+            PageDto<Question> questionPage = questionService.getPageByTopic(id, page, 10);
 
-            model.addAttribute("questions", questions.getElements());
-            model.addAttribute("currentPage", questions.getCurrentPage());
-            model.addAttribute("totalPages", questions.getTotalPages());
-            model.addAttribute("statistics", questionService.getStatistic(questions.getElements()));
+            model.addAttribute("questionPage", questionPage);
             model.addAttribute("topicName", topicService.getById(id).getName());
         } catch (NoSuchElementException ex) {
             return REDIRECT + ERROR_URL;
@@ -228,13 +226,12 @@ public class QuestionController {
         }
 
         try {
-            PageDto<Question> questions = questionService.getPageByTopicAndName(text, id, page, 10);
-            model.addAttribute("questions", questions.getElements());
-            model.addAttribute("currentPage", questions.getCurrentPage());
-            model.addAttribute("totalPages", questions.getTotalPages());
-            model.addAttribute("statistics", questionService.getStatistic(questions.getElements()));
-            model.addAttribute("isSearch", true);
+            PageDto<Question> questionPage =
+                    questionService.getPageByTopicAndName(text, id, page, 10);
+
+            model.addAttribute("questionPage", questionPage);
             model.addAttribute("text", text);
+            model.addAttribute("isSearch", true);
             model.addAttribute("topicName", topicService.getById(id).getName());
         } catch (NoSuchElementException ex) {
             return REDIRECT + ERROR_URL;
@@ -252,19 +249,16 @@ public class QuestionController {
             return REDIRECT + ERROR_URL;
         }
 
-        PageDto<Question> questions = questionService.getPageByUser(
+        PageDto<Question> questionPage = questionService.getPageByUser(
                 userService.getCurrentLoggedIn(), page, 10);
+        List<String> topicNames = topicService.
+                getTopicNamesByQuestions(questionPage.getElements());
 
-        model.addAttribute("questions", questions.getElements());
-        model.addAttribute("currentPage", questions.getCurrentPage());
-        model.addAttribute("totalPages", questions.getTotalPages());
-        model.addAttribute("statistics", questionService.getStatistic(questions.getElements()));
-        model.addAttribute("topicNames", topicService.
-                getTopicNamesByQuestions(questions.getElements()));
+        model.addAttribute("questionPage", questionPage);
+        model.addAttribute("topicNames", topicNames);
 
         if (error != null && (error.equals("delete") || error.equals("edit"))) {
-            model.addAttribute("error", "You can't do this action because " +
-                    "this question because it's used somewhere else");
+            model.addAttribute("error", EDIT_DELETE_QUESTION_ERROR_MESSAGE);
         }
 
         return "user/questions";
@@ -281,16 +275,15 @@ public class QuestionController {
             return REDIRECT + ERROR_URL;
         }
 
-        PageDto<Question> questions = questionService.getPageByUserAndName(
+        PageDto<Question> questionPage = questionService.getPageByUserAndName(
                 userService.getCurrentLoggedIn(), text, page, 10);
-        model.addAttribute("questions", questions.getElements());
-        model.addAttribute("currentPage", questions.getCurrentPage());
-        model.addAttribute("totalPages", questions.getTotalPages());
+        List<String> topicNames = topicService.
+                getTopicNamesByQuestions(questionPage.getElements());
+
+        model.addAttribute("questionPage", questionPage);
         model.addAttribute("isSearch", true);
         model.addAttribute("text", text);
-        model.addAttribute("statistics", questionService.getStatistic(questions.getElements()));
-        model.addAttribute("topicNames", topicService
-                .getTopicNamesByQuestions(questions.getElements()));
+        model.addAttribute("topicNames", topicNames);
 
         return "user/questions";
     }

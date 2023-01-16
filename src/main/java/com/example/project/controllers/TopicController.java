@@ -142,93 +142,82 @@ public class TopicController {
     }
 
     @GetMapping("/admin/topics/{page}")
-    public String getForAdmin(@PathVariable(name = "page") Integer page,
-                              Model model) {
+    public String getPageForAdmin(@PathVariable(name = "page") Integer page,
+                                  Model model) {
         if (page < 1) {
             return REDIRECT + ERROR_URL;
         }
 
-        PageDto<Topic> topics = topicService.getPage(page, 10);
-        model.addAttribute("topics", topics.getElements());
-        model.addAttribute("currentPage", topics.getCurrentPage());
-        model.addAttribute("totalPages", topics.getTotalPages());
+        PageDto<Topic> topicPage = topicService.getPage(page, 10);
+        model.addAttribute("topicPage", topicPage);
         return "admin/topics";
     }
 
     @GetMapping("/admin/topics/search")
-    public String getByNameForAdmin(@RequestParam(name = "page", required = false) Integer page,
-                                    @RequestParam(name = "query") String name,
-                                    Model model) {
+    public String getPageByNameForAdmin(@RequestParam(name = "page", required = false) Integer page,
+                                        @RequestParam(name = "query") String name,
+                                        Model model) {
         if (page == null) {
             page = 1;
         } else if (page < 1) {
             return REDIRECT + ERROR_URL;
         }
 
-        PageDto<Topic> topics = topicService.getPageByName(page, 10, name);
+        PageDto<Topic> topicPage = topicService.getPageByName(page, 10, name);
 
-        model.addAttribute("topics", topics.getElements());
-        model.addAttribute("currentPage", topics.getCurrentPage());
-        model.addAttribute("totalPages", topics.getTotalPages());
+        model.addAttribute("topicPage", topicPage);
         model.addAttribute("name", name);
         model.addAttribute("isSearch", true);
         return "admin/topics";
     }
 
     @GetMapping("/topics/{page}")
-    public String get(@PathVariable(name = "page") Integer page,
-                      Model model) {
+    public String getPage(@PathVariable(name = "page") Integer page,
+                          Model model) {
         if (page < 1) {
             return REDIRECT + ERROR_URL;
         }
 
-        PageDto<Topic> topics = topicService.getPage(page, 10);
+        PageDto<Topic> topicPage = topicService.getPage(page, 10);
 
-        model.addAttribute("topics", topics.getElements());
-        model.addAttribute("currentPage", topics.getCurrentPage());
-        model.addAttribute("totalPages", topics.getTotalPages());
+        model.addAttribute("topicPage", topicPage);
         return "main/topics";
     }
 
     @GetMapping("/topics/search")
-    public String getByName(@RequestParam(name = "page", required = false) Integer page,
-                            @RequestParam(name = "query") String name,
-                            Model model) {
+    public String getPageByName(@RequestParam(name = "page", required = false) Integer page,
+                                @RequestParam(name = "query") String name,
+                                Model model) {
         if (page == null) {
             page = 1;
         } else if (page < 1) {
             return REDIRECT + ERROR_URL;
         }
 
-        PageDto<Topic> topics = topicService.getPageByName(page, 10, name);
+        PageDto<Topic> topicPage = topicService.getPageByName(page, 10, name);
 
-        model.addAttribute("topics", topics.getElements());
-        model.addAttribute("currentPage", topics.getCurrentPage());
-        model.addAttribute("totalPages", topics.getTotalPages());
+        model.addAttribute("topicPage", topicPage);
         model.addAttribute("name", name);
         model.addAttribute("isSearch", true);
         return "main/topics";
     }
 
     @GetMapping("/user/topics/{page}")
-    public String getForUser(@PathVariable(name = "page") Integer page,
-                             Model model) {
+    public String getPageByUser(@PathVariable(name = "page") Integer page,
+                                Model model) {
         if (page < 1) {
             return REDIRECT + ERROR_URL;
         }
 
-        PageDto<Topic> topics = topicService.getPageByUser(page, 10,
+        PageDto<Topic> topicPage = topicService.getPageByUser(page, 10,
                 userService.getCurrentLoggedIn());
 
-        model.addAttribute("topics", topics.getElements());
-        model.addAttribute("currentPage", topics.getCurrentPage());
-        model.addAttribute("totalPages", topics.getTotalPages());
-
+        model.addAttribute("topicPage", topicPage);
         return "user/topics";
     }
 
     @GetMapping("/user/topics/search")
-    public String getByUsernameForUser(@RequestParam(name = "page", required = false) Integer page,
+    public String getPageByUserAndName(@RequestParam(name = "page", required = false) Integer page,
                                        @RequestParam(name = "query") String name,
                                        Model model) {
         if (page == null) {
@@ -237,12 +226,10 @@ public class TopicController {
             return REDIRECT + ERROR_URL;
         }
 
-        PageDto<Topic> topics = topicService.getPageByNameAndUser(page, 10,
+        PageDto<Topic> topicPage = topicService.getPageByNameAndUser(page, 10,
                 userService.getCurrentLoggedIn(), name);
 
-        model.addAttribute("topics", topics.getElements());
-        model.addAttribute("currentPage", topics.getCurrentPage());
-        model.addAttribute("totalPages", topics.getTotalPages());
+        model.addAttribute("topicPage", topicPage);
         model.addAttribute("name", name);
         model.addAttribute("isSearch", true);
 

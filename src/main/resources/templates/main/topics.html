@@ -35,17 +35,18 @@
     <div>
         <h2>Topics <span th:if="${name ne null}"
                          th:text="'By Name: ' + ${name}"></span></h2>
-        <p th:if="${#lists.isEmpty(topics)}">
+        <p th:if="${#lists.isEmpty(topicPage.elements)}">
             There are no topics with such parameters!!!
         </p>
-        <div class="topic" th:each="topic : ${topics}">
+        <div class="topic" th:each="topic : ${topicPage.elements}">
             <h4 class="topicName" th:text="${topic.name}"></h4>
             <a th:href="@{/topic/{id}/questions(id=${topic.id})}">Questions</a>
         </div>
     </div>
-    <th:block th:if="${!#lists.isEmpty(topics)}">
+    <th:block th:if="${!#lists.isEmpty(topicPage.elements)}">
         <div th:replace="fragments/pagination.html ::
-                    pagination(null, null, ${isSearch}, ${name}, ${currentPage}, ${totalPages})">
+                    pagination(null, null, ${isSearch}, ${name},
+                    ${topicPage.currentPage}, ${topicPage.totalPages})">
         </div>
     </th:block>
 </main>

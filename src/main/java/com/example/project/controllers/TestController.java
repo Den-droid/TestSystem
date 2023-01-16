@@ -32,6 +32,12 @@ public class TestController {
     private final QuestionService questionService;
     private static final String ERROR_URL = "/error";
     private static final String REDIRECT = "redirect:";
+    private static final String NOT_ASSIGNED_ERROR_MESSAGE =
+            "You are not assigned to this test!!!";
+    private static final String NOT_USER_CREATED_ERROR_MESSAGE =
+            "You did not create this test!!!";
+    private static final String TOO_EARLY_TO_START_ERROR_MESSAGE =
+            "Too early to start test!!!";
 
     public TestController(UserService userService,
                           TestService testService,
@@ -102,7 +108,7 @@ public class TestController {
             boolean hasStarted = testService.hasStarted(user, testId);
             boolean isTooEarly = testService.isTestTooEarly(testId);
             if (isTooEarly) {
-                model.addAttribute("error", "Too early to start test!!!");
+                model.addAttribute("error", TOO_EARLY_TO_START_ERROR_MESSAGE);
             } else if (hasStarted) {
                 String url = "/test/" + testId + "/walkthrough";
                 return REDIRECT + url;
@@ -263,13 +269,11 @@ public class TestController {
         }
 
         try {
-            PageDto<Test> tests = testService.getPage(type, null,
+            PageDto<Test> testPage = testService.getPage(type, null,
                     userService.getCurrentLoggedIn(), page, 10);
 
             List<String> testTypes = testService.getTestTypes();
-            model.addAttribute("tests", tests.getElements());
-            model.addAttribute("currentPage", tests.getCurrentPage());
-            model.addAttribute("totalPages", tests.getTotalPages());
+            model.addAttribute("testPage", testPage);
             model.addAttribute("testTypes", testTypes);
             model.addAttribute("chosenTestType", type == null
                     ? TestType.ASSIGNED.getText() : type);
@@ -277,9 +281,9 @@ public class TestController {
             model.addAttribute("isTests", true);
             if (error != null) {
                 if (error.equals("notAssigned")) {
-                    model.addAttribute("error", "You are not assigned to this test!!!");
+                    model.addAttribute("error", NOT_ASSIGNED_ERROR_MESSAGE);
                 } else if (error.equals("notUserCreated")) {
-                    model.addAttribute("error", "You did not create this test!!!");
+                    model.addAttribute("error", NOT_USER_CREATED_ERROR_MESSAGE);
                 }
             }
         } catch (IllegalArgumentException ex) {
@@ -290,7 +294,7 @@ public class TestController {
     }
 
     @GetMapping("/user/tests/search")
-    public String gePageByUserAndTypeAndName(@RequestParam(name = "query") String name,
+    public String getPageByUserAndTypeAndName(@RequestParam(name = "query") String name,
                                              @RequestParam(name = "type",
                                                      required = false) String type,
                                              @RequestParam(name = "page",
@@ -303,13 +307,11 @@ public class TestController {
         }
 
         try {
-            PageDto<Test> tests = testService.getPage(type, name,
+            PageDto<Test> testPage = testService.getPage(type, name,
                     userService.getCurrentLoggedIn(), page, 10);
 
             List<String> testTypes = testService.getTestTypes();
-            model.addAttribute("tests", tests.getElements());
-            model.addAttribute("currentPage", tests.getCurrentPage());
-            model.addAttribute("totalPages", tests.getTotalPages());
+            model.addAttribute("testPage", testPage);
             model.addAttribute("testTypes", testTypes);
             model.addAttribute("chosenTestType", type == null
                     ? TestType.ASSIGNED.getText() : type);

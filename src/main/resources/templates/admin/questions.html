@@ -27,20 +27,25 @@
         <h2>Questions for Topic "<span th:text="${topicName}"></span>"
             <span th:if="${text ne null}"
                   th:text="'By Text: ' + ${text}"></span></h2>
-        <p th:if="${#lists.isEmpty(questions)}">
+        <p th:if="${#lists.isEmpty(questionPage.elements)}">
             There are no questions with such parameters!!!
         </p>
-        <div class="question" th:each="question : ${questions}">
+        <div class="question" th:each="question, questionStat : ${questionPage.elements}">
             <h4 class="questionText"
                 th:text="${#strings.length(question.text) > 100
                 ? #strings.substring(question.text, 0, 100)
                 : question.text}"></h4>
             <a th:href="@{/questions/delete/{questionId}(questionId=${question.id})}">Delete</a>
+            <p th:text="'Correct Answers: ' + ${questionPage.correctAnswers ne null ?
+                                questionPage.correctAnswers[questionStat.index] : ''}"></p>
+            <p th:text="'Wrong Answers: ' + ${questionPage.wrongAnswers ne null ?
+                                questionPage.wrongAnswers[questionStat.index] : ''}"></p>
         </div>
     </div>
-    <th:block th:if="${!#lists.isEmpty(questions)}">
+    <th:block th:if="${!#lists.isEmpty(questionPage.elements)}">
         <div th:replace="fragments/pagination.html ::
-                    pagination(null, null, ${isSearch}, ${text}, ${currentPage}, ${totalPages})">
+                    pagination(null, null, ${isSearch}, ${text},
+                    ${questionPage.currentPage}, ${questionPage.totalPages})">
         </div>
     </th:block>
 </main>

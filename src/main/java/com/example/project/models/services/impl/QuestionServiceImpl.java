@@ -1,6 +1,7 @@
 package com.example.project.models.services.impl;
 
 import com.example.project.dto.page.PageDto;
+import com.example.project.dto.page.PageWithStatisticDto;
 import com.example.project.dto.question.AddQuestionDto;
 import com.example.project.dto.question.AddQuestionPageDto;
 import com.example.project.dto.question.EditQuestionDto;
@@ -21,7 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -235,6 +239,9 @@ public class QuestionServiceImpl implements QuestionService {
         for (Question question : questions) {
             QuestionStatistic questionStatistic = questionStatisticRepository
                     .findByQuestion(question);
+            if (questionStatistic == null) {
+                questionStatistic = new QuestionStatistic();
+            }
             questionStatistics.add(questionStatistic);
         }
         return questionStatistics;
@@ -354,7 +361,10 @@ public class QuestionServiceImpl implements QuestionService {
                 .orElseThrow(NoSuchElementException::new);
         Page<Question> questionPage = questionRepository.findAllByTopic(topic,
                 PageRequest.of(page - 1, limit));
-        return new PageDto<>(questionPage.getContent(), page, questionPage.getTotalPages());
+        List<QuestionStatistic> statistics = getStatistic(questionPage.getContent());
+        return new PageWithStatisticDto<>(questionPage.getContent(), page,
+                questionPage.getTotalPages(), getCorrectAnswersFromStatistic(statistics),
+                getWrongAnswersFromStatistic(statistics));
     }
 
     @Override
@@ -364,14 +374,20 @@ public class QuestionServiceImpl implements QuestionService {
         Page<Question> questionPage = questionRepository
                 .findAllByTopicAndTextContainsIgnoreCase(topic, text,
                         PageRequest.of(page - 1, limit));
-        return new PageDto<>(questionPage.getContent(), page, questionPage.getTotalPages());
+        List<QuestionStatistic> statistics = getStatistic(questionPage.getContent());
+        return new PageWithStatisticDto<>(questionPage.getContent(), page,
+                questionPage.getTotalPages(), getCorrectAnswersFromStatistic(statistics),
+                getWrongAnswersFromStatistic(statistics));
     }
 
     @Override
     public PageDto<Question> getPageByUser(User user, int page, int limit) {
         Page<Question> questionPage = questionRepository
                 .findAllByUser(user, PageRequest.of(page - 1, limit));
-        return new PageDto<>(questionPage.getContent(), page, questionPage.getTotalPages());
+        List<QuestionStatistic> statistics = getStatistic(questionPage.getContent());
+        return new PageWithStatisticDto<>(questionPage.getContent(), page,
+                questionPage.getTotalPages(), getCorrectAnswersFromStatistic(statistics),
+                getWrongAnswersFromStatistic(statistics));
     }
 
     @Override
@@ -379,7 +395,10 @@ public class QuestionServiceImpl implements QuestionService {
         Page<Question> questionPage = questionRepository
                 .findAllByUserAndTextContainsIgnoreCase(user, text,
                         PageRequest.of(page - 1, limit));
-        return new PageDto<>(questionPage.getContent(), page, questionPage.getTotalPages());
+        List<QuestionStatistic> statistics = getStatistic(questionPage.getContent());
+        return new PageWithStatisticDto<>(questionPage.getContent(), page,
+                questionPage.getTotalPages(), getCorrectAnswersFromStatistic(statistics),
+                getWrongAnswersFromStatistic(statistics));
     }
 
     private List<String> getQuestionTypes() {
@@ -406,5 +425,17 @@ public class QuestionServiceImpl implements QuestionService {
         return question.getSubQuestions().stream()
                 .map(Question::getAnswers)
                 .collect(ArrayList::new, ArrayList::addAll, ArrayList::addAll);
+    }
+
+    private List<Integer> getCorrectAnswersFromStatistic(List<QuestionStatistic> questionsStatistic) {
+        return questionsStatistic.stream()
+                .map(QuestionStatistic::getCorrectAnswers)
+                .collect(Collectors.toList());
+    }
+
+    private List<Integer> getWrongAnswersFromStatistic(List<QuestionStatistic> questionsStatistic) {
+        return questionsStatistic.stream()
+                .map(QuestionStatistic::getWrongAnswers)
+                .collect(Collectors.toList());
     }
 }

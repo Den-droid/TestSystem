@@ -44,10 +44,10 @@
     <div>
         <h2>Your Tests <span th:if="${name ne null and !#strings.isEmpty(name)}"
                              th:text="'By Name: ' + ${name}"></span></h2>
-        <p th:if="${#lists.isEmpty(tests)}">
+        <p th:if="${#lists.isEmpty(testPage.elements)}">
             There are no tests with such parameters!!!
         </p>
-        <div class="test" th:each="test : ${tests}">
+        <div class="test" th:each="test : ${testPage.elements}">
             <h4 class="testName"
                 th:text="${#strings.length(test.name) > 100
             ? #strings.substring(test.name, 0, 100)
@@ -68,9 +68,10 @@
             </th:block>
         </div>
     </div>
-    <th:block th:if="${!#lists.isEmpty(tests)}">
+    <th:block th:if="${!#lists.isEmpty(testPage.elements)}">
         <div th:replace="fragments/pagination.html ::
-        pagination(${isTests}, ${chosenTestType}, ${isSearch}, ${name}, ${currentPage}, ${totalPages})">
+        pagination(${isTests}, ${chosenTestType}, ${isSearch}, ${name},
+        ${testPage.currentPage}, ${testPage.totalPages})">
         </div>
     </th:block>
 </main>
