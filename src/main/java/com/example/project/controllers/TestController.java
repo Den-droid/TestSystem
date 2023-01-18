@@ -222,9 +222,11 @@ public class TestController {
                                             required = false) String username,
                                     Model model) {
         try {
+            User user = userService.getCurrentLoggedIn();
+            boolean isUserCreated = testService.isUserCreated(testId,
+                    userService.getCurrentLoggedIn());
+
             if (username == null) {
-                boolean isUserCreated = testService.isUserCreated(testId,
-                        userService.getCurrentLoggedIn());
                 if (isUserCreated) {
                     model.addAttribute("resultsInfo", testService.getResultInfo(testId));
                     model.addAttribute("testId", testId);
@@ -235,15 +237,19 @@ public class TestController {
                     return REDIRECT + url;
                 }
             } else {
-                boolean hasFinished = testService.hasFinished(
-                        userService.getByUsername(username), testId);
-                if (hasFinished) {
-                    model.addAttribute("testResult", testService.getUserTestResult(
-                            testId, userService.getCurrentLoggedIn()));
-                    return "test/result";
+                if (user.getUsername().equals(username) || isUserCreated) {
+                    boolean hasFinished = testService.hasFinished(
+                            userService.getByUsername(username), testId);
+                    if (hasFinished) {
+                        model.addAttribute("testResult", testService.getUserTestResult(
+                                testId, user));
+                        return "test/result";
+                    } else {
+                        String url = "/test/" + testId + "/walkthrough";
+                        return REDIRECT + url;
+                    }
                 } else {
-                    String url = "/test/" + testId + "/walkthrough";
-                    return REDIRECT + url;
+                    return REDIRECT + ERROR_URL;
                 }
             }
         } catch (NoSuchElementException ex) {
@@ -295,11 +301,11 @@ public class TestController {
 
     @GetMapping("/user/tests/search")
     public String getPageByUserAndTypeAndName(@RequestParam(name = "query") String name,
-                                             @RequestParam(name = "type",
-                                                     required = false) String type,
-                                             @RequestParam(name = "page",
-                                                     required = false) Integer page,
-                                             Model model) {
+                                              @RequestParam(name = "type",
+                                                      required = false) String type,
+                                              @RequestParam(name = "page",
+                                                      required = false) Integer page,
+                                              Model model) {
         if (page == null) {
             page = 1;
         } else if (page < 1) {
